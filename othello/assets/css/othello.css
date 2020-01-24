@@ -1,0 +1,28 @@
+h1 {
+    background-color: blanchedalmond;
+}
+
+table {
+    border-collapse: collapse;
+    width: 90%;
+    height: 399px;
+  }
+
+td {
+    height: 12%;
+    width: 12%;
+    border: 1px solid black;
+}
+
+
+.counter { /* Player 1 by default*/
+    margin: auto;
+    height: 80%;
+    width: 80%;
+    border-radius: 50%;
+    background-color: darkred;
+}
+
+.player2 {
+    background-color: darkblue;
+}
