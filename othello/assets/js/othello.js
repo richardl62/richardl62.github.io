@@ -9,3 +9,16 @@ $("td").click(function(){
         content.addClass("counter");
     }
 })
+
+function make_squares()
+{
+    $("td").css("height", function () {
+        return $(this).css("width");
+    });
+    console.log("running make_squares");
+}
+
+make_squares();
+
+$( window ).resize(make_squares);
+
