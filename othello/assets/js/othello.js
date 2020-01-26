@@ -10,15 +10,27 @@ $("td").click(function(){
     }
 })
 
-function make_squares()
+function resize_squares()
 {
-    $("td").css("height", function () {
-        return $(this).css("width");
-    });
-    console.log("running make_squares");
+    var w = $( window ).width();
+    var hw = $( window ).height();
+    var hp = $("#preamble").height();
+    var h = hw - hp;
+    $(".square").css("border-color", h > w ? "red" : "green" )
+
+    $(".square").height($(this).width());
+    //console.log(h + " " + w);
+
+    // var size = Math.min(h, w)/8.1;
+
+    // $(".square").height(size);
+    // $(".square").width(size);
+
+    // $(".row").width(w);
+
 }
 
-make_squares();
+resize_squares();
 
-$( window ).resize(make_squares);
+$( window ).resize(resize_squares);
 
