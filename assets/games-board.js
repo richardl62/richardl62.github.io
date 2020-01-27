@@ -1,10 +1,20 @@
 //"use strict";
 'use strict';
 
-class GamesBoard {
-    constructor(board /*element*/, n_cols, n_rows)
+class gamesBoardSquare {
+    constructor(elem)
     {
-        this.board = board;
+        this.elem = elem;
+
+        this.row = parseInt($(this.elem).css("grid-row-start")) - 1 ;
+        this.col = parseInt($(this.elem).css("grid-column-start")) - 1 ;
+    }
+};
+
+class GamesBoard {
+    constructor(board /*div or simiiar*/, n_cols, n_rows)
+    {
+        this.board = $(board);
         this.n_cols = n_cols;
         this.n_rows = n_rows;
 
@@ -19,11 +29,15 @@ class GamesBoard {
                     elem.css("border-top", "none");
                 if (col != 0)
                     elem.css( "border-left", "none");
+
+                elem.css("grid-row", row+1);
+                elem.css("grid-column", col+1);
             }
     
         board.css("grid-template-rows", "repeat(" + n_rows + ", 1fr)");
         board.css("grid-template-columns", "repeat(" + n_cols + ", 1fr)");
     
+
         this.resizeSquares();
     }
 
@@ -40,5 +54,11 @@ class GamesBoard {
         else {
             this.board.innerHeight(ws * this.n_rows);
         }
+    }
+
+    clickSquare(callback) {
+        $(".gamesBoardSquare").click(function(){
+            callback(new gamesBoardSquare(this));
+        });
     }
 }

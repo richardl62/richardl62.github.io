@@ -30,17 +30,16 @@
 
 </head>
 <body>
-
-    <!-- <div id="preamble"> 
-         <h1>Hello.  It's nice to see you.</h1>
-    </div> -->
-
     <div id="board"></div>
 
     <script>
 
         var board = $("#board");
         var games_board = new GamesBoard(board, 6, 3);
+
+        games_board.clickSquare(function(square){
+            alert( square.row + " " + square.col);
+        });
 
         function leftRightMargin(elem)
         {
