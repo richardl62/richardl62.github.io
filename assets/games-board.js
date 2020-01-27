@@ -12,7 +12,7 @@ class GamesBoard {
 
         for (var row = 0; row < n_rows; ++row)
             for (var col = 0; col < n_cols; ++col) {
-                var elem = $('<div class="square"><div class="counter"></div></div>');
+                var elem = $('<div class="gamesBoardSquare"><div class="gamesBoardCounter"></div></div>');
                 board.append(elem);
     
                 if (row != 0)

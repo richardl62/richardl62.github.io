@@ -1,0 +1,12 @@
+.gamesBoardSquare {
+    border: 3px solid black;
+    margin: 0;
+}
+
+.gamesBoardCounter { /* Player 1 by default*/
+    margin: 10%;
+    height: 80%;
+    width: 80%;
+    border-radius: 50%;
+    background-color: darkred;
+}
