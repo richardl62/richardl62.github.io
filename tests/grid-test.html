@@ -24,11 +24,30 @@
         border: 3px dashed red;
       }
 
+    #whose-turn {
+        display: grid;
+        grid-template-columns: 200px 20px;
+        grid-template-rows: auto;
+    }
+    
+
+    #whose-turn-counter { 
+        height: 20px;
+        width: 20px;
+        border-radius: 50%;
+    }
+
     </style>
 
 </head>
 <body>
-    <h2 id="whoses_turn">Whose turn?</h2>
+    <div id="whose-turn" > 
+        <div> Player <span id="whose-turn-text">1</span>'s turn </div>
+        <div id="whose-turn-counter"></div>
+    </div>
+
+
+
     <div id="board"></div>
 
     <script>
@@ -40,18 +59,18 @@
 
         function showWhosesTurn()
         {
-            var whoses_turn = $("#whoses_turn");
+            $("#whose-turn-text").text(player1s_turn ? "1" : "2");
+
+            var counter = $("#whose-turn-counter")
             if(player1s_turn)
             {
-                whoses_turn.text("Player 1's turn");
-                whoses_turn.addClass("gamesBoardPlayer1");
-                whoses_turn.removeClass("gamesBoardPlayer2");
+                counter.addClass("gamesBoardPlayer1");
+                counter.removeClass("gamesBoardPlayer2");
             }
             else
             {
-                whoses_turn.text("Player 2's turn");
-                whoses_turn.addClass("gamesBoardPlayer2");
-                whoses_turn.removeClass("gamesBoardPlayer1");
+                counter.addClass("gamesBoardPlayer2");
+                counter.removeClass("gamesBoardPlayer1");
             }
         }
         showWhosesTurn();
