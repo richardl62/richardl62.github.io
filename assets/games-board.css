@@ -8,5 +8,12 @@
     height: 80%;
     width: 80%;
     border-radius: 50%;
-    background-color: darkred;
+}
+
+.gamesBoardPlayer1 {
+    background-color: darkblue;
+}
+
+.gamesBoardPlayer2 {
+    background-color: darkblue;
 }

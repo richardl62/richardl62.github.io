@@ -37,8 +37,22 @@
         var board = $("#board");
         var games_board = new GamesBoard(board, 6, 3);
 
+        var player1s_turn = true;
         games_board.clickSquare(function(square){
-            alert( square.row + " " + square.col);
+ 
+            var was_empty = square.addCounter(player1s_turn);
+            if(!was_empty && square.isPlayer1() == player1s_turn)
+                {
+                alert("You can't select your own counter");
+                }
+            else
+            { 
+                if(!was_empty)
+                    {
+                    square.togglePlayer();
+                    }
+                player1s_turn = !player1s_turn;
+            }
         });
 
         function leftRightMargin(elem)

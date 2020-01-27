@@ -4,10 +4,45 @@
 class gamesBoardSquare {
     constructor(elem)
     {
-        this.elem = elem;
+        this.elem = $(elem);
 
-        this.row = parseInt($(this.elem).css("grid-row-start")) - 1 ;
-        this.col = parseInt($(this.elem).css("grid-column-start")) - 1 ;
+        this.row = parseInt(this.elem.css("grid-row-start")) - 1 ;
+        this.col = parseInt(this.elem.css("grid-column-start")) - 1 ;
+    }
+
+    empty()
+    {
+        return this.getCounter().length == 0;
+    }
+
+    addCounter(player1 = true)
+    {
+        if(!this.empty())
+        {
+            return false;
+        }
+
+        var counter = $('<div class="gamesBoardCounter"></div>');
+        if(!player1)
+        {
+            counter.addClass("gamesBoardPlayer2");
+        }
+        this.elem.append(counter);
+        return true;
+    }
+
+    isPlayer1()
+    {
+        return !this.getCounter().hasClass("gamesBoardPlayer2");
+    }
+
+    togglePlayer()
+    {
+        this.getCounter().toggleClass("gamesBoardPlayer2");
+    }
+
+    getCounter() {
+        return this.elem.children();
     }
 };
 
@@ -22,7 +57,7 @@ class GamesBoard {
 
         for (var row = 0; row < n_rows; ++row)
             for (var col = 0; col < n_cols; ++col) {
-                var elem = $('<div class="gamesBoardSquare"><div class="gamesBoardCounter"></div></div>');
+                var elem = $('<div class="gamesBoardSquare"></div>');
                 board.append(elem);
     
                 if (row != 0)
