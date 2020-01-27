@@ -23,21 +23,21 @@ class gamesBoardSquare {
         }
 
         var counter = $('<div class="gamesBoardCounter"></div>');
-        if(!player1)
-        {
-            counter.addClass("gamesBoardPlayer2");
-        }
+  
+        counter.addClass(player1 ? "gamesBoardPlayer1" : "gamesBoardPlayer2");
+   
         this.elem.append(counter);
         return true;
     }
 
     isPlayer1()
     {
-        return !this.getCounter().hasClass("gamesBoardPlayer2");
+        return this.getCounter().hasClass("gamesBoardPlayer1");
     }
 
     togglePlayer()
     {
+        this.getCounter().toggleClass("gamesBoardPlayer1");
         this.getCounter().toggleClass("gamesBoardPlayer2");
     }
 

@@ -24,12 +24,11 @@
         border: 3px dashed red;
       }
 
-
-
     </style>
 
 </head>
 <body>
+    <h2 id="whoses_turn">Whose turn?</h2>
     <div id="board"></div>
 
     <script>
@@ -38,6 +37,24 @@
         var games_board = new GamesBoard(board, 6, 3);
 
         var player1s_turn = true;
+
+        function showWhosesTurn()
+        {
+            var whoses_turn = $("#whoses_turn");
+            if(player1s_turn)
+            {
+                whoses_turn.text("Player 1's turn");
+                whoses_turn.addClass("gamesBoardPlayer1");
+                whoses_turn.removeClass("gamesBoardPlayer2");
+            }
+            else
+            {
+                whoses_turn.text("Player 2's turn");
+                whoses_turn.addClass("gamesBoardPlayer2");
+                whoses_turn.removeClass("gamesBoardPlayer1");
+            }
+        }
+        showWhosesTurn();
         games_board.clickSquare(function(square){
  
             var was_empty = square.addCounter(player1s_turn);
@@ -53,6 +70,7 @@
                     }
                 player1s_turn = !player1s_turn;
             }
+            showWhosesTurn();
         });
 
         function leftRightMargin(elem)
