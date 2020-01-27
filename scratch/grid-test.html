@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Grid test</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="../../richardl62.github.io/assets/js/games-board.js"></script>
+    <style>
+* {
+  box-sizing: border-box;
+}
+    body {
+       /* margin: 10px; */
+       /* border: 1px solid red; */
+    } 
+
+    #board {
+        /* margin: 20px; */
+        border: 3px dashed red;
+      }
+
+    .square {
+        border: 3px solid black;
+        margin: 0;
+    }
+
+    .counter { /* Player 1 by default*/
+        margin: 10%;
+        height: 80%;
+        width: 80%;
+        border-radius: 50%;
+        background-color: darkred;
+    }
+
+    </style>
+
+</head>
+<body>
+
+    <!-- <div id="preamble"> 
+         <h1>Hello.  It's nice to see you.</h1>
+    </div> -->
+
+    <div id="board"></div>
+
+    <script>
+
+        var board = $("#board");
+        var games_board = new GamesBoard(board, 6, 3);
+
+        function leftRightMargin(elem)
+        {
+             return elem.outerWidth(true) - elem.outerWidth();
+        }
+
+        function topBotMargin(elem)
+        {
+             return elem.outerHeight(true) - elem.outerHeight();
+        }
+
+        function set_board_to_window_size()
+        {
+            $("body").width($(window).width() - leftRightMargin($("body")));
+            $("body").height($(window).height() - topBotMargin($("body")));
+
+            var board =  $("#board");
+
+            board.width($("body").innerWidth() - leftRightMargin(board));
+            board.height($("body").innerHeight() - topBotMargin(board));
+
+            games_board.resizeSquares();
+        }
+
+        set_board_to_window_size();       
+        $(window).resize(set_board_to_window_size);
+    </script>
+
+
+</body>
+
+
+</html>
