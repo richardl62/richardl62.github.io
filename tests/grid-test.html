@@ -18,14 +18,21 @@
         font-size: larger;
     }
     
+    #preamble {
+        border: 0px;
+        margin: 0px;
+    }
+
     </style>
 
 </head>
 <body>
-    <h2 id="whose-turn" > 
-         Player <span id="whose-turn-text">1</span>'s turn
-    </h2>
 
+    <div id="preamble">
+        <h2 id="whose-turn" > 
+            Player <span id="whose-turn-text">1</span>'s turn
+        </h2>
+    </div>
 
 
     <div id="board"></div>
@@ -35,7 +42,7 @@
 
         var games_board = new GamesBoard($("#board"), 6, 3);
 
-        var n_players = 8;
+        var n_players = 3;
         var player_number = 1;
 
         function showWhosesTurn()
@@ -75,7 +82,8 @@
         function set_board_to_window_size()
         {
             $("body").width($(window).width() - leftRightMargin($("body")));
-            $("body").height($(window).height() - topBotMargin($("body")));
+            $("body").height($(window).height() - topBotMargin($("body"))
+		        - $("#preamble").outerHeight());
 
             var board =  $("#board");
 

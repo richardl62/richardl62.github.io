@@ -71,10 +71,11 @@ class GamesBoard {
         this.n_cols = n_cols;
         this.n_rows = n_rows;
         
+        board.css({
+            display: "grid",
+        });
+
         this.squares = new Array(n_rows); 
-
-        board.css("display", "grid");
-
         for (var row = 0; row < n_rows; ++row)
         {
             this.squares[row] = new Array(n_cols);
