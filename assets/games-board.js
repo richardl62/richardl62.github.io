@@ -33,8 +33,13 @@ class gamesBoardSquare {
             return false;
         }
 
-        this.counter = $('<div class="gamesBoardCounter"></div>');
-  
+        this.counter = $('<div></div>');
+        this.counter.css({
+            margin: "10%",
+            height: "80%",
+            width: "80%",
+            borderRadius: "50%"
+        });
         this.setPlayerNumber(player_number);
    
         this.elem.append(this.counter);
@@ -76,15 +81,28 @@ class GamesBoard {
 
             for (var col = 0; col < n_cols; ++col) {
                 var elem = $('<div class="gamesBoardSquare"></div>');
+                
+                var border_style = "3px solid black";
+                var style = {
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "white",
+                    borderBottom: border_style,
+                    borderRight: border_style,
+                    gridRow: row+1,
+                    gridColumn: col+1,
+                };
+
+                if(row == 0)
+                    style["borderTop"] = border_style;
+
+                if(col == 0)
+                    style["borderLeft"] = border_style; 
+
+                elem.css(style);
+
                 board.append(elem);
     
-                if (row != 0)
-                    elem.css("border-top", "none");
-                if (col != 0)
-                    elem.css( "border-left", "none");
-
-                elem.css("grid-row", row+1);
-                elem.css("grid-column", col+1);
 
                 this.squares[row][col] = new gamesBoardSquare(elem, row, col);
             }
@@ -123,6 +141,7 @@ class GamesBoard {
 
             var row = parseInt($(this).css("grid-row-start")) - 1 ;
             var col = parseInt($(this).css("grid-column-start")) - 1 ;
+            console.log("Clicked on " + row + " " + col)
             callback(games_board.getSquare(row, col));
         });
     }
