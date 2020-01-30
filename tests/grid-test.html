@@ -25,69 +25,49 @@
       }
 
     #whose-turn {
-        display: grid;
-        grid-template-columns: 200px 20px;
-        grid-template-rows: auto;
+        font-size: larger;
     }
     
-
-    #whose-turn-counter { 
-        height: 20px;
-        width: 20px;
-        border-radius: 50%;
-    }
-
     </style>
 
 </head>
 <body>
-    <div id="whose-turn" > 
-        <div> Player <span id="whose-turn-text">1</span>'s turn </div>
-        <div id="whose-turn-counter"></div>
-    </div>
+    <h2 id="whose-turn" > 
+         Player <span id="whose-turn-text">1</span>'s turn
+    </h2>
 
 
 
     <div id="board"></div>
 
     <script>
+        let root = document.documentElement;
 
-        var board = $("#board");
-        var games_board = new GamesBoard(board, 6, 3);
+        var games_board = new GamesBoard($("#board"), 6, 3);
 
-        var player1s_turn = true;
+        var n_players = 8;
+        var player_number = 1;
 
         function showWhosesTurn()
         {
-            $("#whose-turn-text").text(player1s_turn ? "1" : "2");
+            var player_string = player_number.toString();
+            $("#whose-turn-text").text(player_number.toString());
+            var color = GamesBoard.getPlayerColor(player_number);
+            $("#whose-turn").css("color", color);
 
-            var counter = $("#whose-turn-counter")
-            if(player1s_turn)
-            {
-                counter.addClass("gamesBoardPlayer1");
-                counter.removeClass("gamesBoardPlayer2");
-            }
-            else
-            {
-                counter.addClass("gamesBoardPlayer2");
-                counter.removeClass("gamesBoardPlayer1");
-            }
         }
         showWhosesTurn();
         games_board.clickSquare(function(square){
  
-            var was_empty = square.addCounter(player1s_turn);
-            if(!was_empty && square.isPlayer1() == player1s_turn)
+            var was_empty = square.addCounter(player_number);
+            if(!was_empty && square.getPlayerNumber() == player_number)
                 {
                 alert("You can't select your own counter");
                 }
             else
             { 
-                if(!was_empty)
-                    {
-                    square.togglePlayer();
-                    }
-                player1s_turn = !player1s_turn;
+                square.setPlayerNumber(player_number);
+                player_number = (player_number % n_players) + 1;
             }
             showWhosesTurn();
         });

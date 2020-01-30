@@ -10,10 +10,16 @@
     border-radius: 50%;
 }
 
+:root {
+    --board-games-player1-color: green;  
+    --board-games-player2-color: darkred;
+  }
+
+
 .gamesBoardPlayer1 {
-    background-color: darkred;
+    background-color: var(--board-games-player1-color);
 }
 
 .gamesBoardPlayer2 {
-    background-color: darkblue;
+    background-color: var(--board-games-player2-color);;
 }

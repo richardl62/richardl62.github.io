@@ -1,13 +1,24 @@
 //"use strict";
 'use strict';
 
+const GamesBoardcolors = [
+    "red",
+    "blue",
+    "green",
+    "orange",
+    "purple",
+    "brown",
+    "gold", // Yellow was a bit to light for text to be readable against a white background
+    "black",
+];
+
 class gamesBoardSquare {
-    constructor(elem)
+    constructor(elem, row, col)
     {
         this.elem = $(elem);
 
-        this.row = parseInt(this.elem.css("grid-row-start")) - 1 ;
-        this.col = parseInt(this.elem.css("grid-column-start")) - 1 ;
+        this.row = row;
+        this.col = col;
     }
 
     empty()
@@ -15,30 +26,31 @@ class gamesBoardSquare {
         return this.getCounter().length == 0;
     }
 
-    addCounter(player1 = true)
+    addCounter(player_number)
     {
         if(!this.empty())
         {
             return false;
         }
 
-        var counter = $('<div class="gamesBoardCounter"></div>');
+        this.counter = $('<div class="gamesBoardCounter"></div>');
   
-        counter.addClass(player1 ? "gamesBoardPlayer1" : "gamesBoardPlayer2");
+        this.setPlayerNumber(player_number);
    
-        this.elem.append(counter);
+        this.elem.append(this.counter);
         return true;
     }
 
-    isPlayer1()
+    getPlayerNumber()
     {
-        return this.getCounter().hasClass("gamesBoardPlayer1");
+        return this.player_number;
     }
 
-    togglePlayer()
+    setPlayerNumber(player_number)
     {
-        this.getCounter().toggleClass("gamesBoardPlayer1");
-        this.getCounter().toggleClass("gamesBoardPlayer2");
+        this.player_number = player_number;
+
+        this.counter.css("background",  GamesBoard.getPlayerColor(player_number));
     }
 
     getCounter() {
@@ -46,16 +58,22 @@ class gamesBoardSquare {
     }
 };
 
+
 class GamesBoard {
     constructor(board /*div or simiiar*/, n_cols, n_rows)
     {
         this.board = $(board);
         this.n_cols = n_cols;
         this.n_rows = n_rows;
+        
+        this.squares = new Array(n_rows); 
 
         board.css("display", "grid");
 
         for (var row = 0; row < n_rows; ++row)
+        {
+            this.squares[row] = new Array(n_cols);
+
             for (var col = 0; col < n_cols; ++col) {
                 var elem = $('<div class="gamesBoardSquare"></div>');
                 board.append(elem);
@@ -67,7 +85,10 @@ class GamesBoard {
 
                 elem.css("grid-row", row+1);
                 elem.css("grid-column", col+1);
+
+                this.squares[row][col] = new gamesBoardSquare(elem, row, col);
             }
+        }
     
         board.css("grid-template-rows", "repeat(" + n_rows + ", 1fr)");
         board.css("grid-template-columns", "repeat(" + n_cols + ", 1fr)");
@@ -91,9 +112,26 @@ class GamesBoard {
         }
     }
 
+    getSquare(row, col)
+    {
+        console.log("getting square " + row + " " + col); 
+        return this.squares[row][col];
+    }
     clickSquare(callback) {
+        var games_board = this;
         $(".gamesBoardSquare").click(function(){
-            callback(new gamesBoardSquare(this));
+
+            var row = parseInt($(this).css("grid-row-start")) - 1 ;
+            var col = parseInt($(this).css("grid-column-start")) - 1 ;
+            callback(games_board.getSquare(row, col));
         });
     }
+
+    static getPlayerColor(player_number)
+        {
+        if(player_number < 1 || player_number > GamesBoardcolors.length)
+            throw "Invalid player numbeer " + player_number;
+
+        return GamesBoardcolors[player_number-1];
+        }
 }
