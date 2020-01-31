@@ -8,10 +8,22 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 
-    <script type="text/javascript" src="../assets/games-board.js"></script>
+    <script type="text/javascript" src="../lib/games-board.js"></script>
     <style>
     * {
         box-sizing: border-box;
+    }
+
+    html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0px;
+    }
+
+    body {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        padding: 2%; /* padding is OK, but don't set a margin */
     }
 
     #whose-turn {
@@ -19,8 +31,12 @@
     }
     
     #preamble {
-        border: 0px;
+        border: 4px red solid;
         margin: 0px;
+    }
+
+    #board {
+        
     }
 
     </style>
@@ -28,19 +44,19 @@
 </head>
 <body>
 
-    <div id="preamble">
-        <h2 id="whose-turn" > 
-            Player <span id="whose-turn-text">1</span>'s turn
-        </h2>
-    </div>
+        <div id="preamble">
+            <h2 id="whose-turn">
+                Player <span id="whose-turn-text">1</span>'s turn
+            </h2>
+        </div>
+        
+        <div id="board" align="center"></div>
 
-
-    <div id="board"></div>
 
     <script>
         let root = document.documentElement;
 
-        var games_board = new GamesBoard($("#board"), 6, 3);
+        var games_board = new GamesBoard($("#board"), 2, 2);
 
         var n_players = 3;
         var player_number = 1;
@@ -79,22 +95,11 @@
              return elem.outerHeight(true) - elem.outerHeight();
         }
 
-        function set_board_to_window_size()
-        {
-            $("body").width($(window).width() - leftRightMargin($("body")));
-            $("body").height($(window).height() - topBotMargin($("body"))
-		        - $("#preamble").outerHeight());
+        // Make sure the squares stay square when the board is resized.
+        $(window).resize(function(){
+            games_board.resize();
+        })
 
-            var board =  $("#board");
-
-            board.width($("body").innerWidth() - leftRightMargin(board));
-            board.height($("body").innerHeight() - topBotMargin(board));
-
-            games_board.resizeSquares();
-        }
-
-        set_board_to_window_size();       
-        $(window).resize(set_board_to_window_size);
     </script>
 
 
