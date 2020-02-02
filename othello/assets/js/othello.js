@@ -1,36 +1,19 @@
-$("td").click(function(){
-    var content = $(this).children("div").first();
-    if(content.hasClass("counter"))
-    {
-        content.toggleClass("player2");  
-    }
-    else
-    {
-        content.addClass("counter");
-    }
-})
+"use strict;"
 
-function resize_squares()
-{
-    var w = $( window ).width();
-    var hw = $( window ).height();
-    var hp = $("#preamble").height();
-    var h = hw - hp;
-    $(".square").css("border-color", h > w ? "red" : "green" )
+const n_rows = 8;
+const n_cols = 8;
 
-    $(".square").height($(this).width());
-    //console.log(h + " " + w);
+var board = new GamesBoard($("#board"), n_rows, n_cols);
 
-    // var size = Math.min(h, w)/8.1;
+var mid_row = Math.floor(n_rows/2) - 1;
+var mid_col = Math.floor(n_cols/2) - 1
 
-    // $(".square").height(size);
-    // $(".square").width(size);
+board.getSquare(mid_row, mid_col).addCounter(1);
+board.getSquare(mid_row+1, mid_col).addCounter(2);
+board.getSquare(mid_row, mid_col+1).addCounter(2);
+board.getSquare(mid_row+1, mid_col+1).addCounter(1);
 
-    // $(".row").width(w);
-
-}
-
-resize_squares();
-
-$( window ).resize(resize_squares);
+$( window ).resize(function(){
+    board.resize();
+});
 

@@ -35,10 +35,6 @@
         margin: 0px;
     }
 
-    #board {
-        
-    }
-
     </style>
 
 </head>
@@ -58,7 +54,7 @@
 
         var games_board = new GamesBoard($("#board"), 2, 2);
 
-        var n_players = 3;
+        var n_players = 2;
         var player_number = 1;
 
         function showWhosesTurn()
@@ -72,18 +68,24 @@
         showWhosesTurn();
         games_board.clickSquare(function(square){
  
-            var was_empty = square.addCounter(player_number);
-            if(!was_empty && square.getPlayerNumber() == player_number)
+            var previous_square_owner = square.playerNumber(player_number);
+            console.log(previous_square_owner + " " + player_number);
+            if(previous_square_owner == player_number)
                 {
-                alert("You can't select your own counter");
+                square.clear();
+                alert("You cleared your own square - try again.");
                 }
             else
             { 
-                square.setPlayerNumber(player_number);
                 player_number = (player_number % n_players) + 1;
             }
             showWhosesTurn();
         });
+
+        games_board.hoverSquare(
+            function(square){square.elem.css("backgroundColor", "yellow");}, 
+            function(square){square.elem.css("backgroundColor", "white");}, 
+            );
 
         function leftRightMargin(elem)
         {
