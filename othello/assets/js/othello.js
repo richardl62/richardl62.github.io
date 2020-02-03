@@ -133,28 +133,30 @@ function on_click(square)
     if(game_move.errorString())
     {
         alert(game_move.errorString());
+        if(clear_square_set_by_hover_in)
+            square.clear();
     }
     else
     {
         change_player();
-        clear_square_on_hover_out = false;
+        clear_square_set_by_hover_in = false;
     } 
 }
 
 
 function on_hover_in(square)
 {
-    clear_square_on_hover_out = false;
+    clear_square_set_by_hover_in = false;
     if(!square.playerNumber())
     {
         square.color(GamesBoard.getPlayerColor(current_player));
-        clear_square_on_hover_out = true;
+        clear_square_set_by_hover_in = true;
     }
 }
 
 function on_hover_out(square)
 {
-    if(clear_square_on_hover_out)
+    if(clear_square_set_by_hover_in)
     {
         square.clear();
     }
