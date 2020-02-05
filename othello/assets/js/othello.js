@@ -1,7 +1,7 @@
 "use strict;"
 
-const n_rows = 2;
-const n_cols = 3;
+const n_rows = 8;
+const n_cols = 8;
 
 var board = new GamesBoard($("#board"), n_rows, n_cols);
 
