@@ -1,37 +1,40 @@
 "use strict;"
 
-const n_rows = 8;
-const n_cols = 8;
+const n_rows = 2;
+const n_cols = 3;
 
 var board = new GamesBoard($("#board"), n_rows, n_cols);
 
 var mid_row = Math.floor(n_rows/2) - 1;
 var mid_col = Math.floor(n_cols/2) - 1
 
-board.getSquare(mid_row, mid_col).playerNumber(1);
-board.getSquare(mid_row+1, mid_col).playerNumber(2);
-board.getSquare(mid_row, mid_col+1).playerNumber(2);
-board.getSquare(mid_row+1, mid_col+1).playerNumber(1);
-
-
-
-// Kludge: Start out of order that swap as lazy way to set color of preamble
-var current_player = 2;
-var other_player = 1;
-var move_number = 0;
-
-change_player();
-
-function change_player()
+function reset_game()
 {
-    var tmp = current_player;
-    current_player = other_player;
-    other_player = tmp;
+    for(var row = 0; row < n_rows; ++row)
+        for(var col = 0; col < n_cols; ++col)
+            board.getSquare(row, col).clear();
+
+    board.getSquare(mid_row, mid_col).playerNumber(1);
+    board.getSquare(mid_row+1, mid_col).playerNumber(2);
+    board.getSquare(mid_row, mid_col+1).playerNumber(2);
+    board.getSquare(mid_row+1, mid_col+1).playerNumber(1);
+
+    set_current_player(1);
+}
+
+reset_game();
+
+var current_player = 1;
+var other_player = 2;
+
+function set_current_player(cp)
+{
+    current_player = cp;
+    other_player = (current_player%2)+1;
     
-    ++move_number;
 
-
-    $("#preamble").css("background-color", GamesBoard.getPlayerColor(current_player));
+    $(".next-player-color").css("color", GamesBoard.getPlayerColor(current_player));
+    $(".next-player-number").text(current_player.toString());
 }
 
 function get_captures(square, r_step, c_step)
@@ -92,9 +95,6 @@ class GameMove
                 }
             }
 
-            //var captures = get_captures(this.square, 1, 0);
-            //this.captured_squares.push(...captures);
-
             if(this.captured_squares.length == 0)
             {
                 this.error_string = "you must capture at least one square";
@@ -109,62 +109,43 @@ class GameMove
         }
     }
     
-    undo()
-    {
-        if(!this.error_string) {
-            for(var i = 0; i < this.captured_squares.length; ++i)
-            {
-                this.captured_squares[i].playerNumber(this.other_player);
-            }
-            this.square.clear();
-        }
-    }
-
     errorString()
     {
         return this.error_string;
     }
 }
 
-
+var prev_state;
+var prev_player;
 function on_click(square)
 {
+    prev_state = board.state();
+    prev_player = current_player;
+
     var game_move = new  GameMove(square, current_player, other_player)
     if(game_move.errorString())
     {
         alert(game_move.errorString());
-        if(clear_square_set_by_hover_in)
-            square.clear();
     }
     else
     {
-        change_player();
-        clear_square_set_by_hover_in = false;
+        set_current_player(other_player);
     } 
-}
-
-
-function on_hover_in(square)
-{
-    clear_square_set_by_hover_in = false;
-    if(!square.playerNumber())
-    {
-        square.color(GamesBoard.getPlayerColor(current_player));
-        clear_square_set_by_hover_in = true;
-    }
-}
-
-function on_hover_out(square)
-{
-    if(clear_square_set_by_hover_in)
-    {
-        square.clear();
-    }
 }
 
 board.click(on_click);
 
-board.hover(on_hover_in, on_hover_out);
+
+$("#undo").click(function(){
+   board.state(prev_state);
+   set_current_player(prev_player);
+});
+
+$("#pass").click(function(){
+    set_current_player(other_player);
+});
+
+$("#reset").click(reset_game);
 
 $( window ).resize(function(){
     board.resize();

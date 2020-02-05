@@ -25,6 +25,16 @@
             height: 100%;
             width: 100%;
         }
+
+        #preamble {
+            display: flex;
+        }
+
+        #next-move {
+            /* flex: 1; */
+            margin-right: 2%
+        }
+
     </style> 
 
     </head>
@@ -32,7 +42,10 @@
 
         
         <div id="preamble">
-            <h1>Othello</h1>
+            <h2 id="next-move">Next move: <span class="next-player-color"> Player <span class="next-player-number"> 1 </span> </span> </h2>
+            <button id="undo" type="button">Undo</button">
+            <button id="pass" type="button">Pass</button">
+            <button id="reset" type="button">Reset</button">
         </div>
         
         <div id="board"> </div>
