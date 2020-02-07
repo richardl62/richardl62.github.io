@@ -61,9 +61,22 @@
             </div>
 
             <div id="buttons">
-                <button id="undo" type="button">Undo</button>
-                <button id="pass" type="button">Pass</button>
-                <button id="reset" type="button">Reset</button>
+                <div id="play-buttons">
+                    <button id="undo" type="button">Undo</button>
+                    <button id="pass" type="button">Pass</button>
+                    <button id="new-game" type="button">New Game</button>
+                </div>
+                <div id="setup-buttons">
+                    Rows <input type="number" id="num-rows" min="1" max="100" value="8">
+                    Cols <input type="number" id="num-cols" min="1" max="100" value="8">
+                    <button id="Clear" type="button">clear</button>
+                </div>
+
+                <label for="mode">Mode:</label>
+                <select id="mode">
+                    <option value="play">Play</option>
+                    <option value="setup">Setup</option>
+                </select>
             </div>
         </div>
         

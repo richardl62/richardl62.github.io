@@ -9,7 +9,7 @@ var preamble = $("#preamble");
 var mid_row = Math.floor(n_rows/2) - 1;
 var mid_col = Math.floor(n_cols/2) - 1;
 
-function reset_game()
+function restart_game()
 {
     for(var row = 0; row < n_rows; ++row)
         for(var col = 0; col < n_cols; ++col)
@@ -23,7 +23,7 @@ function reset_game()
     set_current_player(1);
 }
 
-reset_game();
+restart_game();
 
 var current_player = 1;
 var other_player = 2;
@@ -118,7 +118,7 @@ class GameMove
 
 var prev_state;
 var prev_player;
-function on_click(square)
+function on_click_play(square)
 {
     prev_state = board.state();
     prev_player = current_player;
@@ -134,8 +134,55 @@ function on_click(square)
     } 
 }
 
-board.click(on_click);
+function on_click_setup(square)
+{
+    var player = square.playerNumber();
+    if(!player)
+    {
+        square.playerNumber(1);
+    }
+    else if(player == 1)
+    {
+        square.playerNumber(2);
+    } 
+    else
+    {
+        square.clear();
+    }
+}
 
+board.click(on_click_play);
+
+function play_mode(set_play_mode)
+{
+    board.off("click");
+    
+
+}
+
+function mode_change()
+{
+    var mode = $("#mode").children("option:selected").val();
+    console.log(mode);
+
+    board.off("click");
+    
+    if(mode === "play")
+    {
+        $("#play-buttons").css("display", "block");
+        $("#setup-buttons").css("display", "none");
+        board.click(on_click_play);
+    }
+    else
+    {
+        $("#play-buttons").css("display", "none");
+        $("#setup-buttons").css("display", "block");
+        board.click(on_click_setup);
+    }
+}
+mode_change(); //kludge?
+
+$("#mode").change(mode_change);
 
 $("#undo").click(function(){
    board.state(prev_state);
@@ -146,7 +193,7 @@ $("#pass").click(function(){
     set_current_player(other_player);
 });
 
-$("#reset").click(reset_game);
+$("#new-game").click(restart_game);
 
 function do_resize()
 {
