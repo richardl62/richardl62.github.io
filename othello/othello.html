@@ -2,10 +2,9 @@
     <head>
         <meta charset="utf-8">
         <title>Othello</title>
-        <!-- <link rel="stylesheet" href="assets/css/othello.css"> -->
 
     <style>
-        * { /* To do - understand why this is necessary */
+        * {
             box-sizing: border-box;
         }
 
@@ -16,36 +15,56 @@
         }
 
         body {
-            display: grid;
-            grid-template-rows: auto 1fr;
+            display: flex;
+            flex-direction: column;
             padding: 2%;
         }
 
         #board {
             height: 100%;
-            width: 100%;
+            width: 100%; 
         }
 
         #preamble {
             display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            margin-bottom: 4px;
+            flex-wrap: wrap;
         }
 
-        #next-move {
-            /* flex: 1; */
-            margin-right: 2%
+
+        #next-player {
+            font-size: 1.3em;
+            font-weight: bold;
+            flex: 1;
+
+            display: flex;
+            white-space: nowrap; 
+        }
+        
+        /* Prevent line breaks withing the divs */
+       #buttons {
+            display: flex;
+            white-space: nowrap; 
         }
 
     </style> 
-
     </head>
+
     <body>
 
         
         <div id="preamble">
-            <h2 id="next-move">Next move: <span class="next-player-color"> Player <span class="next-player-number"> 1 </span> </span> </h2>
-            <button id="undo" type="button">Undo</button">
-            <button id="pass" type="button">Pass</button">
-            <button id="reset" type="button">Reset</button">
+            <div id="next-player"> Next turn:&nbsp;
+            <span class="next-player-color"> Player <span class="next-player-number"> 1 </span> </span>
+            </div>
+
+            <div id="buttons">
+                <button id="undo" type="button">Undo</button>
+                <button id="pass" type="button">Pass</button>
+                <button id="reset" type="button">Reset</button>
+            </div>
         </div>
         
         <div id="board"> </div>

@@ -4,9 +4,10 @@ const n_rows = 8;
 const n_cols = 8;
 
 var board = new GamesBoard($("#board"), n_rows, n_cols);
+var preamble = $("#preamble");
 
 var mid_row = Math.floor(n_rows/2) - 1;
-var mid_col = Math.floor(n_cols/2) - 1
+var mid_col = Math.floor(n_cols/2) - 1;
 
 function reset_game()
 {
@@ -147,7 +148,16 @@ $("#pass").click(function(){
 
 $("#reset").click(reset_game);
 
-$( window ).resize(function(){
+function do_resize()
+{
+    // Ensure the squares in the board are actually square.
     board.resize();
-});
 
+    // Resize the preamble to match the board size.
+    // (It will overflow if the board is too small, but that is OK.)
+    var bw = board.outerWidth();
+    preamble.width(bw);
+}
+
+$( window ).resize(do_resize);
+do_resize();
