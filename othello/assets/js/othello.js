@@ -137,7 +137,7 @@ function on_click_play(square)
 function on_click_setup(square)
 {
     var player = square.playerNumber();
-    if(!player)
+    if(square.disabled())
     {
         square.playerNumber(1);
     }
@@ -145,9 +145,13 @@ function on_click_setup(square)
     {
         square.playerNumber(2);
     } 
-    else
+    else if(player == 2)
     {
         square.clear();
+    }
+    else
+    {
+        square.disable();
     }
 }
 
