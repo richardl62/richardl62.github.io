@@ -13,12 +13,12 @@ function restart_game()
 {
     for(var row = 0; row < n_rows; ++row)
         for(var col = 0; col < n_cols; ++col)
-            board.getSquare(row, col).clear();
+            board.getSquare(row, col).make_empty();
 
-    board.getSquare(mid_row, mid_col).playerNumber(1);
-    board.getSquare(mid_row+1, mid_col).playerNumber(2);
-    board.getSquare(mid_row, mid_col+1).playerNumber(2);
-    board.getSquare(mid_row+1, mid_col+1).playerNumber(1);
+    board.getSquare(mid_row, mid_col).player(1);
+    board.getSquare(mid_row+1, mid_col).player(2);
+    board.getSquare(mid_row, mid_col+1).player(2);
+    board.getSquare(mid_row+1, mid_col+1).player(1);
 
     set_current_player(1);
 }
@@ -34,7 +34,7 @@ function set_current_player(cp)
     other_player = (current_player%2)+1;
     
 
-    $(".next-player-color").css("color", GamesBoard.getPlayerColor(current_player));
+    $(".next-player-color").css("color", gamesBoardPlayerColor(current_player));
     $(".next-player-number").text(current_player.toString());
 }
 
@@ -52,11 +52,11 @@ function get_captures(square, r_step, c_step)
         row += r_step;
         
         var sq = board.getSquare(row, col);
-        if(!sq || !sq.playerNumber())
+        if(!sq || !sq.player())
         {
             return [];
         }
-        else if (sq.playerNumber() == current_player) // Using current_player is a kludge
+        else if (sq.player() == current_player) // Using current_player is a kludge
         {
             return captures;
         }   
@@ -82,7 +82,7 @@ class GameMove
         this.captured_squares = [];
         this.error_string = undefined;
 
-        if (this.square.playerNumber()) {
+        if (this.square.player()) {
             this.error_string = "you must select an empty square";
         }
         else {
@@ -103,9 +103,9 @@ class GameMove
             else{
                 for(var i = 0; i < this.captured_squares.length; ++i)
                 {
-                    this.captured_squares[i].playerNumber(this.player);
+                    this.captured_squares[i].player(this.player);
                 }
-                this.square.playerNumber(this.player);
+                this.square.player(this.player);
             }
         }
     }
@@ -116,11 +116,11 @@ class GameMove
     }
 }
 
-var prev_state;
+var prev_status;
 var prev_player;
 function on_click_play(square)
 {
-    prev_state = board.state();
+    prev_status = board.status();
     prev_player = current_player;
 
     var game_move = new  GameMove(square, current_player, other_player)
@@ -136,23 +136,26 @@ function on_click_play(square)
 
 function on_click_setup(square)
 {
-    var player = square.playerNumber();
-    if(square.disabled())
+
+    var status = square.status();
+    if(status.is_empty())
     {
-        square.playerNumber(1);
+        status.player(1);
     }
-    else if(player == 1)
+    else if(status.player() == 1)
     {
-        square.playerNumber(2);
+        status.player(2);
     } 
-    else if(player == 2)
+    else if(status.player() == 2)
     {
-        square.clear();
+        status.disable();
     }
     else
     {
-        square.disable();
+        status.make_empty();
     }
+
+    square.status(status);
 }
 
 board.click(on_click_play);
@@ -180,7 +183,7 @@ mode_change(); //kludge?
 $("#mode").change(mode_change);
 
 $("#undo").click(function(){
-   board.state(prev_state);
+   board.status(prev_status);
    set_current_player(prev_player);
 });
 
