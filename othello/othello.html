@@ -49,6 +49,10 @@
             white-space: nowrap; 
         }
 
+        #num-rows, #num-cols {
+          width: 3em;  
+        };
+
     </style> 
     </head>
 
@@ -69,13 +73,14 @@
                 <div id="setup-buttons">
                     Rows <input type="number" id="num-rows" min="1" max="100" value="8">
                     Cols <input type="number" id="num-cols" min="1" max="100" value="8">
-                    <button id="Clear" type="button">clear</button>
+                    <button id="clear" type="button">Clear</button>
                 </div>
 
                 <label for="mode">Mode:</label>
                 <select id="mode">
-                    <option value="play">Play</option>
+  
                     <option value="setup">Setup</option>
+                    <option value="play">Play</option>
                 </select>
             </div>
         </div>

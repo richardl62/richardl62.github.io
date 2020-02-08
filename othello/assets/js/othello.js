@@ -153,19 +153,10 @@ function on_click_setup(square)
 
 board.click(on_click_play);
 
-function play_mode(set_play_mode)
-{
-    board.off("click");
-    
-
-}
 
 function mode_change()
 {
     var mode = $("#mode").children("option:selected").val();
-    console.log(mode);
-
-    board.off("click");
     
     if(mode === "play")
     {
@@ -194,6 +185,16 @@ $("#pass").click(function(){
 });
 
 $("#new-game").click(restart_game);
+
+function reset_board()
+{
+    var n_rows = parseInt($("#num-rows").val());
+    var n_cols = parseInt($("#num-cols").val());
+    board.reset(n_rows, n_cols);
+}
+$("#clear").click(reset_board);
+$("#num-rows").change(reset_board);
+$("#num-cols").change(reset_board);
 
 function do_resize()
 {
