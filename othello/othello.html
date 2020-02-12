@@ -43,7 +43,7 @@
             white-space: nowrap; 
         }
         
-        /* Prevent line breaks withing the divs */
+        /* Prevent line breaks within the divs */
        #buttons {
             display: flex;
             white-space: nowrap;
@@ -67,18 +67,21 @@
 
         
         <div id="preamble">
-            <div id="scores"> Score:&nbsp;
-            <span id="player1-score"> 2 </span> - <span id="player2-score"> 2 </span>
+
+            <div id="scores">
+                <div class="play-mode">
+                    Score: <span id="player1-score"> 2 </span> - <span id="player2-score"> 2 </span>
+                </div>
             </div>
 
             <div id="buttons">
-                <div id="play-buttons">
+                <div class="play-mode">
                     <button id="undo" type="button">Undo</button>
                     <button id="redo" type="button">Redo</button>
                     <button id="pass" type="button">Pass</button>
                     <button id="new-game" type="button">New Game</button>
                 </div>
-                <div id="setup-buttons">
+                <div class="setup-mode">
                     Rows <input type="number" id="num-rows" min="1" max="100" value="8">
                     Cols <input type="number" id="num-cols" min="1" max="100" value="8">
                     <button id="clear" type="button">Clear</button>

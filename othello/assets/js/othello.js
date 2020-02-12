@@ -226,21 +226,24 @@ function mode_change()
 {
     var mode = $("#mode").children("option:selected").val();
     
+    var play_mode_elems = $(".play-mode");
+    var setup_mode_elems = $(".setup-mode");
+
     if(mode === "play")
     {
-        $("#play-buttons").css("display", "block");
-        $("#setup-buttons").css("display", "none");
+        play_mode_elems .css("display", "block");
+        setup_mode_elems.css("display", "none");
         board.click(on_click_play);
 
         game_history.clear();
-        game_history.record(1);
+        current_player = 1;
+        game_history.record(current_player);
         display_game_state();
-
     }
     else
     {
-        $("#play-buttons").css("display", "none");
-        $("#setup-buttons").css("display", "block");
+        play_mode_elems.css("display", "none");
+        setup_mode_elems.css("display", "block");
         board.click(on_click_setup);
     }
 }
