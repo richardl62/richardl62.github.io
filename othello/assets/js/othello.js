@@ -231,6 +231,11 @@ function mode_change()
         $("#play-buttons").css("display", "block");
         $("#setup-buttons").css("display", "none");
         board.click(on_click_play);
+
+        game_history.clear();
+        game_history.record(1);
+        display_game_state();
+
     }
     else
     {
