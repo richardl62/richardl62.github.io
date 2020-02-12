@@ -3,40 +3,41 @@
 const n_rows = 8;
 const n_cols = 8;
 
-var board = new GamesBoard($("#board"), n_rows, n_cols);
+
 var preamble = $("#preamble");
 
-var mid_row = Math.floor(n_rows/2) - 1;
-var mid_col = Math.floor(n_cols/2) - 1;
 
-function restart_game()
+var board = new GamesBoard($("#board"), n_rows, n_cols);
+var game_history = new GameHistory(board);
+
+var current_player = 1;
+function other_player (player) {
+    return (player%2)+1;
+}
+
+function setup_board()
 {
     for(var row = 0; row < n_rows; ++row)
         for(var col = 0; col < n_cols; ++col)
             board.getSquare(row, col).make_empty();
+
+    var mid_row = Math.floor(n_rows/2) - 1;
+    var mid_col = Math.floor(n_cols/2) - 1;
 
     board.getSquare(mid_row, mid_col).player(1);
     board.getSquare(mid_row+1, mid_col).player(2);
     board.getSquare(mid_row, mid_col+1).player(2);
     board.getSquare(mid_row+1, mid_col+1).player(1);
 
-    set_current_player(1);
+    current_player = 1;
+    game_history.record(current_player);
+    display_game_state();
 }
 
-restart_game();
+setup_board();
 
-var current_player = 1;
-var other_player = 2;
 
-function set_current_player(cp)
-{
-    current_player = cp;
-    other_player = (current_player%2)+1;
-    
 
-    $(".next-player-color").css("color", gamesBoardPlayerColor(current_player));
-    $(".next-player-number").text(current_player.toString());
-}
 
 function get_captures(square, r_step, c_step)
 {
@@ -69,11 +70,10 @@ function get_captures(square, r_step, c_step)
 
 class GameMove
 {
-    constructor(square, player, other_player)
+    constructor(square, player)
     {
         this.square = square;
         this.player = player;
-        this.other_player = other_player;
         this.redo();
     }
     
@@ -116,21 +116,54 @@ class GameMove
     }
 }
 
-var prev_status;
-var prev_player;
+function disable_button(button, disable)
+{
+    button.prop("disabled", disable);
+
+    if(disable)
+    {
+        button.addClass("button-disabled");
+    }
+    else
+    {
+        button.removeClass("button-disabled");
+    }
+}
+
+function display_game_state()
+{
+    $(".next-player-color").css("color", gamesBoardPlayerColor(current_player));
+    $(".next-player-number").text(current_player.toString());
+
+    const history_pos = game_history.pos();
+    const history_items = game_history.n_items();
+
+    disable_button($("#undo"), history_pos == 0);
+    disable_button($("#redo"), history_pos + 1>= history_items);
+}
+
+function history_state_change()
+{
+    current_player = game_history.user_data();
+    display_game_state();
+}
+
+
 function on_click_play(square)
 {
     prev_status = board.status();
     prev_player = current_player;
 
-    var game_move = new  GameMove(square, current_player, other_player)
+    var game_move = new  GameMove(square, current_player)
     if(game_move.errorString())
     {
         alert(game_move.errorString());
     }
     else
     {
-        set_current_player(other_player);
+        current_player = other_player(current_player);
+        game_history.record(current_player);
+        display_game_state();
     } 
 }
 
@@ -183,15 +216,29 @@ mode_change(); //kludge?
 $("#mode").change(mode_change);
 
 $("#undo").click(function(){
-   board.status(prev_status);
-   set_current_player(prev_player);
+    if(!game_history.undo())
+        alert("Cannot undo");
+
+    history_state_change();
+});
+$("#redo").click(function(){
+    if(!game_history.redo())
+        alert("Cannot redo");
+    
+    history_state_change();
+});
+
+$("#new-game").click(function(){
+    game_history.select(0);
+
+    history_state_change();
 });
 
 $("#pass").click(function(){
-    set_current_player(other_player);
+    current_player = other_player(current_player);
+    display_game_state();
 });
 
-$("#new-game").click(restart_game);
 
 function reset_board()
 {

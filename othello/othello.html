@@ -46,7 +46,14 @@
         /* Prevent line breaks withing the divs */
        #buttons {
             display: flex;
-            white-space: nowrap; 
+            white-space: nowrap;
+        }
+
+        button {
+            background-color: lightgrey;
+        }
+        .button-disabled {
+            background-color: grey;
         }
 
         #num-rows, #num-cols {
@@ -67,6 +74,7 @@
             <div id="buttons">
                 <div id="play-buttons">
                     <button id="undo" type="button">Undo</button>
+                    <button id="redo" type="button">Redo</button>
                     <button id="pass" type="button">Pass</button>
                     <button id="new-game" type="button">New Game</button>
                 </div>
@@ -88,7 +96,8 @@
 
 
         <script type="text/javascript" src="assets/js/lib/jquery-3.4.1.min.js"></script>
-        <script type="text/javascript" src="../lib/games-board.js"></script>
+        <script type="text/javascript" src="../lib/game-board.js"></script>
+        <script type="text/javascript" src="../lib/game-history.js"></script>
         <script type="text/javascript" src="assets/js/othello.js"></script>
     </body>
 </html>
