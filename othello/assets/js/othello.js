@@ -130,10 +130,38 @@ function disable_button(button, disable)
     }
 }
 
+
 function display_game_state()
 {
-    $(".next-player-color").css("color", gamesBoardPlayerColor(current_player));
-    $(".next-player-number").text(current_player.toString());
+    var p1_score = $("#player1-score");
+    var p2_score = $("#player2-score");
+
+    // Setting colors here isa kludge in that they do not depend on the state
+    // of the game.
+    function score_css(elem, player_number)
+    {
+        const underline = player_number == current_player;
+        elem.css({
+            color: gamesBoardPlayerColor(player_number),
+            textDecoration: underline ? "underline" : "none",
+        });
+
+    }
+    score_css(p1_score, 1);
+    score_css(p2_score, 2);
+
+    var s1 = 0;
+    var s2 = 0;
+    board.for_each_square(function(sq){
+        if(sq.player() == 1)
+            ++s1;
+
+        if(sq.player() == 2)
+            ++s2;
+    });
+
+    p1_score.text(s1.toString());
+    p2_score.text(s2.toString());
 
     const history_pos = game_history.pos();
     const history_items = game_history.n_items();
