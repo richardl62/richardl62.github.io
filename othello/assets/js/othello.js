@@ -276,6 +276,12 @@ $("#pass").click(function(){
 });
 
 
+$("#show-json").click(function(){
+    var json = JSON.stringify(game_history);
+    var new_window = window.open("", "");
+    new_window.document.write("<p>" + json + "</p>");
+});
+
 function reset_board()
 {
     var n_rows = parseInt($("#num-rows").val());
