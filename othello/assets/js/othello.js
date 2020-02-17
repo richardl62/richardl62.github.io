@@ -209,6 +209,9 @@ function history_state_change()
 
 function on_click_play(square)
 {
+    if(square.status().is_disabled())
+        return;
+
     prev_status = board.status();
     prev_player = current_player;
 
