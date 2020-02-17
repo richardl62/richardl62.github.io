@@ -1,13 +1,7 @@
 "use strict;"
 
-const n_rows = 8;
-const n_cols = 8;
-
-
 var preamble = $("#preamble");
-
-
-var board = new GamesBoard($("#board"), n_rows, n_cols);
+var board = new GamesBoard($("#board"));
 var game_history = new GameHistory(board);
 
 var current_player = 1;
@@ -15,19 +9,14 @@ function other_player (player) {
     return (player%2)+1;
 }
 
+const starting_position_json = {
+    standard: "[8,8,[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,1,2,-1,-1,-1],[-1,-1,-1,2,1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1]]]",
+};
+
 function setup_board()
 {
-    for(var row = 0; row < n_rows; ++row)
-        for(var col = 0; col < n_cols; ++col)
-            board.getSquare(row, col).make_empty();
-
-    var mid_row = Math.floor(n_rows/2) - 1;
-    var mid_col = Math.floor(n_cols/2) - 1;
-
-    board.getSquare(mid_row, mid_col).player(1);
-    board.getSquare(mid_row+1, mid_col).player(2);
-    board.getSquare(mid_row, mid_col+1).player(2);
-    board.getSquare(mid_row+1, mid_col+1).player(1);
+    var start_status = JSON.parse(starting_position_json.standard);
+    board.status(start_status);
 
     current_player = 1;
     game_history.record(current_player);
@@ -277,7 +266,7 @@ $("#pass").click(function(){
 
 
 $("#show-json").click(function(){
-    var json = JSON.stringify(game_history.state());
+    var json = JSON.stringify(board.status());
     var new_window = window.open("", "");
     new_window.document.write("<p>" + json + "</p>");
 });
@@ -287,6 +276,7 @@ function reset_board()
     var n_rows = parseInt($("#num-rows").val());
     var n_cols = parseInt($("#num-cols").val());
     board.reset(n_rows, n_cols);
+    game_history.clear();
 }
 $("#clear").click(reset_board);
 $("#num-rows").change(reset_board);
