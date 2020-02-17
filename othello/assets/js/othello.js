@@ -277,7 +277,7 @@ $("#pass").click(function(){
 
 
 $("#show-json").click(function(){
-    var json = JSON.stringify(game_history);
+    var json = JSON.stringify(game_history.state());
     var new_window = window.open("", "");
     new_window.document.write("<p>" + json + "</p>");
 });

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Test</title>
+</head>
+
+<body>
+  <h1>File test</h1>
+
+  <button onclick="myFunction()">Try it</button>
+
+  <script>
+    var a = [0, "one", [2, 2]];
+    function myFunction() {
+      var myJSON = JSON.stringify(a);
+      var myWindow = window.open("", "");
+      myWindow.document.write("<p>" + myJSON + "</p>");
+    }
+  </script>
+
+</body>
+
+</html>
+
+
