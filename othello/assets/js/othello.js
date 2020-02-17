@@ -9,23 +9,64 @@ function other_player (player) {
     return (player%2)+1;
 }
 
-const starting_position_json = {
-    standard: "[8,8,[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,1,2,-1,-1,-1],[-1,-1,-1,2,1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1]]]",
-};
+starting_positions_json = [
+    ["Standard", "[8,8,[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,1,2,-1,-1,-1],[-1,-1,-1,2,1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1]]]"],
+    ["7x7", "[7,7,[[-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1],[-1,-1,2,1,2,-1,-1],[-1,-1,1,-2,1,-1,-1],[-1,-1,2,1,2,-1,-1],[-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1]]]"],
+    ["6x6", "[6,6,[[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,-1,1,2,-1,-1],[-1,-1,2,1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1]]]"],
+    ["5x5", "[5,5,[[-1,-1,-1,-1,-1],[-1,2,1,2,-1],[-1,1,-2,1,-1],[-1,2,1,2,-1],[-1,-1,-1,-1,-1]]]"],
+    ["Missing corners", "[8,8,[[-2,-2,-1,-1,-1,-1,-2,-2],[-2,-2,-1,-1,-1,-1,-2,-2],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,1,2,-1,-1,-1],[-1,-1,-1,2,1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-2,-2,-1,-1,-1,-1,-2,-2],[-2,-2,-1,-1,-1,-1,-2,-2]]]"],
+];
 
-function setup_board()
+function named_board_status(name)
 {
-    var start_status = JSON.parse(starting_position_json.standard);
-    board.status(start_status);
+    for(i = 0; i < starting_positions_json.length; ++i)
+    {
+        var spj = starting_positions_json[i];
+        if(spj[0] == name)
+        {
+            return JSON.parse(spj[1]);
+        }
+    }
 
-    current_player = 1;
-    game_history.record(current_player);
-    display_game_state();
+    throw new Error("Unrecognised game state: " + name);
 }
 
-setup_board();
+/* INITIAL SETUP */
+
+var mode_html = "";
+
+function option_elem(name)
+{
+    return "<option>" + name + "</option>";
+}
+
+for(var i = 0; i < starting_positions_json.length; i++) {
+    mode_html += option_elem(starting_positions_json[i][0]);
+    }
+
+const custom_setup_string = "Custom (Setup)";
+const custom_play_string = "Custom (Play)";
+mode_html += option_elem(custom_setup_string);
+mode_html += option_elem(custom_play_string);
+
+$("#mode").html(mode_html);
+
+mode_change();
+// function setup_board()
+// {
+//     var start_status = JSON.parse(starting_positions_json[0][1]);
+//     board.status(start_status);
+
+//     current_player = 1;
+//     game_history.record(current_player);
+//     display_game_state();
+// }
+
+// setup_board();
 
 
+
+/* END OF INITIAL SETUP */
 
 
 function get_captures(square, r_step, c_step)
@@ -213,30 +254,39 @@ board.click(on_click_play);
 
 function mode_change()
 {
-    var mode = $("#mode").children("option:selected").val();
-    
+    var mode_text = $("#mode").children("option:selected").text();
+    //console.log(mode_text);
+
     var play_mode_elems = $(".play-mode");
     var setup_mode_elems = $(".setup-mode");
 
-    if(mode === "play")
-    {
-        play_mode_elems .css("display", "block");
-        setup_mode_elems.css("display", "none");
-        board.click(on_click_play);
-
-        game_history.clear();
-        current_player = 1;
-        game_history.record(current_player);
-        display_game_state();
-    }
-    else
+    if(mode_text === custom_setup_string)
     {
         play_mode_elems.css("display", "none");
         setup_mode_elems.css("display", "block");
         board.click(on_click_setup);
     }
+    else
+    {
+        play_mode_elems.css("display", "block");
+        setup_mode_elems.css("display", "none");
+        board.click(on_click_play);
+
+        // KLUDGE:  Don't change the board state when going to 'custom play'.
+        // Intended for use after 'custom setup' but can be used at any time.
+        if (mode_text != custom_play_string) 
+        {
+            var board_status = named_board_status(mode_text)
+            board.status(board_status);
+        }
+
+        game_history.clear();
+        current_player = 1;
+        game_history.record(current_player);
+
+        display_game_state();
+    }
 }
-mode_change(); //kludge?
 
 $("#mode").change(mode_change);
 
