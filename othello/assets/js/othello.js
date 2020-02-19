@@ -281,18 +281,30 @@ function mode_change()
 
 $("#mode").change(mode_change);
 
-$("#undo").click(function(){
-    if(!game_history.undo())
-        alert("Cannot undo");
+function undo() {
+    game_history.undo();
 
     history_state_change();
-});
-$("#redo").click(function(){
-    if(!game_history.redo())
-        alert("Cannot redo");
+}
+
+function redo() {
+    game_history.redo();
     
     history_state_change();
-});
+}
+
+$("#undo").click(undo);
+
+$("#redo").click(redo);
+
+
+document.onkeydown = function (e) {
+    if (e.keyCode == 90 && e.ctrlKey)
+        undo();
+
+    if (e.keyCode == 89 && e.ctrlKey)
+        redo();
+};
 
 $("#new-game").click(function(){
     game_history.select(0);
