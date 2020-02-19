@@ -52,18 +52,6 @@ mode_html += option_elem(custom_play_string);
 $("#mode").html(mode_html);
 
 mode_change();
-// function setup_board()
-// {
-//     var start_status = JSON.parse(starting_positions_json[0][1]);
-//     board.status(start_status);
-
-//     current_player = 1;
-//     game_history.record(current_player);
-//     display_game_state();
-// }
-
-// setup_board();
-
 
 
 /* END OF INITIAL SETUP */

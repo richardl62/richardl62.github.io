@@ -3,64 +3,69 @@
         <meta charset="utf-8">
         <title>Othello</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+    
+            html,
+            body {
+                height: 100%;
+                width: 100%;
+                margin: 0px;
+            }
+    
+            body {
+                display: flex;
+                flex-direction: column;
+                padding: 2%;
+            }
+    
+            #board {
+                height: 100%;
+                width: 100%;
+            }
+    
 
-        html, body {
-            height: 100%;
-            width: 100%;
-            margin: 0px;
-        }
-
-        body {
-            display: flex;
-            flex-direction: column;
-            padding: 2%;
-        }
-
-        #board {
-            height: 100%;
-            width: 100%; 
-        }
-
-        #preamble {
-            display: flex;
-            flex-direction: row;
-            align-items: flex-end;
-            margin-bottom: 4px;
-            flex-wrap: wrap;
-        }
-
-
-        #scores {
-            font-size: 1.3em;
-            font-weight: bold;
-            flex: 1;
-
-            display: flex;
-            white-space: nowrap; 
-        }
-        
-        /* Prevent line breaks within the divs */
-       #buttons {
-            display: flex;
-            white-space: nowrap;
-        }
-
-        button {
-            background-color: lightgrey;
-        }
-        .button-disabled {
-            background-color: grey;
-        }
-
-        #num-rows, #num-cols {
-          width: 3em;  
-        };
-
-    </style> 
+            #preamble {
+                display: flex;
+                flex-direction: row;
+                align-items: flex-end;
+                margin-bottom: 4px;
+                flex-wrap: wrap;
+            }
+    
+    
+            #scores {
+                font-size: 1.3em;
+                font-weight: bold;
+                flex: 1;
+    
+                display: flex;
+                white-space: nowrap;
+            }
+    
+            /* Prevent line breaks within the divs */
+            #buttons {
+                display: flex;
+                white-space: nowrap;
+            }
+    
+            button {
+                background-color: lightgrey;
+            }
+    
+            .button-disabled {
+                background-color: grey;
+            }
+    
+            #num-rows,
+            #num-cols {
+                width: 3em;
+            }
+    
+            ;
+        </style>
     </head>
 
     <body>
