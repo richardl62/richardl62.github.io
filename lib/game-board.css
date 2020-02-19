@@ -1,0 +1,21 @@
+.game-board {
+    border: 2px solid black;
+}
+
+.game-board-square {
+    width: 100%;
+    height: 100%;
+    border: inherit; /* applied only to interal borders */
+}
+
+.game-board-square-disabled {
+    margin: 0;
+    background-color: black;
+}
+
+.game-board-counter {
+    margin: 10%;
+    height: 80%;
+    width: 80%;
+    border-radius: 50%;
+}
