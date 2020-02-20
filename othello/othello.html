@@ -35,7 +35,7 @@
     
             .game-board {
                 background-color: lightyellow;
-                border-width: 5px;
+                border: 10px saddlebrown solid;
             }
 
             .game-board-square {
@@ -48,6 +48,11 @@
                 align-items: flex-end;
                 margin-bottom: 4px;
                 flex-wrap: wrap;
+                /* font-size: 30px; */
+            }
+
+            button, select {
+                /* font-size: 20px; */
             }
     
     
@@ -75,13 +80,21 @@
             }
     
             button {
-                background-color: lightgrey;
+                border: 1px solid #0066cc;
+                background-color: green;
+                color: #ffffff;
+                padding: 5px 10px;
             }
     
-            .button-disabled {
-                background-color: grey;
+            button:disabled {
+                border: 1px solid #999999;
+                background-color: #cccccc;
+                color: #666666;
             }
     
+            #mode {
+                margin-left: 0.5em;
+            }
             #num-rows,
             #num-cols {
                 width: 3em;
@@ -116,7 +129,6 @@
                     <button id="show-json">Show JSON</button>
                 </div>
 
-                <label for="mode">Mode:</label>
                 <select id="mode"> </select>
             </div>
         </div>

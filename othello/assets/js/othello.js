@@ -134,21 +134,6 @@ class GameMove
     }
 }
 
-function disable_button(button, disable)
-{
-    button.prop("disabled", disable);
-
-    if(disable)
-    {
-        button.addClass("button-disabled");
-    }
-    else
-    {
-        button.removeClass("button-disabled");
-    }
-}
-
-
 function display_game_state()
 {
     var p1_score = $("#player1-score");
@@ -183,8 +168,8 @@ function display_game_state()
     const history_pos = game_history.pos();
     const history_items = game_history.n_items();
 
-    disable_button($("#undo"), history_pos == 0);
-    disable_button($("#redo"), history_pos + 1>= history_items);
+    $("#undo").prop("disabled", history_pos == 0);
+    $("#redo").prop("disabled", history_pos + 1>= history_items);
 }
 
 function history_state_change()
