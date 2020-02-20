@@ -1,3 +1,13 @@
+body {
+    --game-board-player-colours-1: red;
+    --game-board-player-colours-2: blue;
+    --game-board-player-colours-3: green;
+    --game-board-player-colours-4: orange;
+    --game-board-player-colours-5: purple;
+    --game-board-player-colours-6: brown;
+    --game-board-player-colours-7: gold; /* Yellow was a bit to light for text to be readable against a white background */
+    --game-board-player-colours-8: black;
+}
 .game-board {
     border: 2px solid black;
 }

@@ -5,6 +5,7 @@
     
         <link rel="stylesheet" href="../lib/game-board.css"></link>
 
+
         <style>
             * {
                 box-sizing: border-box;
@@ -16,11 +17,15 @@
                 width: 100%;
                 margin: 0px;
             }
+
     
             body {
                 display: flex;
                 flex-direction: column;
                 padding: 2%;
+
+                --game-board-player-colours-1: green;
+                --game-board-player-colours-2: black;
             }
     
             #board {
@@ -53,6 +58,14 @@
     
                 display: flex;
                 white-space: nowrap;
+            }
+
+            #player1-score {
+                color : var(--game-board-player-colours-1);
+            }
+
+            #player2-score {
+                color : var(--game-board-player-colours-2);
             }
     
             /* Prevent line breaks within the divs */

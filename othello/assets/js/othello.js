@@ -160,7 +160,6 @@ function display_game_state()
     {
         const underline = player_number == current_player;
         elem.css({
-            color: gamesBoardPlayerColor(player_number),
             textDecoration: underline ? "underline" : "none",
         });
 
