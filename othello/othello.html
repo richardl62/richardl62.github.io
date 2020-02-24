@@ -4,8 +4,6 @@
         <title>Othello</title>
     
         <link rel="stylesheet" href="../lib/game-board.css"></link>
-
-
         <style>
             * {
                 box-sizing: border-box;
@@ -26,6 +24,8 @@
 
                 --game-board-player-colours-1: green;
                 --game-board-player-colours-2: black;
+
+                --board-border-colour: saddlebrown;
             }
     
             #board {
@@ -35,11 +35,16 @@
     
             .game-board {
                 background-color: lightyellow;
-                border: 5px saddlebrown solid;
+
+                border: 5px solid var(--board-border-colour);
             }
 
             .game-board-square {
                 border-width: 2px;
+            }
+            
+            .game-board-square-disabled {
+                background-color: var(--board-border-colour);
             }
 
             #preamble {
