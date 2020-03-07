@@ -14,22 +14,11 @@ body {
     display: flex;
     flex-direction: column;
     padding: 2%;
-
-    --game-board-player-colours-1: green;
-    --game-board-player-colours-2: black;
-
-    --board-border-colour: saddlebrown;
 }
 
 #board {
     height: 100%;
     width: 100%;
-}
-
-.game-board {
-    background-color: lightyellow;
-
-    border: 5px solid var(--board-border-colour);
 }
 
 .game-board-square {

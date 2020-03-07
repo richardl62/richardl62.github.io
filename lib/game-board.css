@@ -1,26 +1,34 @@
 body {
-    --game-board-player-colours-1: red;
-    --game-board-player-colours-2: blue;
-    --game-board-player-colours-3: green;
-    --game-board-player-colours-4: orange;
-    --game-board-player-colours-5: purple;
-    --game-board-player-colours-6: brown;
-    --game-board-player-colours-7: gold; /* Yellow was a bit to light for text to be readable against a white background */
-    --game-board-player-colours-8: black;
+    /* group the colours together.  Some can also be changed in the classes below */
+    --game-board-player-colours-1: green;
+    --game-board-player-colours-2: black;
+    --game-board-player-colours-3: red;
+    --game-board-player-colours-4: blue;
+    --game-board-player-colours-5: orange;
+    --game-board-player-colours-6: purple;
+    --game-board-player-colours-7: brown;
+    --game-board-player-colours-8: gold; /* Yellow was a bit to light for text to be readable against a lightyellow background */
+
+
+    --games-board-background-colour: darkred; /* uses for board  border, gaps between squares and disabled squares */
+    --games-board-square-colour: lightyellow;
 }
 .game-board {
-    border: 2px solid black;
+    border: 5px solid var(--games-board-background-colour);
+    background: var(--games-board-background-colour);
+    
+    grid-gap: 2px;
 }
 
 .game-board-square {
     width: 100%;
     height: 100%;
-    border: inherit; /* applied only to interal borders */
+    background: var(--games-board-square-colour);
 }
 
 .game-board-square-disabled {
     margin: 0;
-    background-color: black;
+    background-color: var(--games-board-background-colour);
 }
 
 .game-board-counter {
