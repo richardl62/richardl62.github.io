@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games Board test</title>
+    <link rel="stylesheet" href="../lib/game-board.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0px;
+        }
+
+        html, body, #board {
+            width: 100%;
+            height: 100%;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="board"></div>
+
+    <script type="text/javascript" src="../lib/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="../lib/game-board.js"></script>
+    
+    <script>
+        const n_rows = 4; 
+        const n_cols = 4;
+        const n_players = 8;
+
+        var board = new GamesBoard($("#board"), n_rows, n_cols);
+
+        for(var r = 0; r < n_rows; ++r)
+            for(var c = 0; c < n_cols; ++c)
+        {
+            var player_no = r * n_rows + c;
+            if(player_no == 0)
+                board.getSquare(r,c).disable();
+            else if(player_no <= n_players)
+                board.getSquare(r,c).player(player_no);
+        }
+    </script>
+</body>
+</html>
