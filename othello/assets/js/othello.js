@@ -1,6 +1,6 @@
 "use strict;"
 
-var preamble = $("#preamble");
+var status = $("#status");
 var board = new GamesBoard($("#board"));
 var game_history = new GameHistory(board);
 
@@ -326,10 +326,14 @@ $("#num-cols").change(reset_board);
 
 function do_resize()
 {
+    //var w = $(window).width();
+    //var f = $("#status").css("font-size");
+    //console.log("body width", w, "font size", f, "ratio", parseInt(f)/w);
+    
     // Ensure the squares in the board are actually square.
     board.resize();
 
-    // Resize the preamble to match the board size.
+    // Resize the status line to match the board size.
     // (It will overflow if the board is too small, but that is OK.)
     var bw = board.outerWidth();
     $(".auto-resize").width(bw);
