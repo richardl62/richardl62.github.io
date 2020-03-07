@@ -101,7 +101,7 @@ class GameMove
         this.error_string = undefined;
 
         if (this.square.player()) {
-            this.error_string = "you must select an empty square";
+            this.error_string = "Square in use";
         }
         else {
 
@@ -116,7 +116,7 @@ class GameMove
 
             if(this.captured_squares.length == 0)
             {
-                this.error_string = "you must capture at least one square";
+                this.error_string = "Nothing captured";
             }
             else{
                 for(var i = 0; i < this.captured_squares.length; ++i)
@@ -188,12 +188,16 @@ function on_click_play(square)
     prev_player = current_player;
 
     var game_move = new  GameMove(square, current_player)
+
+    var error_box = $("#error-box");
     if(game_move.errorString())
     {
-        alert(game_move.errorString());
+        error_box.text(game_move.errorString());
+        error_box.css("display", "block");
     }
     else
     {
+        error_box.css("display", "none");
         current_player = other_player(current_player);
         game_history.record(current_player);
         display_game_state();
@@ -230,7 +234,8 @@ board.click(on_click_play);
 function mode_change()
 {
     var mode_text = $("#mode").children("option:selected").text();
-    //console.log(mode_text);
+   
+    //$("#error-box").css("display", "none");
 
     var play_mode_elems = $(".play-mode");
     var setup_mode_elems = $(".setup-mode");
@@ -327,7 +332,7 @@ function do_resize()
     // Resize the preamble to match the board size.
     // (It will overflow if the board is too small, but that is OK.)
     var bw = board.outerWidth();
-    preamble.width(bw);
+    $(".auto-resize").width(bw);
 }
 
 $( window ).resize(do_resize);

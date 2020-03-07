@@ -80,6 +80,15 @@ button:disabled {
     color: #666666;
 }
 
+#error-box {
+    color: red;
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+
+    display: none;
+}
 
 #num-rows,
 #num-cols {
