@@ -21,21 +21,19 @@ body {
     width: 100%;
 }
 
-.game-board-square {
-    border-width: 2px;
-}
-
-.game-board-square-disabled {
-    background-color: var(--board-border-colour);
-}
-
 #status {
     display: flex;
     flex-direction: row;
     align-items: flex-end;
     margin-bottom: 4px;
     flex-wrap: nowrap;
-    font-size: 3.6vmin; 
+    font-size: 4vmin; 
+    font-family: "Arial"; /* Let's be boring */
+}
+
+#status * {
+    font-size: inherit;
+    font-family: inherit;  
 }
 
 #scores {
@@ -70,10 +68,6 @@ button {
     padding: 1px 2px;
 }
 
-button, select, input {
-    font-size: inherit; 
-}
-
 button:disabled {
     border: 1px solid #999999;
     background-color: #cccccc;
@@ -86,7 +80,6 @@ button:disabled {
     font-weight: bold;
     text-align: center;
     white-space: nowrap;
-
     display: none;
 }
 

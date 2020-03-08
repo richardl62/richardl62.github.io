@@ -14,7 +14,7 @@ starting_positions_json = [
     ["7x7", "[7,7,[[-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1],[-1,-1,2,1,2,-1,-1],[-1,-1,1,2,1,-1,-1],[-1,-1,2,1,2,-1,-1],[-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1]]]"],
     ["6x6", "[6,6,[[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,-1,1,2,-1,-1],[-1,-1,2,1,-1,-1],[-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1]]]"],
     ["5x5", "[5,5,[[-1,-1,-1,-1,-1],[-1,2,1,2,-1],[-1,1,2,1,-1],[-1,2,1,2,-1],[-1,-1,-1,-1,-1]]]"],
-    ["Missing corners", "[8,8,[[-2,-2,-1,-1,-1,-1,-2,-2],[-2,-2,-1,-1,-1,-1,-2,-2],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,1,2,-1,-1,-1],[-1,-1,-1,2,1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-2,-2,-1,-1,-1,-1,-2,-2],[-2,-2,-1,-1,-1,-1,-2,-2]]]"],
+    ["Cornerless", "[8,8,[[-2,-2,-1,-1,-1,-1,-2,-2],[-2,-2,-1,-1,-1,-1,-2,-2],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,1,2,-1,-1,-1],[-1,-1,-1,2,1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-2,-2,-1,-1,-1,-1,-2,-2],[-2,-2,-1,-1,-1,-1,-2,-2]]]"],
 ];
 
 function named_board_status(name)
@@ -33,25 +33,35 @@ function named_board_status(name)
 
 /* INITIAL SETUP */
 
-var mode_html = "";
+
 
 function option_elem(name)
 {
     return "<option>" + name + "</option>";
 }
 
+const custom_setup_string = "Setup";
+const custom_play_string = "Play";
+const default_mode_string = "Options ...";
+
+var mode_html = option_elem(default_mode_string);
+
+mode_html += '<optgroup label="New Game">';
 for(var i = 0; i < starting_positions_json.length; i++) {
     mode_html += option_elem(starting_positions_json[i][0]);
     }
+mode_html += "</optgroup>";
 
-const custom_setup_string = "Custom (Setup)";
-const custom_play_string = "Custom (Play)";
+mode_html += '<optgroup label="Custom">';
 mode_html += option_elem(custom_setup_string);
 mode_html += option_elem(custom_play_string);
+mode_html += "</optgroup>";
 
+console.log(mode_html)
 $("#mode").html(mode_html);
 
-mode_change();
+//KLUDGE? Get the name of the first listed mode
+set_mode(starting_positions_json[0][0]);
 
 
 /* END OF INITIAL SETUP */
@@ -231,16 +241,12 @@ function on_click_setup(square)
 board.click(on_click_play);
 
 
-function mode_change()
+function set_mode(mode_name)
 {
-    var mode_text = $("#mode").children("option:selected").text();
-   
-    //$("#error-box").css("display", "none");
-
     var play_mode_elems = $(".play-mode");
     var setup_mode_elems = $(".setup-mode");
 
-    if(mode_text === custom_setup_string)
+    if(mode_name === custom_setup_string)
     {
         play_mode_elems.css("display", "none");
         setup_mode_elems.css("display", "block");
@@ -254,9 +260,9 @@ function mode_change()
 
         // KLUDGE:  Don't change the board state when going to 'custom play'.
         // Intended for use after 'custom setup' but can be used at any time.
-        if (mode_text != custom_play_string) 
+        if (mode_name != custom_play_string) 
         {
-            var board_status = named_board_status(mode_text)
+            var board_status = named_board_status(mode_name)
             board.status(board_status);
         }
 
@@ -268,7 +274,18 @@ function mode_change()
     }
 }
 
-$("#mode").change(mode_change);
+$("#mode").change(function(){
+    var mode_name = $("#mode").find("option:selected").text();
+    if(mode_name != default_mode_string)
+    {
+        set_mode(mode_name);
+    }
+
+    // Return to the default
+    $('#mode option').prop('selected', function() {
+        return this.defaultSelected;
+    });
+});
 
 function undo() {
     game_history.undo();
@@ -294,12 +311,6 @@ document.onkeydown = function (e) {
     if (e.keyCode == 89 && e.ctrlKey)
         redo();
 };
-
-$("#new-game").click(function(){
-    game_history.select(0);
-
-    history_state_change();
-});
 
 $("#pass").click(function(){
     current_player = other_player(current_player);
