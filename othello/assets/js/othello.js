@@ -318,7 +318,7 @@ $("#pass").click(function(){
 });
 
 
-$("#show-json").click(function(){
+$("#json").click(function(){
     var json = JSON.stringify(board.status());
     var new_window = window.open("", "");
     new_window.document.write("<p>" + json + "</p>");
