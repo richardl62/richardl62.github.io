@@ -52,7 +52,7 @@
     <script>
         let root = document.documentElement;
 
-        var games_board = new GamesBoard($("#board"), 2, 2);
+        var games_board = new GridOfSquares($("#board"), 2, 2);
 
         var n_players = 2;
         var player_number = 1;
@@ -61,7 +61,7 @@
         {
             var player_string = player_number.toString();
             $("#whose-turn-text").text(player_number.toString());
-            var color = GamesBoard.getPlayerColor(player_number);
+            var color = GridOfSquares.getPlayerColor(player_number);
             $("#whose-turn").css("color", color);
 
         }

@@ -1,7 +1,7 @@
 "use strict;"
 
 var status = $("#status");
-var board = new GamesBoard($("#board"));
+var board = new GridOfSquares($("#board"));
 var game_history = new GameHistory(board);
 
 var current_player = 1;
@@ -57,7 +57,6 @@ mode_html += option_elem(custom_setup_string);
 mode_html += option_elem(custom_play_string);
 mode_html += "</optgroup>";
 
-console.log(mode_html)
 $("#mode").html(mode_html);
 
 //KLUDGE? Get the name of the first listed mode
@@ -149,15 +148,12 @@ function display_game_state()
     var p1_score = $("#player1-score");
     var p2_score = $("#player2-score");
 
-    // Setting colors here isa kludge in that they do not depend on the state
-    // of the game.
     function score_css(elem, player_number)
     {
         const underline = player_number == current_player;
         elem.css({
             textDecoration: underline ? "underline" : "none",
         });
-
     }
     score_css(p1_score, 1);
     score_css(p2_score, 2);
