@@ -20,6 +20,13 @@ body {
 
     border: 5px solid var(--games-board-background-colour);
     background: var(--games-board-background-colour);
+
+    box-sizing: border-box;
+    margin: 0px;
+
+    /* Height and width may be changes in JavaScript */
+    height: 100%;
+    width: 100%;
 }
 
 .grid-square {
