@@ -33,7 +33,7 @@
 
         var rows = urlParams.get('rows');
         if(!rows)
-            rows = 4; //why not?
+            rows = 4; //arbitrary
 
         var cols = urlParams.get('cols');
         if (!cols) {
@@ -48,7 +48,7 @@
         $(".grid-square").click(function(){
             var pos = grid.getPosition(this);
             console.log("Clicked square " + pos);
-            var elem = grid.getElement(pos[0],pos[1]);
+            var elem = grid.getElement(...pos);
             $(elem).css("background", "red");
         });
     </script>

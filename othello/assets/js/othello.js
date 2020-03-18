@@ -160,13 +160,18 @@ function display_game_state()
 
     var s1 = 0;
     var s2 = 0;
-    board.for_each_square(function(sq){
-        if(sq.player() == 1)
-            ++s1;
 
-        if(sq.player() == 2)
-            ++s2;
-    });
+    for(var row = 0; row < board.n_rows; ++row)
+    {
+        for (var col = 0; col < board.n_cols; ++col) {
+            var sq = board.getSquare(row, col);
+            if (sq.player() == 1)
+                ++s1;
+
+            if (sq.player() == 2)
+                ++s2;
+        } 
+    }
 
     p1_score.text(s1.toString());
     p2_score.text(s2.toString());
@@ -234,7 +239,7 @@ function on_click_setup(square)
     square.status(status);
 }
 
-board.click(on_click_play);
+board.clickBoardSquare(on_click_play);
 
 
 function set_mode(mode_name)
@@ -246,13 +251,13 @@ function set_mode(mode_name)
     {
         play_mode_elems.css("display", "none");
         setup_mode_elems.css("display", "block");
-        board.click(on_click_setup);
+        board.clickBoardSquare(on_click_setup);
     }
     else
     {
         play_mode_elems.css("display", "block");
         setup_mode_elems.css("display", "none");
-        board.click(on_click_play);
+        board.clickBoardSquare(on_click_play);
 
         // KLUDGE:  Don't change the board state when going to 'custom play'.
         // Intended for use after 'custom setup' but can be used at any time.
