@@ -1,7 +1,7 @@
 "use strict;"
 
 var status = $("#status");
-var board = new GamesBoard($("#board"));
+var board = new BasicGameBoard($("#board"));
 var game_history = new GameHistory(board);
 
 var current_player = 1;
