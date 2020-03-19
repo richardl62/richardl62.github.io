@@ -3,7 +3,7 @@
 var status = $("#status");
 var board = new BasicGameBoard($("#board"));
 var game_history = new GameHistory(board);
-var game_play = new GamePlayOthello(board);
+var game_play = new GamePlayDropdown(board);
 
 var current_player = 1;
 function other_player (player) {
@@ -12,9 +12,10 @@ function other_player (player) {
 
 function named_board_status(name)
 {
-    for(i = 0; i < starting_positions_json.length; ++i)
+    var starting_positions = game_play.starting_positions_json();
+    for(i = 0; i < starting_positions.length; ++i)
     {
-        var spj = starting_positions_json[i];
+        var spj = starting_positions[i];
         if(spj[0] == name)
         {
             return JSON.parse(spj[1]);
@@ -38,8 +39,9 @@ const default_mode_string = "Options ...";
 var mode_html = option_elem(default_mode_string);
 
 mode_html += '<optgroup label="New Game">';
-for(var i = 0; i < starting_positions_json.length; i++) {
-    mode_html += option_elem(starting_positions_json[i][0]);
+var starting_positions = game_play.starting_positions_json();
+for(var i = 0; i < starting_positions.length; i++) {
+    mode_html += option_elem(starting_positions[i][0]);
     }
 mode_html += "</optgroup>";
 
@@ -51,7 +53,7 @@ mode_html += "</optgroup>";
 $("#mode").html(mode_html);
 
 //KLUDGE? Get the name of the first listed mode
-set_mode(starting_positions_json[0][0]);
+set_mode(starting_positions[0][0]);
 
 
 /* END OF INITIAL SETUP */

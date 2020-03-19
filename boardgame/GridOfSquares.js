@@ -74,6 +74,9 @@ class GridOfSquares {
         this.clickGridSquare(this.callback);
     }
 
+    rows() {return this.n_rows;}
+    cols() {return this.n_cols;}
+
     outerHeight() {
         return this.board.outerHeight();
     }

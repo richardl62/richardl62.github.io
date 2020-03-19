@@ -107,6 +107,9 @@ class gamesBoardSquare {
         this.gbs_status = new gamesBoardSquareStatus(gbs_empty);
     }
 
+    getRow() {return this.row;}
+    getCol() {return this.col;}
+
     status(new_status) {
         if (new_status === undefined) {
             return this.gbs_status;
