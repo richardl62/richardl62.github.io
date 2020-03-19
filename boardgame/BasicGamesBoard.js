@@ -2,7 +2,7 @@
 GamesBoard: class to represent a basic games board.
 It is a grid of GameBoardSquares.
 */
-'use strict';
+"use strict";
 
 class BasicGameBoard extends GridOfSquares {
     constructor(elem) {

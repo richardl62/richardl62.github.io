@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /*
 GameHistory:  Record the history of a game and give undo/redo facilities

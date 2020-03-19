@@ -4,7 +4,7 @@ Class gamesBoardSquare presenets a class on a names board.
 TO DO:  Consider reviewing and simplifying this code.
 */
 
-'use strict';
+"use strict";
 
 function gamesBoardPlayerColor(player)
 {

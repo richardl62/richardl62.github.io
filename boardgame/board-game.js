@@ -1,8 +1,9 @@
-"use strict;"
+"use strict";
 
 var status = $("#status");
 var board = new BasicGameBoard($("#board"));
 var game_history = new GameHistory(board);
+var game_play = new GamePlayOthello(board);
 
 var current_player = 1;
 function other_player (player) {
@@ -56,7 +57,27 @@ set_mode(starting_positions_json[0][0]);
 /* END OF INITIAL SETUP */
 
 
+function display_game_state() {
 
+    game_play.display_status();
+
+    var error_box = $("#error-box");
+    if(game_play.get_error_string())
+    {
+        error_box.text(game_play.get_error_string());
+        error_box.css("display", "block");
+    }
+    else
+    {
+        error_box.css("display", "none");
+    } 
+
+    const history_pos = game_history.pos();
+    const history_items = game_history.n_items();
+
+    $("#undo").prop("disabled", history_pos == 0);
+    $("#redo").prop("disabled", history_pos + 1 >= history_items);
+}
 
 function history_state_change()
 {
@@ -64,30 +85,18 @@ function history_state_change()
     display_game_state();
 }
 
-
 function on_click_play(square)
 {
     if(square.status().is_disabled())
         return;
 
-    prev_status = board.status();
-    prev_player = current_player;
-
-    var game_move = new  GameMove(square, current_player)
-
-    var error_box = $("#error-box");
-    if(game_move.errorString())
+    if(game_play.move(current_player, square))
     {
-        error_box.text(game_move.errorString());
-        error_box.css("display", "block");
-    }
-    else
-    {
-        error_box.css("display", "none");
         current_player = other_player(current_player);
-        game_history.record(current_player);
-        display_game_state();
-    } 
+        game_history.record(current_player); 
+    }
+
+    display_game_state(); 
 }
 
 function on_click_setup(square)

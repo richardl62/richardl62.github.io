@@ -16,7 +16,7 @@ NOTE: While the grid is responsive, the squareness of the grid elements will
   reize() when the window is resized.) 
 
 */
-'use strict';
+"use strict";
 
 class GridOfSquares {
 
