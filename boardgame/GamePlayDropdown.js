@@ -8,12 +8,12 @@ class GamePlayDropdown {
         this.board = board;
     }
 
-    type()
+    static mode()
     {
-        return "Dropdown";
+        return "dropdown";
     }
 
-    starting_positions_json()
+   static starting_positions_json()
     {
         return [
             ["8x8", "[8,8,[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1]]]"],

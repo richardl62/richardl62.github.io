@@ -3,61 +3,86 @@
 var status = $("#status");
 var board = new BasicGameBoard($("#board"));
 var game_history = new GameHistory(board);
-var game_play = new GamePlayDropdown(board);
+var game_play_modes = [GamePlayDropdown,  GamePlayOthello, GamePlaySimple];
+
+var game_play = 1234; // set below
+
+
+var play_mode_elems = $(".play-mode");
+var setup_mode_elems = $(".setup-mode");
+
+function setup_for_customising()
+{
+    play_mode_elems.css("display", "none");
+    setup_mode_elems.css("display", "block");
+    board.clickBoardSquare(on_click_setup);
+}
+
+function setup_for_game_play()
+{
+    play_mode_elems.css("display", "block");
+    setup_mode_elems.css("display", "none");
+    board.clickBoardSquare(on_click_play);
+
+    game_history.clear();
+    current_player = 1;
+    game_history.record(current_player);
+}
+
+function setup_for_specific_game(mode_index, start_pos_index)
+{
+    
+    var game_play_mode = game_play_modes[mode_index];
+
+    window.game_play = new game_play_mode(board);
+    
+    const starting_pos = game_play_mode.starting_positions_json()[start_pos_index][1];
+    board.status(JSON.parse(starting_pos));
+
+    setup_for_game_play();
+}
+
+// kludge? Default to the first game
+setup_for_specific_game(0,0);
 
 var current_player = 1;
 function other_player (player) {
     return (player%2)+1;
 }
 
-function named_board_status(name)
-{
-    var starting_positions = game_play.starting_positions_json();
-    for(i = 0; i < starting_positions.length; ++i)
-    {
-        var spj = starting_positions[i];
-        if(spj[0] == name)
-        {
-            return JSON.parse(spj[1]);
-        }
-    }
-
-    throw new Error("Unrecognised game state: " + name);
-}
+const custom_setup_string = "setup";
+const custom_play_string = "play";
+const default_mode_string = "Game type ...";
 
 /* INITIAL SETUP */
-
-function option_elem(name)
+function mode_inner_html()
 {
-    return "<option>" + name + "</option>";
+    function option_elem(name) {
+        return "<option>" + name + "</option>";
+    }
+
+    var html = option_elem(default_mode_string);
+    for(var mi = 0; mi < game_play_modes.length; ++mi)
+    {
+        var mode = game_play_modes[mi].mode();
+        var starting_positions = game_play_modes[mi].starting_positions_json();
+
+        html += '<optgroup label=' + mode + '>';
+        for (var si = 0; si < starting_positions.length; si++) {
+            html += option_elem(starting_positions[si][0]);
+        }
+        html += "</optgroup>";
+    }
+
+    html += '<optgroup label="custom">';
+    html += option_elem(custom_setup_string);
+    html += option_elem(custom_play_string);
+    html += "</optgroup>";
+
+    return html;
 }
 
-const custom_setup_string = "Setup";
-const custom_play_string = "Play";
-const default_mode_string = "Options ...";
-
-var mode_html = option_elem(default_mode_string);
-
-mode_html += '<optgroup label="New Game">';
-var starting_positions = game_play.starting_positions_json();
-for(var i = 0; i < starting_positions.length; i++) {
-    mode_html += option_elem(starting_positions[i][0]);
-    }
-mode_html += "</optgroup>";
-
-mode_html += '<optgroup label="Custom">';
-mode_html += option_elem(custom_setup_string);
-mode_html += option_elem(custom_play_string);
-mode_html += "</optgroup>";
-
-$("#mode").html(mode_html);
-
-//KLUDGE? Get the name of the first listed mode
-set_mode(starting_positions[0][0]);
-
-
-/* END OF INITIAL SETUP */
-
+$("#mode").html(mode_inner_html());
 
 function display_game_state() {
 
@@ -127,45 +152,45 @@ function on_click_setup(square)
 
 board.clickBoardSquare(on_click_play);
 
+$("#mode").change(function() {
 
-function set_mode(mode_name)
-{
-    var play_mode_elems = $(".play-mode");
-    var setup_mode_elems = $(".setup-mode");
+    const selected_name = $("#mode").find("option:selected").text();
 
-    if(mode_name === custom_setup_string)
+    if(selected_name == default_mode_string)
     {
-        play_mode_elems.css("display", "none");
-        setup_mode_elems.css("display", "block");
-        board.clickBoardSquare(on_click_setup);
+        return;
+    }
+
+    if(selected_name == custom_setup_string)
+    {
+        setup_for_game_play();
+    }
+    else if(selected_name == custom_play_string)
+    {
+        setup_for_game_play();
     }
     else
     {
-        play_mode_elems.css("display", "block");
-        setup_mode_elems.css("display", "none");
-        board.clickBoardSquare(on_click_play);
+        function select_choosed_game() {
+            const selected_index = document.getElementById("mode").selectedIndex; // Not JQuery!
 
-        // KLUDGE:  Don't change the board state when going to 'custom play'.
-        // Intended for use after 'custom setup' but can be used at any time.
-        if (mode_name != custom_play_string) 
-        {
-            var board_status = named_board_status(mode_name)
-            board.status(board_status);
+            var index_count = 0;
+            for (var mi = 0; mi < game_play_modes.length; ++mi) {
+                var starting_positions = game_play_modes[mi].starting_positions_json();
+                for (var si = 0; si < starting_positions.length; si++) {
+                    ++index_count;
+                    if (index_count == selected_index) {
+                        setup_for_specific_game(mi, si);
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
-        game_history.clear();
-        current_player = 1;
-        game_history.record(current_player);
+        if(!select_choosed_game())
+             throw Error("Unrecognised game selection");
 
-        display_game_state();
-    }
-}
-
-$("#mode").change(function(){
-    var mode_name = $("#mode").find("option:selected").text();
-    if(mode_name != default_mode_string)
-    {
-        set_mode(mode_name);
     }
 
     // Return to the default
