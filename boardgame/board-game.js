@@ -2,7 +2,7 @@
 
 var board = new BasicGameBoard($("#board"));
 var game_history = new GameHistory(board);
-var game_play_modes = [GamePlayDropdown, GamePlayOthello, GamePlaySimple];
+var game_play_modes = [GamePlayDropdown, GamePlayOthello, GamePlayUnrestricted];
 
 var game_play = 1234; // set below
 
