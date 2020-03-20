@@ -3,6 +3,19 @@
 */
 "use strict";
 
+// Defining here is a kludge
+function status_span(text,
+    player,  // Player number - determines color
+    underline // Optional - text is underlined if true
+) {
+    var sp = '<span style="color:var(--game-board-player-colours-' + player + ');';
+
+    if (underline)
+        sp += ';text-decoration:underline';
+
+    return sp + '">' + text + '</span>';
+}
+
 class GamePlayOthello {
     constructor(board) {
         this.board = board;
@@ -42,14 +55,14 @@ class GamePlayOthello {
                 }
             }
             if (captured_squares.length == 0) {
-                this.error_string = "Nothing captured";
+                set_error_string("Nothing captured");
                 legal_move = false;
             }
             else {
                 for (var i = 0; i < captured_squares.length; ++i) {
                     captured_squares[i].player(player);
                 }
-                
+                square.player(player);
             }
         }
 
@@ -84,23 +97,7 @@ class GamePlayOthello {
         }
     }
 
-    get_error_string()
-    {
-        return this.error_string;
-    }
-
-    display_status() {
-        var p1_score = $("#player1-score");
-        var p2_score = $("#player2-score");
-
-        function score_css(elem, player_number) {
-            const underline = player_number == current_player;
-            elem.css({
-                textDecoration: underline ? "underline" : "none",
-            });
-        }
-        score_css(p1_score, 1);
-        score_css(p2_score, 2);
+    display_status(player) {
 
         var s1 = 0;
         var s2 = 0;
@@ -116,7 +113,11 @@ class GamePlayOthello {
             }
         }
 
-        p1_score.text(s1.toString());
-        p2_score.text(s2.toString());
+        var html = status_span(s1, 1, player == 1)
+            + "-"
+            + status_span(s2, 2, player == 2);
+
+        console.log(html);
+        $("#status").html(html);
     }
 }

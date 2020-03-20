@@ -1,9 +1,8 @@
 "use strict";
 
-var status = $("#status");
 var board = new BasicGameBoard($("#board"));
 var game_history = new GameHistory(board);
-var game_play_modes = [GamePlayDropdown,  GamePlayOthello, GamePlaySimple];
+var game_play_modes = [GamePlayDropdown, GamePlayOthello, GamePlaySimple];
 
 var game_play = 1234; // set below
 
@@ -11,8 +10,22 @@ var game_play = 1234; // set below
 var play_mode_elems = $(".play-mode");
 var setup_mode_elems = $(".setup-mode");
 
+
+function set_error_string(str)
+{
+    $("#error-box").text(str);
+    $("#error-box").css("display","block");
+}
+
+function clear_error_string()
+{
+    $("#error-box").css("display","none");
+}
+
 function setup_for_customising()
 {
+    clear_error_string();
+
     play_mode_elems.css("display", "none");
     setup_mode_elems.css("display", "block");
     board.clickBoardSquare(on_click_setup);
@@ -20,6 +33,8 @@ function setup_for_customising()
 
 function setup_for_game_play()
 {
+    clear_error_string();
+
     play_mode_elems.css("display", "block");
     setup_mode_elems.css("display", "none");
     board.clickBoardSquare(on_click_play);
@@ -27,6 +42,9 @@ function setup_for_game_play()
     game_history.clear();
     current_player = 1;
     game_history.record(current_player);
+
+    
+    display_game_state();
 }
 
 function setup_for_specific_game(mode_index, start_pos_index)
@@ -84,20 +102,10 @@ function mode_inner_html()
 
 $("#mode").html(mode_inner_html());
 
+// For use during play rather than customisation
 function display_game_state() {
 
-    game_play.display_status();
-
-    var error_box = $("#error-box");
-    if(game_play.get_error_string())
-    {
-        error_box.text(game_play.get_error_string());
-        error_box.css("display", "block");
-    }
-    else
-    {
-        error_box.css("display", "none");
-    } 
+    game_play.display_status(current_player);
 
     const history_pos = game_history.pos();
     const history_items = game_history.n_items();
@@ -117,6 +125,9 @@ function on_click_play(square)
     if(square.status().is_disabled())
         return;
 
+    // Loose any old errror string
+    clear_error_string();
+    
     if(game_play.move(current_player, square))
     {
         current_player = other_player(current_player);
@@ -163,7 +174,7 @@ $("#mode").change(function() {
 
     if(selected_name == custom_setup_string)
     {
-        setup_for_game_play();
+        setup_for_customising();
     }
     else if(selected_name == custom_play_string)
     {
@@ -249,11 +260,7 @@ $("#num-cols").change(reset_board);
 
 function do_resize()
 {
-    //var w = $(window).width();
-    //var f = $("#status").css("font-size");
-    //console.log("body width", w, "font size", f, "ratio", parseInt(f)/w);
-    
-    // Ensure the squares in the board are actually square.
+     // Ensure the squares in the board are actually square.
     board.resize();
 
     // Resize the status line to match the board size.

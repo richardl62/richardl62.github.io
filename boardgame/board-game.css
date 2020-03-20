@@ -18,7 +18,7 @@ body {
     width: 100%;
 }
 
-#status {
+#before-board {
     display: flex;
     flex-direction: row;
     align-items: flex-end;
@@ -28,12 +28,12 @@ body {
     font-family: "Arial"; /* Let's be boring */
 }
 
-#status * {
+#before-board * {
     font-size: inherit;
     font-family: inherit;  
 }
 
-#scores {
+#status {
     font-size: 1.5em;
     font-weight: bold;
     flex: 1;

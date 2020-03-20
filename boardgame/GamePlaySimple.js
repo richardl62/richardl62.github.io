@@ -32,22 +32,7 @@ class GamePlaySimple {
         return false;
     }
 
-    get_error_string()
-    {
-        return undefined;
-    }
-
-    display_status() {
-        var p1_score = $("#player1-score");
-        var p2_score = $("#player2-score");
-
-        function score_css(elem, player_number) {
-            const underline = player_number == current_player;
-            elem.css({
-                textDecoration: underline ? "underline" : "none",
-            });
-        }
-        score_css(p1_score, 1);
-        score_css(p2_score, 2);
+    display_status(player) {
+        $("#status").html(status_span("Player " + player, player));
     }
 }
