@@ -108,7 +108,8 @@ class GridOfSquares {
 
         // Allow of the callback being set before the grid is sized.
         if (this.grid_elements) {
-            this.grid_elements.flat().forEach(elem => {
+            // My version of Edge does not support [].flat()
+            flatten(this.grid_elements).forEach(elem => {
                 elem.off("click");
                 if (callback) {
                     elem.click(function() {
@@ -119,4 +120,11 @@ class GridOfSquares {
             });
         }
     }
+}
+
+// My version of Edge does not support [].flat() do provide an alternative
+function flatten(arr)
+{
+    // From https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays
+    return [].concat.apply([], arr);
 }
