@@ -1,9 +1,9 @@
 body {
     /* group the colours together.  Some can also be changed in the classes below */
-    --game-board-player-colours-1: green;
-    --game-board-player-colours-2: black;
-    --game-board-player-colours-3: red;
-    --game-board-player-colours-4: blue;
+    --game-board-player-colours-1: rgb(0, 0, 220);  /* slightly dark blue */
+    --game-board-player-colours-2: rgb(200, 0, 0);  /* slightly dark red */
+    --game-board-player-colours-3: green;
+    --game-board-player-colours-4: black;
     --game-board-player-colours-5: orange;
     --game-board-player-colours-6: purple;
     --game-board-player-colours-7: brown;
@@ -11,7 +11,7 @@ body {
 
 
     --games-board-background-colour: darkred; /* uses for board  border, gaps between squares and disabled squares */
-    --games-board-square-colour: lightyellow;
+    --games-board-square-colour: lemonchiffon;
 }
 
 .grid-of-squares {
