@@ -1,0 +1,64 @@
+#dice-set {
+    display: flex;
+ }
+
+ .dice {
+     margin: 0 10px;
+     position: relative;
+     width: 50px;
+     height: 50px;
+     background-color: darkred;
+     border-radius: 20%;
+     /* margin: auto;  for now */
+
+     --spot-size: 16%; /* If chamged, also change --spot-offset-mid */
+     --spot-offset-edge: 15%; /* arbitrary. Use with any edge*/
+     --spot-offset-mid: 42%; /* 50% - spot-size / 2.  Use with left and top */
+
+ }
+
+ .dice-spot {
+     width: var(--spot-size);
+     height: var(--spot-size);
+
+     position: absolute; 
+
+     background-color: white;
+     border-radius: 50%;
+
+ }
+
+ .spot0 {
+    top: var(--spot-offset-edge);
+    left: var(--spot-offset-edge);
+ }
+
+ .spot1 {
+    top: var(--spot-offset-mid);
+    left: var(--spot-offset-edge);
+ }
+
+ .spot2 {
+    bottom: var(--spot-offset-edge);
+    left: var(--spot-offset-edge); 
+ }
+ 
+ .spot3 {
+    top: var(--spot-offset-mid);
+    left: var(--spot-offset-mid);
+ }
+
+ .spot4 {
+    top: var(--spot-offset-edge);
+    right: var(--spot-offset-edge);
+ }
+
+ .spot5 {
+    top: var(--spot-offset-mid);
+    right: var(--spot-offset-edge);; 
+ }
+
+ .spot6 {
+    bottom: var(--spot-offset-edge);
+    right: var(--spot-offset-edge); 
+ }
