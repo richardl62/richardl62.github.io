@@ -17,6 +17,11 @@
 
  }
 
+ .dice-held {
+    border: 5% solid back;
+    background-color: darkblue;
+ }
+
  .dice-spot {
      width: var(--spot-size);
      height: var(--spot-size);

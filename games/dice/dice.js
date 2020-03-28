@@ -13,14 +13,12 @@ const n_dice_dots = 7;
 class dice {
     constructor(input_elem)
     {
-        this.elem = $(input_elem);
-
-        this.elem.addClass("dice");
+        $(input_elem).addClass("dice");
         this.dots = new Array(n_dice_dots);
         for (var i = 0; i < n_dice_dots; ++i)
         {
             var node = $("<div></div>");
-            this.elem.append(node);
+            $(input_elem).append(node);
             node.addClass("dice-spot");
             node.addClass("spot" + i);
 
@@ -52,6 +50,33 @@ class dice {
     }
 }
 
+// dice with a 'hold' option. The option is just cosmetic in that it does not
+// affect roll function.  This class is intended for use as part of a diceSet.
+class holdableDice extends dice 
+{
+    constructor(elem)
+    {
+        super(elem);
+
+        this.input_elem = elem;
+
+        this.elem = $(elem);
+    }
+
+    hold(on_off)
+    {
+        if(on_off === undefined)
+        {
+            return this.elem.hasClass("dice-held");
+        }
+        else
+        {
+            return this.elem.toggleClass("dice-held", on_off);
+        }
+    }
+
+}
+
 const  n_dice = 6;
 var dice_set = new Array(n_dice);
 
@@ -60,13 +85,14 @@ for(var i = 0; i < n_dice; ++i)
 {
     var node = document.createElement("div");  
     document.getElementById("dice-set").appendChild(node); 
-    dice_set[i] = new dice(node);
+    dice_set[i] = new holdableDice(node);
     dice_set[i].number(i+1);
 }
 
-$("#dice-set").click(function(){
-    for(var i = 0; i < n_dice; ++i)
-    {
-        dice_set[i].roll();
-    }
+dice_set[0].hold(true);
+
+$(".dice").click(function () {
+    var die = dice_set.find(d => d.input_elem === this);
+
+    die.hold(!die.hold());
 });
