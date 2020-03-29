@@ -56,43 +56,126 @@ class holdableDice extends dice
 {
     constructor(elem)
     {
-        super(elem);
+        var raw_dice_elem = document.createElement("div");
+        super(raw_dice_elem);
 
         this.input_elem = elem;
 
-        this.elem = $(elem);
+        this.top_elem = $(elem);
+        this.dice_elem = $(raw_dice_elem);
+        this.hold_elem = $(document.createElement("div"));
+
+        this.hold_elem.addClass("hold-text");
+        this.hold_elem.text("Held");
+  
+        $(elem).append(this.dice_elem, this.hold_elem);
+
+        this.hold(false); // the default
     }
 
     hold(on_off)
     {
         if(on_off === undefined)
         {
-            return this.elem.hasClass("dice-held");
+            return this.held;
         }
         else
         {
-            return this.elem.toggleClass("dice-held", on_off);
+            this.held = on_off;
+            this.dice_elem.toggleClass("dice-held", on_off);
+
+
+            this.hold_elem.css("visibility", 
+                on_off ? "visible" : "hidden"
+            );
         }
     }
 
+    // Set a click callback.
+    click(callback)
+    {
+        this.top_elem.click(() => callback(this));
+    }
 }
 
-const  n_dice = 6;
-var dice_set = new Array(n_dice);
+class diceSet {
+    constructor(
+        elem /* div or similar to hold the dice */,
+        n_dice) 
+        {
+        this.dice_set = new Array(n_dice);
+        for (var i = 0; i < n_dice; ++i) {
+            var node = document.createElement("div");
+            elem.appendChild(node);
 
+            this.dice_set[i] = new holdableDice(node);
+            this.dice_set[i].number(i + 1);
+            this.dice_set[i].click(die => die.hold(!die.hold()));
+        }
+    }
 
-for(var i = 0; i < n_dice; ++i)
+    roll_all()
+    {
+        this.dice_set.forEach(die => {die.roll(); die.hold(false);});
+    }
+
+    
+    roll_unheld() 
+    {
+        var held = [];
+
+        for (var pos = 0; pos < this.dice_set.length; ++pos) 
+        {
+            var die = this.dice_set[pos];
+
+            if (die.hold()) {
+                held.push(die.number());
+            }
+        }
+
+        held.sort();
+
+        for (var pos = 0; pos < this.dice_set.length; ++pos) 
+        {
+            var die = this.dice_set[pos];
+            
+            if (pos < held.length) {
+                die.number(held[pos]);
+                die.hold(true);
+            }
+            else {
+                die.roll();
+                die.hold(false);
+            }
+
+        }
+    }
+ 
+    die(num) {return this.dice_set[num];}
+
+    n_dice() {return this.dice_set.length;}
+}
+
+var dice_set = new diceSet(document.getElementById("dice-set"), 6);
+
+dice_set.die(0).hold(true); // TEMPORARY - to help with testing
+dice_set.die(3).hold(true); // TEMPORARY - to help with testing
+dice_set.die(4).hold(true); // TEMPORARY - to help with testing
+dice_set.roll_unheld();
+
+$("#roll-all").click(() => dice_set.roll_all());
+$("#roll-unheld").click(() => dice_set.roll_unheld());
+
+function reset()
 {
-    var node = document.createElement("div");  
-    document.getElementById("dice-set").appendChild(node); 
-    dice_set[i] = new holdableDice(node);
-    dice_set[i].number(i+1);
+    for (var pos = 0; pos < dice_set.n_dice(); ++pos) 
+    {
+        var die = dice_set.die(pos);
+        die.number((pos % 6) + 1);
+        die.hold(false);
+    }
 }
+$("#reset").click(reset);
 
-dice_set[0].hold(true);
+reset();
 
-$(".dice").click(function () {
-    var die = dice_set.find(d => d.input_elem === this);
-
-    die.hold(!die.hold());
-});

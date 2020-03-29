@@ -1,15 +1,25 @@
+#buttons {
+   display: flex;
+   justify-self: flex-start;
+   margin-bottom: 4pt;
+}
+
+#reset {
+   color: red;
+   justify-self: flex-end;
+}
+
 #dice-set {
     display: flex;
- }
+}
 
- .dice {
-     margin: 0 10px;
+.dice {
      position: relative;
      width: 50px;
      height: 50px;
      background-color: darkred;
      border-radius: 20%;
-     /* margin: auto;  for now */
+     margin: 0 4pt;
 
      --spot-size: 16%; /* If chamged, also change --spot-offset-mid */
      --spot-offset-edge: 15%; /* arbitrary. Use with any edge*/
@@ -18,9 +28,17 @@
  }
 
  .dice-held {
-    border: 5% solid back;
-    background-color: darkblue;
+    background-color: darkblue;  /* Same as hold-text color */
  }
+
+ .hold-text {
+   margin-top: 2px;
+   text-align: center;
+   color: darkblue;  /* Same as dice-held backgroud-color */
+   font-weight: bold;
+   font-family: helvetica;
+ }
+
 
  .dice-spot {
      width: var(--spot-size);
