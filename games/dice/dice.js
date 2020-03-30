@@ -1,5 +1,31 @@
 'use strict';
 
+// Rotate element through 360 degrees
+function rotate_360(elem,
+    duration, // duration of the rotation in millisecconds
+    end_func
+) {
+
+    const angle_increment = 6;
+    const n_steps = 360 / angle_increment;
+
+    var angle = 0;
+    var id = setInterval(increment_rotation, duration / n_steps);
+    function increment_rotation() {
+        if (angle >= 360) {
+            clearInterval(id);
+            elem.style.transform = "none";
+            if(end_func)
+            {
+                end_func();
+            }
+        } else {
+            angle += angle_increment;
+            elem.style.transform = "rotate(" + angle + "deg)";
+        }
+    }
+}
+
 const dot_patterns = [
     , //0
     [3], // 1
@@ -13,6 +39,8 @@ const n_dice_dots = 7;
 class dice {
     constructor(input_elem)
     {
+        this.dice_input_elem = input_elem;
+
         $(input_elem).addClass("dice");
         this.dots = new Array(n_dice_dots);
         for (var i = 0; i < n_dice_dots; ++i)
@@ -45,8 +73,12 @@ class dice {
 
     roll()
     {
-        var num = Math.floor((Math.random() * 6) + 1);
-        this.number(num);
+        rotate_360(this.dice_input_elem, 750 /*millisecs*/,
+            () => {
+                var num = Math.floor((Math.random() * 6) + 1);
+                this.number(num);
+            }
+            );
     }
 }
 
@@ -59,7 +91,7 @@ class holdableDice extends dice
         var raw_dice_elem = document.createElement("div");
         super(raw_dice_elem);
 
-        this.input_elem = elem;
+        this.holdable_input_elem = elem;
 
         this.top_elem = $(elem);
         this.dice_elem = $(raw_dice_elem);
@@ -110,7 +142,7 @@ class diceSet {
         }
 
         // Remove all the current dice. (Inefficient as some dice will then be added.)
-        this.dice_set.forEach(die => die.input_elem.remove());
+        this.dice_set.forEach(die => die.holdable_input_elem.remove());
 
         this.dice_set = new Array(num_dice);
         for (var i = 0; i < num_dice; ++i) {
@@ -205,4 +237,3 @@ $("#num-player").change(reset);
 
 show_options(true);
 reset();
-

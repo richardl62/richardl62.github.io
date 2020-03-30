@@ -38,6 +38,8 @@ button
     flex-wrap: wrap;
 }
 
+
+
 .dice {
      position: relative;
      width: 50px; /* For now */
@@ -45,6 +47,8 @@ button
      background-color: darkred;
      border-radius: 20%;
      margin-right: 5px; /* For now */
+
+     transform-origin: center center;
 
      --spot-size: 16%; /* If chamged, also change --spot-offset-mid */
      --spot-offset-edge: 15%; /* arbitrary. Use with any edge*/
