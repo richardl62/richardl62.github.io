@@ -99,17 +99,25 @@ class holdableDice extends dice
 }
 
 class diceSet {
-    constructor(
-        elem /* div or similar to hold the dice */,
-        n_dice) 
-        {
-        this.dice_set = new Array(n_dice);
-        for (var i = 0; i < n_dice; ++i) {
+    constructor( elem /* div or similar to hold the dice */) {
+        this.user_elem = elem;
+        this.dice_set = [];
+    }
+
+    n_dice(num_dice) {
+        if (num_dice === undefined) {
+            return this.dice_set.length;
+        }
+
+        // Remove all the current dice. (Inefficient as some dice will then be added.)
+        this.dice_set.forEach(die => die.input_elem.remove());
+
+        this.dice_set = new Array(num_dice);
+        for (var i = 0; i < num_dice; ++i) {
             var node = document.createElement("div");
-            elem.appendChild(node);
+            this.user_elem.appendChild(node);
 
             this.dice_set[i] = new holdableDice(node);
-            this.dice_set[i].number(i + 1);
             this.dice_set[i].click(die => die.hold(!die.hold()));
         }
     }
@@ -152,21 +160,16 @@ class diceSet {
     }
  
     die(num) {return this.dice_set[num];}
-
-    n_dice() {return this.dice_set.length;}
 }
 
-var dice_set = new diceSet(document.getElementById("dice-set"), 6);
+var dice_set = new diceSet(document.getElementById("dice-set")); 
 
-dice_set.die(0).hold(true); // TEMPORARY - to help with testing
-dice_set.die(3).hold(true); // TEMPORARY - to help with testing
-dice_set.die(4).hold(true); // TEMPORARY - to help with testing
-dice_set.roll_unheld();
 
 $("#roll-all").click(() => dice_set.roll_all());
 $("#roll-unheld").click(() => dice_set.roll_unheld());
 
-function reset()
+
+function restart()
 {
     for (var pos = 0; pos < dice_set.n_dice(); ++pos) 
     {
@@ -175,7 +178,16 @@ function reset()
         die.hold(false);
     }
 }
-$("#restart").click(reset);
+
+function reset()
+{
+    var num_dice = $("#num-dice").val();
+    var num_player = $("#num-player").val();
+    dice_set.n_dice(num_dice);
+
+     restart();   
+}
+$("#restart").click(restart);
 
 
 var options_shown;
@@ -187,7 +199,10 @@ function show_options(show)
 }
 
 $("#options-button").click(() => show_options(!options_shown));
- 
+
+$("#num-dice").change(reset);
+$("#num-player").change(reset); 
+
 show_options(true);
 reset();
 
