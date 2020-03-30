@@ -1,16 +1,31 @@
+body {
+   width: 400px; /* For now */
+}
+
+
+button
+{
+    outline: 0 none;
+    background-color: #e8e8e8;
+}
+
 #buttons {
    display: flex;
-   justify-self: flex-start;
+   justify-content: space-between;
    margin-bottom: 4pt;
 }
 
-#reset {
+.pressed-button {
+   border: inset;
+}
+
+#restart {
    color: red;
-   justify-self: flex-end;
 }
 
 #dice-set {
     display: flex;
+    justify-content: space-between;/
 }
 
 .dice {
@@ -19,7 +34,6 @@
      height: 50px;
      background-color: darkred;
      border-radius: 20%;
-     margin: 0 4pt;
 
      --spot-size: 16%; /* If chamged, also change --spot-offset-mid */
      --spot-offset-edge: 15%; /* arbitrary. Use with any edge*/

@@ -175,7 +175,19 @@ function reset()
         die.hold(false);
     }
 }
-$("#reset").click(reset);
+$("#restart").click(reset);
 
+
+var options_shown;
+function show_options(show)
+{
+    options_shown = show;
+    $("#options-button").toggleClass("pressed-button", show);
+    $("#options-menu").toggle(show);
+}
+
+$("#options-button").click(() => show_options(!options_shown));
+ 
+show_options(true);
 reset();
 
