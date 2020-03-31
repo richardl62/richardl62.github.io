@@ -1,0 +1,51 @@
+
+        .score-pad {
+            display: flex;
+            flex-direction: column;
+            width: 10em;
+            border: 2px solid black;
+
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bolder;
+            font-size: large;
+
+            background-color: lemonchiffon;
+
+        }
+
+        .score-pad > * {
+            flex: 1;
+        }
+
+        .enter-score {
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            font-family: inherit;
+            font-weight: inherit;
+            font-size: inherit;
+        }
+
+        .current-score {
+            border-right: 1px solid black;
+        }
+
+        .player-name {
+            background-color: inherit;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: x-large;
+            font-weight: bold;
+        }
+        .scores {
+            display: flex;
+            flex-direction: row;
+        }
+        .scores > div {
+            /* display: inline-block;
+            width: 50%; */
+            flex: 1;
+            min-height: 1em;
+
+            height: fit-content;
+            text-align: right;
+            padding: 2px;
+        }
