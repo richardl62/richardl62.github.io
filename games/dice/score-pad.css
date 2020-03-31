@@ -1,32 +1,28 @@
 
+        .score-pads {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
         .score-pad {
             display: flex;
             flex-direction: column;
             width: 10em;
-            border: 2px solid black;
+            border: 5px solid blue;
+            margin-right: 2px;
+            margin-bottom: 5px;
 
             font-family: 'Courier New', Courier, monospace;
             font-weight: bolder;
             font-size: large;
 
             background-color: lemonchiffon;
-
         }
+
 
         .score-pad > * {
             flex: 1;
-        }
-
-        .enter-score {
-            border-top: 1px solid black;
-            border-bottom: 1px solid black;
-            font-family: inherit;
-            font-weight: inherit;
-            font-size: inherit;
-        }
-
-        .current-score {
-            border-right: 1px solid black;
+            border: 0px; /* Some boarders are re-added below */
         }
 
         .player-name {
@@ -35,13 +31,26 @@
             font-size: x-large;
             font-weight: bold;
         }
+
+        .enter-score{
+
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            font-family: inherit;
+            font-weight: inherit;
+            font-size: inherit;
+        }
+
+        .current-score {
+            border: none;
+            border-right: 1px solid black;
+        }
+
         .scores {
             display: flex;
             flex-direction: row;
         }
         .scores > div {
-            /* display: inline-block;
-            width: 50%; */
             flex: 1;
             min-height: 1em;
 

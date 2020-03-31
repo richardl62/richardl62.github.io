@@ -4,24 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Score Page</title>
+    <title>Score Pads</title>
 
     <link rel="stylesheet" href="score-pad.css">
 </head>
 
 <body>
-    <div class="score-pad">
-        <input type="text" class="player-name" placeholder="&#60;Player name&#62;">
-        <input type="text" class="enter-score" placeholder="&#60;Enter score&#62;">
-        <div class="scores">
-            <div class="current-score">Score<br></div>
-            <div class="total-score">Total<br></div>
-        </div>
-    </div>
-
+    <div id="score-pads"></div>
 </body>
 
     <script src='../lib/jquery-3.4.1.min.js'></script>
     <script src='score-pad.js'></script>
+
+    <script>
+        score_pads = new scorePads($("#score-pads"));
+        score_pads.n_players(4);
+    </script>    
 
 </html>
