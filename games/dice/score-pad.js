@@ -1,3 +1,5 @@
+"use strict";
+
 const score_pad_html = `
 <input type="text" class="player-name" placeholder="Player name">
 <input type="text" class="enter-score" placeholder="Enter score">
@@ -22,8 +24,8 @@ class scorePad {
         this.current_score = this.user_elem.find(".current-score");
         this.total_score_elem = this.user_elem.find(".total-score");
 
-        console.log(this.player_name, this.enter_score,
-            this.current_score, this.total_score);
+        // console.log(this.player_name, this.enter_score,
+        //     this.current_score, this.total_score);
    
 
         var pad = this;
@@ -56,8 +58,11 @@ class scorePads {
 
     constructor(elem)
     {
-        this.user_elem = $(elem);
-        this.user_elem.addClass("score-pads");
+        this.input_elem = elem;
+        $(this.input_elem).addClass("score-pads");
+
+
+        this.score_pads = [];
     }
 
     n_players(n_players)
@@ -67,11 +72,13 @@ class scorePads {
             return this.score_pads.length();
         }
 
+        this.score_pads.forEach(pad => pad.user_elem.remove());
+
         this.score_pads = new Array(n_players);
         for(var i = 0; i < n_players; i++)
         {
             var node = $("<div></div>");
-            this.user_elem.append(node);
+            $(this.input_elem).append(node);
             this.score_pads[i] = new scorePad(node); 
             this.score_pads[i].defaultPlayerName("Player " + (i+1)); 
         }
