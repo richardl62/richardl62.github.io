@@ -28,11 +28,9 @@ class scorePad {
 
         var pad = this;
         this.enter_score.change(function() {
-             pad.enter_score_text(this.value);
+            pad.enter_score_text(this.value);
+            this.value = "";
         });
-
-        this.enter_score_text("x");
-        this.enter_score_text("10");
     }
 
     enter_score_text(value /* text - typically a number, but can be text like e.g. '-' or 'pass' */)
@@ -41,14 +39,12 @@ class scorePad {
         if (!isNaN(score)) {
             this.total_score += score;
             this.current_score.append(score + "<br>");
-            this.total_score_elem.append(this.total_score + "<br>");
         }
         else {
             this.current_score.append(value + "<br>");
-            this.total_score_elem.append(value + "<br>");
         }
-
-        this.value = "";
+        
+        this.total_score_elem.append(this.total_score + "<br>");
     }
 
     defaultPlayerName(name) {

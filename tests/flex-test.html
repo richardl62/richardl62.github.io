@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport">
+    <title>Flex test</title>
+
+    <style>
+        div {
+            margin: 1px;
+            border: 1px solid red;
+        }
+
+        #outer {
+            display: flex;
+        }
+
+        .inner{
+            display: flex;
+            flex-direction: column;
+           
+        }
+
+        .text-div {
+            height: 100%;
+        }
+        
+    </style>
+</head>
+<body>
+    <div id="outer">
+        <div class=inner>
+            <input type="text" placeholder="input 1">
+            <input type="text" placeholder="input 2">
+            <div class="text-div" id="text-div-1">
+                xxx
+            </div>
+        </div>
+        <div class=inner>
+            <input type="text" placeholder="input 1">
+            <input type="text" placeholder="input 2">
+            <div class="text-div" id="text-div-2">
+                xxx
+            </div>
+        </div>
+</body>
+
+<script>
+document.onkeypress = function (e) {
+    e = e || window.event;
+    
+    //alert("hello");
+    document.getElementById('text-div-1').innerHTML += "<br>xxx";
+};
+
+</script>
+
+</html>

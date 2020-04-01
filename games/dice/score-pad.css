@@ -2,11 +2,13 @@
         .score-pads {
             display: flex;
             flex-wrap: wrap;
+            /* align-items: flex-start; */
         }
 
         .score-pad {
             display: flex;
             flex-direction: column;
+
             width: 10em;
             border: 5px solid blue;
             margin-right: 2px;
@@ -21,7 +23,6 @@
 
 
         .score-pad > * {
-            flex: 1;
             border: 0px; /* Some boarders are re-added below */
         }
 
@@ -33,7 +34,6 @@
         }
 
         .enter-score{
-
             border-top: 1px solid black;
             border-bottom: 1px solid black;
             font-family: inherit;
@@ -49,12 +49,12 @@
         .scores {
             display: flex;
             flex-direction: row;
+            height: 100%;
         }
         .scores > div {
-            flex: 1;
             min-height: 1em;
-
-            height: fit-content;
+            width: 50%;
+            height: 100%;
             text-align: right;
             padding: 2px;
         }
