@@ -1,43 +1,17 @@
-
-button
-{
-    outline: 0 none;
-    background-color: #e8e8e8;
-}
-
-#game-control {
-   display:  inline-block;
-   /* width: 330px; For now */
-}
-
-#game-control > div {
-   margin-bottom: 4pt;
-}
-
-#left-buttons {
-   margin-right: 20pt;
-}
-
-
-#buttons {
-   display: flex;
-   justify-content: space-between;
-   margin-right: 5px; /* For now */
+body {
+   --dice-set-width: 330px;  /* Kludge? Gives 6 dice per line */
 }
 
 .pressed-button {
    border: inset;
 }
 
-#restart {
-   color: red;
-}
 
-#dice-set {
+.dice-set {
     display: flex;
     flex-wrap: wrap;
+    width: var(--dice-set-width);
 }
-
 
 
 .dice {

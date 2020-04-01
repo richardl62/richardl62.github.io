@@ -71,14 +71,26 @@ class dice {
         }
     }
 
-    roll()
+    roll(spin /*define to true*/)
     {
-        rotate_360(this.dice_input_elem, 750 /*millisecs*/,
-            () => {
-                var num = Math.floor((Math.random() * 6) + 1);
-                this.number(num);
-            }
-            );
+        if(spin === undefined)
+        {
+            spin = true;
+        }
+
+        var do_roll = () => {
+            var num = Math.floor((Math.random() * 6) + 1);
+            this.number(num);
+        }
+
+        if(spin)
+        {
+            rotate_360(this.dice_input_elem, 750 /*millisecs*/, do_roll);
+        }
+        else
+        {
+            do_roll();
+        }
     }
 }
 
@@ -154,9 +166,9 @@ class diceSet {
         }
     }
 
-    roll_all()
+    roll_all(spin /* default is true*/)
     {
-        this.dice_set.forEach(die => {die.roll(); die.hold(false);});
+        this.dice_set.forEach(die => {die.roll(spin); die.hold(false);});
     }
 
     
@@ -194,46 +206,46 @@ class diceSet {
     die(num) {return this.dice_set[num];}
 }
 
-var dice_set = new diceSet(document.getElementById("dice-set")); 
+// var dice_set = new diceSet(document.getElementById("dice-set")); 
 
 
-$("#roll-all").click(() => dice_set.roll_all());
-$("#roll-unheld").click(() => dice_set.roll_unheld());
+// $("#roll-all").click(() => dice_set.roll_all());
+// $("#roll-unheld").click(() => dice_set.roll_unheld());
 
 
-function restart()
-{
-    for (var pos = 0; pos < dice_set.n_dice(); ++pos) 
-    {
-        var die = dice_set.die(pos);
-        die.number((pos % 6) + 1);
-        die.hold(false);
-    }
-}
+// function restart()
+// {
+//     for (var pos = 0; pos < dice_set.n_dice(); ++pos) 
+//     {
+//         var die = dice_set.die(pos);
+//         die.number((pos % 6) + 1);
+//         die.hold(false);
+//     }
+// }
 
-function reset()
-{
-    var num_dice = $("#num-dice").val();
-    var num_player = $("#num-player").val();
-    dice_set.n_dice(num_dice);
+// function reset()
+// {
+//     var num_dice = $("#num-dice").val();
+//     var num_player = $("#num-player").val();
+//     dice_set.n_dice(num_dice);
 
-     restart();   
-}
-$("#restart").click(restart);
+//      restart();   
+// }
+// $("#restart").click(restart);
 
 
-var options_shown;
-function show_options(show)
-{
-    options_shown = show;
-    $("#options-button").toggleClass("pressed-button", show);
-    $("#options-menu").toggle(show);
-}
+// var options_shown;
+// function show_options(show)
+// {
+//     options_shown = show;
+//     $("#options-button").toggleClass("pressed-button", show);
+//     $("#options-menu").toggle(show);
+// }
 
-$("#options-button").click(() => show_options(!options_shown));
+// $("#options-button").click(() => show_options(!options_shown));
 
-$("#num-dice").change(reset);
-$("#num-player").change(reset); 
+// $("#num-dice").change(reset);
+// $("#num-player").change(reset); 
 
-show_options(true);
-reset();
+// show_options(true);
+// reset();
