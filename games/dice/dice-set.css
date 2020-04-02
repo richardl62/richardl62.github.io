@@ -1,18 +1,11 @@
-body {
-   --dice-set-width: 330px;  /* Kludge? Gives 6 dice per line */
-}
-
 .pressed-button {
    border: inset;
 }
 
-
 .dice-set {
     display: flex;
     flex-wrap: wrap;
-    width: var(--dice-set-width);
 }
-
 
 .dice {
      position: relative;
