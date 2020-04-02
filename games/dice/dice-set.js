@@ -166,6 +166,8 @@ class diceSet {
             this.dice_set[i] = new holdableDice(node);
             this.dice_set[i].click(die => die.hold(!die.hold()));
         }
+
+        this.roll_all(false /* no spin */)
     }
 
     roll_all(spin /* default is true*/)
