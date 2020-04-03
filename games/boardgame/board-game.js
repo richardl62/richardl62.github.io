@@ -258,16 +258,6 @@ $("#clear").click(reset_board);
 $("#num-rows").change(reset_board);
 $("#num-cols").change(reset_board);
 
-function do_resize()
-{
-     // Ensure the squares in the board are actually square.
-    board.resize();
 
-    // Resize the status line to match the board size.
-    // (It will overflow if the board is too small, but that is OK.)
-    var bw = board.outerWidth();
-    $(".auto-resize").width(bw);
-}
-
-$( window ).resize(do_resize);
-do_resize();
+// Ensure the squares in the board are actually square.
+board.resize();

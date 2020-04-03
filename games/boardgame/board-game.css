@@ -12,6 +12,9 @@ body {
     flex-direction: column;
     padding: 2%;
     box-sizing: border-box;
+
+    width: 720px;
+    font-size: 30px; /* default */
 }
 
 #board {
@@ -25,7 +28,7 @@ body {
     align-items: flex-end;
     margin-bottom: 4px;
     flex-wrap: nowrap;
-    font-size: 4vmin; 
+
     font-family: "Arial"; /* Let's be boring */
 }
 
@@ -35,8 +38,8 @@ body {
 }
 
 #status {
-    font-size: 1.5em;
     font-weight: bold;
+    font-size: 1.3em;
     flex: 1;
 
     display: flex;
@@ -55,8 +58,6 @@ body {
 #buttons {
     display: flex;
     white-space: nowrap;
-    margin-left: 1%;
-    margin-right: 1%;
 }
 
 button {
@@ -83,5 +84,5 @@ button:disabled {
 
 #num-rows,
 #num-cols {
-    width: 3em;
+    width: 2em;
 }
