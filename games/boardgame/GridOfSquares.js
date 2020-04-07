@@ -22,9 +22,29 @@ class GridOfSquares {
 
     constructor(elem /*div or similar*/, n_rows, n_cols) {
         this.user_supplied_elem = $(elem);
+        this.fixed_width_squares = true;
+
         if (n_cols)
             this.reset(n_rows, n_cols);
     }
+
+    // Intended for internal use.
+    setGridColunmTemplate()
+    {
+        if (this.fixed_width_squares) {
+            this.board.css({
+                width: "auto",
+                gridTemplateColumns: "repeat(" + this.n_cols + ", var(--game-square-size))",
+            });
+        }
+        else {
+            // Expand the squares to fit the width of the container
+            this.board.css({
+                width: "100%",
+                gridTemplateColumns: "repeat(" +  this.n_cols + ", 1fr)",
+            });
+        }
+    }  
 
     reset(n_rows, n_cols) {
         this.n_rows = n_rows;
@@ -33,10 +53,9 @@ class GridOfSquares {
             this.board.remove();
         this.board = $('<div class="grid-of-squares"></div>');
         this.user_supplied_elem.append(this.board);
-        this.board.css({
-            gridTemplateRows: "repeat(" + n_rows + ", 1fr)",
-            gridTemplateColumns: "repeat(" + n_cols + ", 1fr)",
-        });
+
+        this.setGridColunmTemplate();
+        this.board.css("gridTemplateRows", "repeat(" + n_rows + ", auto)");
 
         this.grid_elements = new Array(n_rows);
         for (var row = 0; row < n_rows; ++row) {
@@ -52,30 +71,20 @@ class GridOfSquares {
                 this.grid_elements[row][col] = elem;
             }
         }
-
-        this.resize();
     }
 
-    resize() {
-        var user_w = this.user_supplied_elem.innerWidth();
-        var user_h = this.user_supplied_elem.innerHeight();
-        // Size of squares to exactly fit the user width or hieght.
-        var ws = user_w / this.n_cols;
-        var hs = user_h / this.n_rows;
-        var ss = Math.min(ws, hs);
-        var board_w = (100.0 * ss / ws).toString() + "%";
-        var board_h = (100.0 * ss / hs).toString() + "%";
-        // Set the outer width/height of the board based on calculations
-        // using the inner width/height of the user supplied element.
-        this.board.outerWidth(board_w, true);
-        this.board.outerHeight(board_h, true);
- 
-        // Apply any previously registered callback to the new squares.
-        this.clickGridSquare(this.callback);
+    fixedWidthSquares(on) {
+        if (on === undefined) {
+            return this.fixed_width_squares;
+        }
+        else {
+            this.fixed_width_squares = on;
+            this.setGridColunmTemplate();
+        }
     }
 
-    rows() {return this.n_rows;}
-    cols() {return this.n_cols;}
+    rows() { return this.n_rows; }
+    cols() { return this.n_cols; }
 
     outerHeight() {
         return this.board.outerHeight();
@@ -112,7 +121,7 @@ class GridOfSquares {
             flatten(this.grid_elements).forEach(elem => {
                 elem.off("click");
                 if (callback) {
-                    elem.click(function() {
+                    elem.click(function () {
                         var [row, col] = grid.getPosition(this);
                         callback(row, col);
                     });
@@ -123,8 +132,7 @@ class GridOfSquares {
 }
 
 // My version of Edge does not support [].flat() do provide an alternative
-function flatten(arr)
-{
+function flatten(arr) {
     // From https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays
     return [].concat.apply([], arr);
 }

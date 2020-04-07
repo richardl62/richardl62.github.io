@@ -10,52 +10,49 @@
 </head>
 
     <style>
-        html,
+
         body {
-            height: 100%;
-            width: 100%;
-            margin: 0;
+            border: 1px solid black;
+            margin: 5px;
+            /* height: 50px; */
         }
 
-        #outerdiv {
+        #outer {
             height: 90%;
             width: 90%;
             margin: 5%;
-            border: 5px dashed black;
         }
+
     </style>
 
     <body>
-
-    <div id=outerdiv></div>
+        <div id="outer">
+            <div id="grid"></div>
+        </div>
     
-    <script type="text/javascript" src="../lib/jquery-3.4.1.min.js"></script>
-    <script type="text/javascript" src="GridOfSquares.js"></script>
+        <script type="text/javascript" src="../lib/jquery-3.4.1.min.js"></script>
+        <script type="text/javascript" src="GridOfSquares.js"></script>
+    
+        <script>
+            var urlParams = new URLSearchParams(window.location.search);
 
-    <script>
-        var urlParams = new URLSearchParams(window.location.search);
+            var rows = urlParams.get('rows');
+            if (!rows)
+                rows = 4; //arbitrary
 
-        var rows = urlParams.get('rows');
-        if(!rows)
-            rows = 4; //arbitrary
+            var cols = urlParams.get('cols');
+            if (!cols) {
+                cols = rows;
+            }
 
-        var cols = urlParams.get('cols');
-        if (!cols) {
-            cols = rows;
-        }
+            var grid = new GridOfSquares($("#grid"), rows, cols);
 
-        var grid = new GridOfSquares($("#outerdiv"), rows, cols);
-        $(window).resize(function () {
-            grid.resize();
-        });
 
-        $(".grid-square").click(function(){
-            var pos = grid.getPosition(this);
-            console.log("Clicked square " + pos);
-            var elem = grid.getElement(...pos);
-            $(elem).css("background", "red");
-        });
-    </script>
+            $("#grid").click(function(){
+                var fixed_size = grid.fixedWidthSquares();
+                grid.fixedWidthSquares(!fixed_size);
+            });
+        </script>
     
 </body>
 </html>

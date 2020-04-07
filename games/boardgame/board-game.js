@@ -258,6 +258,3 @@ $("#clear").click(reset_board);
 $("#num-rows").change(reset_board);
 $("#num-cols").change(reset_board);
 
-
-// Ensure the squares in the board are actually square.
-board.resize();
