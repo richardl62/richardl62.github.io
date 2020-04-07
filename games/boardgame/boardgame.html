@@ -7,47 +7,58 @@
     
         <link rel="stylesheet" href="game-board.css">
         <link rel="stylesheet" href="board-game.css">
+
+        <style>
+            body {
+                display: inline-block;
+            }
+        </style>
     </head>
 
     <body>
 
-        <div id="before-board">
-
-            <div id="status" class="play-mode">
-
-            </div>
-
-            <div id="buttons">
-                <div class="play-mode">
+        <div id="play-options">
+            <div id="status-line">
+                <div id="status"> </div>
+                <div id="status-line-buttons">
                     <button id="undo" type="button">Undo</button>
                     <button id="redo" type="button">Redo</button>
                     <button id="pass" type="button">Pass</button>
                 </div>
-                <div class="setup-mode">
-                    <label for="num-rows">Rows</label>
-                    <input type="number" name="num-rows" id="num-rows" min="1" max="100" value="8">
-                    <label for="num-cols">Cols</label>
-                    <input type="number name="num-cols" id="num-cols" min="1" max="100" value="8">
-                    <button id="clear" type="button">Clear</button>
-                    <button id="json">JSON</button>
-                </div>
             </div>
-
-            <select id="mode"> </select>
+            <div id="game-options">
+                <div>
+                    <select id="game-type"> </select>
+                    <select id="game-option"> </select>
+                </div>
+                
+                <button id="scale-to-fit" type="button">Scale to fit</button>
+            </div>
+            <div id="error-box"> Placeholder for error messages </div>
         </div>
-        
-        <div id="error-box"> Placeholder for error messages </div>
-
+    
+        <div id="customise">
+            <label for="num-rows">Rows</label>
+            <input type="number" name="num-rows" id="num-rows" min="1" max="100" value="8">
+            <label for="num-cols">Cols</label>
+            <input type="number name=" num-cols" id="num-cols" min="1" max="100" value="8">
+            <button id="clear" type="button">Clear</button>
+            <button id="json">JSON</button>
+        </div>
+    
+    
+    
         <div id="board"> </div>
-
-    <script src="../lib/jquery-3.4.1.min.js"></script>
-    <script src="GridOfSquares.js"></script>
-    <script src="GameBoardSquare.js"></script>
-    <script src="GameHistory.js"></script>
-    <script src="BasicGamesBoard.js"></script>
-    <script src="GamePlayOthello.js"></script>
-    <script src="GamePlayUnrestricted.js"></script>
-    <script src="GamePlayDropdown.js"></script>
-    <script src="board-game.js"></script>
+    
+        <script src="../lib/jquery-3.4.1.min.js"></script>
+        <script src="GridOfSquares.js"></script>
+        <script src="GameBoardSquare.js"></script>
+        <script src="GameHistory.js"></script>
+        <script src="BasicGamesBoard.js"></script>
+        <script src="GamePlayOthello.js"></script>
+        <script src="GamePlayUnrestricted.js"></script>
+        <script src="GamePlayDropdown.js"></script>
+        <script src="board-game.js"></script>
     </body>
+    
 </html>

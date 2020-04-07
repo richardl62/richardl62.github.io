@@ -2,9 +2,26 @@
 
 var board = new BasicGameBoard($("#board"));
 var game_history = new GameHistory(board);
-var game_play_modes = [GamePlayDropdown, GamePlayOthello, GamePlayUnrestricted];
 
-var game_play = 1234; // set below
+const custom_setup_string = "setup";
+const custom_play_string = "play";
+
+class PseudoGamePlayCustom {
+
+    static mode()
+    {
+        return "custom";
+    }
+
+    starting_positions_json()
+    {
+        return [[custom_setup_string], [custom_play_string]];
+    };
+}
+var game_play_modes = [GamePlayDropdown, GamePlayOthello, GamePlayUnrestricted,
+    PseudoGamePlayCustom];
+
+var game_play = null; // set below
 
 
 var play_mode_elems = $(".play-mode");
@@ -47,60 +64,59 @@ function setup_for_game_play()
     display_game_state();
 }
 
-function setup_for_specific_game(mode_index, start_pos_index)
+function game_option_inner_html(starting_positions_json)
+{
+    var html = "";
+    starting_positions_json.forEach(
+        spj => html += option_elem(spj[0]) 
+    );
+
+    $("#game-option").html(html);
+}
+
+function setup_for_specific_game(mode_index)
 {
     
     var game_play_mode = game_play_modes[mode_index];
 
-    window.game_play = new game_play_mode(board);
+    game_play = new game_play_mode(board);
+
+    $("#game-option").html(game_option_inner_html(
+        game_play.starting_positions_json()
+    ));
     
-    const starting_pos = game_play_mode.starting_positions_json()[start_pos_index][1];
+    // Kludge?  Hard coded to pick the first starting position
+    const starting_pos = game_play.starting_positions_json()[0][1];
     board.status(JSON.parse(starting_pos));
 
     setup_for_game_play();
 }
 
 // kludge? Default to the first game
-setup_for_specific_game(0,0);
+setup_for_specific_game(0);
 
 var current_player = 1;
 function other_player (player) {
     return (player%2)+1;
 }
 
-const custom_setup_string = "setup";
-const custom_play_string = "play";
-const default_mode_string = "Game type ...";
 
-/* INITIAL SETUP */
-function mode_inner_html()
+function option_elem(name) {
+    return "<option>" + name + "</option>";
+}
+
+function game_type_inner_html()
 {
-    function option_elem(name) {
-        return "<option>" + name + "</option>";
-    }
-
-    var html = option_elem(default_mode_string);
-    for(var mi = 0; mi < game_play_modes.length; ++mi)
-    {
-        var mode = game_play_modes[mi].mode();
-        var starting_positions = game_play_modes[mi].starting_positions_json();
-
-        html += '<optgroup label=' + mode + '>';
-        for (var si = 0; si < starting_positions.length; si++) {
-            html += option_elem(starting_positions[si][0]);
-        }
-        html += "</optgroup>";
-    }
-
-    html += '<optgroup label="custom">';
-    html += option_elem(custom_setup_string);
-    html += option_elem(custom_play_string);
-    html += "</optgroup>";
+    var html = "";
+    game_play_modes.forEach(
+        gpm => html += option_elem(gpm.mode()) 
+    );
 
     return html;
 }
 
-$("#mode").html(mode_inner_html());
+$("#game-type").html(game_type_inner_html());
+
 
 // For use during play rather than customisation
 function display_game_state() {
@@ -163,52 +179,6 @@ function on_click_setup(square)
 
 board.clickBoardSquare(on_click_play);
 
-$("#mode").change(function() {
-
-    const selected_name = $("#mode").find("option:selected").text();
-
-    if(selected_name == default_mode_string)
-    {
-        return;
-    }
-
-    if(selected_name == custom_setup_string)
-    {
-        setup_for_customising();
-    }
-    else if(selected_name == custom_play_string)
-    {
-        setup_for_game_play();
-    }
-    else
-    {
-        function select_choosed_game() {
-            const selected_index = document.getElementById("mode").selectedIndex; // Not JQuery!
-
-            var index_count = 0;
-            for (var mi = 0; mi < game_play_modes.length; ++mi) {
-                var starting_positions = game_play_modes[mi].starting_positions_json();
-                for (var si = 0; si < starting_positions.length; si++) {
-                    ++index_count;
-                    if (index_count == selected_index) {
-                        setup_for_specific_game(mi, si);
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        if(!select_choosed_game())
-             throw Error("Unrecognised game selection");
-
-    }
-
-    // Return to the default
-    $('#mode option').prop('selected', function() {
-        return this.defaultSelected;
-    });
-});
 
 function undo() {
     game_history.undo();
@@ -257,4 +227,34 @@ function reset_board()
 $("#clear").click(reset_board);
 $("#num-rows").change(reset_board);
 $("#num-cols").change(reset_board);
+
+
+function set_fixed_width_options()
+{
+    var fixed_width = board.fixedWidthSquares();
+    if(fixed_width)
+    {
+        $("body").css("width", "auto");
+        $("#scale-to-fit").css({
+            border: "outset",
+            // color: "black"
+        });
+    }
+    else
+    {
+        $("body").css("width", "100%");
+        $("#scale-to-fit").css({
+            border: "inset",
+            // color: "red"
+        });
+    }
+}
+set_fixed_width_options();
+
+$("#scale-to-fit").click(function()
+{
+    board.fixedWidthSquares(!board.fixedWidthSquares());
+    set_fixed_width_options();
+
+});
 
