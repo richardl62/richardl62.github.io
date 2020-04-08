@@ -2,31 +2,43 @@
 
 var board = new BasicGameBoard($("#board"));
 var game_history = new GameHistory(board);
-
-const custom_setup_string = "setup";
-const custom_play_string = "play";
-
-class PseudoGamePlayCustom {
-
-    static mode()
-    {
-        return "custom";
-    }
-
-    starting_positions_json()
-    {
-        return [[custom_setup_string], [custom_play_string]];
-    };
-}
-var game_play_modes = [GamePlayDropdown, GamePlayOthello, GamePlayUnrestricted,
-    PseudoGamePlayCustom];
+var game_options = new GameOptions;
 
 var game_play = null; // set below
 
+function intial_setup() {
+    $("#game-type").html(inner_html_for_select(
+        game_options.game_names()
+    ));
 
-var play_mode_elems = $(".play-mode");
-var setup_mode_elems = $(".setup-mode");
+    select_game(0);
+}
+intial_setup();
 
+function select_game(index)
+{
+    game_options.game(index);
+
+    $("#game-option").html(inner_html_for_select(
+        game_options.initial_status_names()
+    ));
+
+    game_play = game_options.new_game_play();
+    //board.status(game_options.initial_status());
+}
+var selectElem = document.getElementById('game-type')
+
+// When a new <option> is selected
+selectElem.addEventListener('change', function() {
+  var index = selectElem.selectedIndex;
+    console.log(index);
+    select_game(index);
+})
+
+// $("#game-type").change(function() {
+//     console.log($("#game-type").selectedIndex);
+//     select_game($("#game-type").selectedIndex);
+// });
 
 function set_error_string(str)
 {
@@ -43,8 +55,8 @@ function setup_for_customising()
 {
     clear_error_string();
 
-    play_mode_elems.css("display", "none");
-    setup_mode_elems.css("display", "block");
+    $(".play-mode").css("display", "none");
+    $(".setup-mode").css("display", "block");
     board.clickBoardSquare(on_click_setup);
 }
 
@@ -52,8 +64,8 @@ function setup_for_game_play()
 {
     clear_error_string();
 
-    play_mode_elems.css("display", "block");
-    setup_mode_elems.css("display", "none");
+    $(".play-mode").css("display", "block");
+    $(".setup-mode").css("display", "none");
     board.clickBoardSquare(on_click_play);
 
     game_history.clear();
@@ -74,26 +86,23 @@ function game_option_inner_html(starting_positions_json)
     $("#game-option").html(html);
 }
 
-function setup_for_specific_game(mode_index)
-{
+// function setup_for_specific_game(mode_index)
+// {
     
-    var game_play_mode = game_play_modes[mode_index];
+//     var game_play_mode = game_play_modes[mode_index];
 
-    game_play = new game_play_mode(board);
+//     game_play = new game_play_mode(board);
 
-    $("#game-option").html(game_option_inner_html(
-        game_play.starting_positions_json()
-    ));
-    
-    // Kludge?  Hard coded to pick the first starting position
-    const starting_pos = game_play.starting_positions_json()[0][1];
-    board.status(JSON.parse(starting_pos));
 
-    setup_for_game_play();
-}
+//     // Kludge?  Hard coded to pick the first starting position
+//     const starting_pos = game_play.starting_positions_json()[0][1];
+//     board.status(JSON.parse(starting_pos));
 
-// kludge? Default to the first game
-setup_for_specific_game(0);
+//     setup_for_game_play();
+// }
+
+// // kludge? Default to the first game
+// setup_for_specific_game(0);
 
 var current_player = 1;
 function other_player (player) {
@@ -101,21 +110,21 @@ function other_player (player) {
 }
 
 
-function option_elem(name) {
-    return "<option>" + name + "</option>";
-}
+// function option_elem(name) {
+//     return "<option>" + name + "</option>";
+// }
 
-function game_type_inner_html()
-{
-    var html = "";
-    game_play_modes.forEach(
-        gpm => html += option_elem(gpm.mode()) 
-    );
+// function game_type_inner_html()
+// {
+//     var html = "";
+//     game_play_modes.forEach(
+//         gpm => html += option_elem(gpm.mode()) 
+//     );
 
-    return html;
-}
+//     return html;
+// }
 
-$("#game-type").html(game_type_inner_html());
+
 
 
 // For use during play rather than customisation
