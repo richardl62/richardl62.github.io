@@ -50,7 +50,7 @@ class GamePlayOthello {
         else {
             for (var c_step = -1; c_step <= 1; ++c_step) {
                 for (var r_step = -1; r_step <= 1; ++r_step) {
-                    var captures = this.get_captures(square, c_step, r_step);
+                    var captures = this.get_captures(square, c_step, r_step, player);
                     captured_squares.push(...captures);
                 }
             }
@@ -73,7 +73,7 @@ class GamePlayOthello {
         return legal_move;
     }
 
-    get_captures(square, r_step, c_step) {
+    get_captures(square, r_step, c_step, current_player) {
         var row = square.row;
         var col = square.col;
 

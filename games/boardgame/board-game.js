@@ -3,12 +3,24 @@ class GameControl {
     constructor()
     {
         this.board = new BasicGameBoard($("#board"));
-        this.game_history = new GameHistory(board);
+        this.game_history = new GameHistory(this.board);
         this.game_options = new GameOptions;
         
-        this.game_play = undefined; // set later
+        this.game_play = undefined; // set in reset()
+        this.current_player = undefined; // set in reset()
 
         this.reset();
+    }
+
+    reset()
+    {
+        this.game_play = this.game_options.new_game_play(this.board);
+        const init_stat = this.game_options.initial_status();
+        this.board.status(init_stat);
+
+        this.current_player = 1;
+        this.game_history.clear();
+        this.history_record();
     }
 
     game_index(index)
@@ -23,19 +35,44 @@ class GameControl {
         this.reset();
     }
 
+    current_player(player)
+    {
+        if(player)
+        {
+            this.current_player = player;
+        }
+
+        return this.current_player;
+    }
+
     game_names() {return this.game_options.game_names();}
     initial_status_names() {return this.game_options.initial_status_names();}
 
-    reset()
+    history_record()
     {
-        this.game_play = this.game_options.new_game_play();
-        const init_stat = this.game_options.initial_status();
-        console.log(init_stat);
-        this.board.status(init_stat);
+        this.game_history.record(this.current_player);
     }
 
-    clickBoardSquare() {
-        this.board.clickBoardSquare();
+    // If make_change is false (but not undefined) check if an undo is possible
+    // but don't actually make the change.
+    undo(make_change)
+    {
+        this.game_history.undo(make_change);
+    }
+
+    // Analogous to undo()
+    redo(make_change)
+    {
+        this.game_history.redo(make_change);
+    }
+
+    game_move(square, player)
+    {
+        this.game_play.move(square, player);
+    }
+
+    clickBoardSquare(callback) {
+        this.board.clickBoardSquare(callback);
     }
 
     fixedWidthSquares(opt)
@@ -44,7 +81,12 @@ class GameControl {
     }
 }
 
+function other_player (player) {
+    return (player%2)+1;
+}
+
 var game_control = new GameControl;
+setup_for_game_play();
 
 $("#game-type").html(inner_html_for_select(
     game_control.game_names()
@@ -54,7 +96,6 @@ $("#game-type").html(inner_html_for_select(
 $("#game-option").html(inner_html_for_select(
     game_control.initial_status_names()
 ));
-
 
 $("#game-type").change(function(param) {
     game_control.game_index(this.selectedIndex);
@@ -96,84 +137,23 @@ function setup_for_game_play()
 
     $(".play-mode").css("display", "block");
     $(".setup-mode").css("display", "none");
-    board.clickBoardSquare(on_click_play);
-
-    game_history.clear();
-    current_player = 1;
-    game_history.record(current_player);
-
+    game_control.clickBoardSquare(on_click_play);
     
     display_game_state();
 }
-
-function game_option_inner_html(starting_positions_json)
-{
-    var html = "";
-    starting_positions_json.forEach(
-        spj => html += option_elem(spj[0]) 
-    );
-
-    $("#game-option").html(html);
-}
-
-// function setup_for_specific_game(mode_index)
-// {
-    
-//     var game_play_mode = game_play_modes[mode_index];
-
-//     game_play = new game_play_mode(board);
-
-
-//     // Kludge?  Hard coded to pick the first starting position
-//     const starting_pos = game_play.starting_positions_json()[0][1];
-//     board.status(JSON.parse(starting_pos));
-
-//     setup_for_game_play();
-// }
-
-// // kludge? Default to the first game
-// setup_for_specific_game(0);
-
-var current_player = 1;
-function other_player (player) {
-    return (player%2)+1;
-}
-
-
-// function option_elem(name) {
-//     return "<option>" + name + "</option>";
-// }
-
-// function game_type_inner_html()
-// {
-//     var html = "";
-//     game_play_modes.forEach(
-//         gpm => html += option_elem(gpm.mode()) 
-//     );
-
-//     return html;
-// }
-
 
 
 
 // For use during play rather than customisation
 function display_game_state() {
 
-    game_play.display_status(current_player);
+    //game_play.display_status(current_player);
 
-    const history_pos = game_history.pos();
-    const history_items = game_history.n_items();
-
-    $("#undo").prop("disabled", history_pos == 0);
-    $("#redo").prop("disabled", history_pos + 1 >= history_items);
+    // false -> check if possible, but don't make a change
+    $("#undo").prop("disabled", game_control.undo(false));
+    $("#redo").prop("disabled", game_control.redo(false));
 }
 
-function history_state_change()
-{
-    current_player = game_history.user_data();
-    display_game_state();
-}
 
 function on_click_play(square)
 {
@@ -183,10 +163,10 @@ function on_click_play(square)
     // Loose any old errror string
     clear_error_string();
     
-    if(game_play.move(current_player, square))
+    if(game_control.game_move(game_control.current_player, square))
     {
-        current_player = other_player(current_player);
-        game_history.record(current_player); 
+        game_control.current_player(other_player(game_control.current_player));
+        game_control.history_record(); 
     }
 
     display_game_state(); 
@@ -220,15 +200,11 @@ game_control.clickBoardSquare(on_click_play);
 
 
 function undo() {
-    game_history.undo();
-
-    history_state_change();
+    game_control.undo();
 }
 
 function redo() {
-    game_history.redo();
-    
-    history_state_change();
+    game_control.redo();
 }
 
 $("#undo").click(undo);
@@ -245,7 +221,9 @@ document.onkeydown = function (e) {
 };
 
 $("#pass").click(function(){
-    current_player = other_player(current_player);
+    game_control.current_player(
+        other_player(game_control.current_player())
+    );
     display_game_state();
 });
 

@@ -35,18 +35,18 @@ class GameHistory {
         });
     }
 
-    undo() {
-        return this.select( this.current_pos - 1);
+    undo(make_change) {
+        return this.select( this.current_pos - 1, make_change);
     }
 
-    redo() {
-        return this.select(this.current_pos + 1);
+    redo(make_change) {
+        return this.select(this.current_pos + 1, make_change);
     }
 
-    select(new_pos) {
+    select(new_pos, make_change) {
         var ok = new_pos >= 0 && new_pos < this.history.length;
 
-        if (ok) {
+        if (ok && make_change !== false) {
             var hist = this.history[new_pos];
             this.board.status(hist.board_status);
 
@@ -67,14 +67,6 @@ class GameHistory {
         else {
             this.history[this.current_pos].user_data = user_data;
         }
-    }
-
-    n_items() {
-        return this.history.length;
-    }
-
-    pos() {
-        return this.current_pos;
     }
 
     state()

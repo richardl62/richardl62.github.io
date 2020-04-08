@@ -51,9 +51,10 @@ class GameOptions {
     }
 
     // Return a new game play object for the currently selected game
-    new_game_play()
+    new_game_play(board)
     {
-        return new game_types[this.game_index()];
+        var game_type = game_types[this.game_index()]
+        return new game_type(board);
     }
 
     // Return the currently selected initial status

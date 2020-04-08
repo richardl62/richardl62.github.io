@@ -6,8 +6,7 @@
 
 body {
     display: inline-block;
-    padding: 2%;
-    border: 2px black solid;
+    padding: 1%;
 }
 
 #play-options {
