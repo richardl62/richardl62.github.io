@@ -1,44 +1,74 @@
 "use strict";
+class GameControl {
+    constructor()
+    {
+        this.board = new BasicGameBoard($("#board"));
+        this.game_history = new GameHistory(board);
+        this.game_options = new GameOptions;
+        
+        this.game_play = undefined; // set later
 
-var board = new BasicGameBoard($("#board"));
-var game_history = new GameHistory(board);
-var game_options = new GameOptions;
+        this.reset();
+    }
 
-var game_play = null; // set below
+    game_index(index)
+    {
+        this.game_options.game_index(index);
+        this.reset();
+    }
 
-function intial_setup() {
-    $("#game-type").html(inner_html_for_select(
-        game_options.game_names()
-    ));
+    initial_status_index(index)
+    {
+        this.game_options.initial_status_index(index);
+        this.reset();
+    }
 
-    select_game(0);
+    game_names() {return this.game_options.game_names();}
+    initial_status_names() {return this.game_options.initial_status_names();}
+
+    reset()
+    {
+        this.game_play = this.game_options.new_game_play();
+        const init_stat = this.game_options.initial_status();
+        console.log(init_stat);
+        this.board.status(init_stat);
+    }
+
+    clickBoardSquare() {
+        this.board.clickBoardSquare();
+    }
+
+    fixedWidthSquares(opt)
+    {
+        return this.board.fixedWidthSquares(opt);
+    }
 }
-intial_setup();
 
-function select_game(index)
-{
-    game_options.game(index);
+var game_control = new GameControl;
 
+$("#game-type").html(inner_html_for_select(
+    game_control.game_names()
+));
+
+// kludge: Copied below
+$("#game-option").html(inner_html_for_select(
+    game_control.initial_status_names()
+));
+
+
+$("#game-type").change(function(param) {
+    game_control.game_index(this.selectedIndex);
+    
+    // kludge: Copied above
     $("#game-option").html(inner_html_for_select(
-        game_options.initial_status_names()
+        game_control.initial_status_names()
     ));
+});
 
-    game_play = game_options.new_game_play();
-    //board.status(game_options.initial_status());
-}
-var selectElem = document.getElementById('game-type')
-
-// When a new <option> is selected
-selectElem.addEventListener('change', function() {
-  var index = selectElem.selectedIndex;
-    console.log(index);
-    select_game(index);
-})
-
-// $("#game-type").change(function() {
-//     console.log($("#game-type").selectedIndex);
-//     select_game($("#game-type").selectedIndex);
-// });
+$("#game-option").change(function(param) {
+    console.log("game-option");
+    game_control.initial_status_index(this.selectedIndex);
+});
 
 function set_error_string(str)
 {
@@ -186,7 +216,7 @@ function on_click_setup(square)
     square.status(status);
 }
 
-board.clickBoardSquare(on_click_play);
+game_control.clickBoardSquare(on_click_play);
 
 
 function undo() {
@@ -240,7 +270,7 @@ $("#num-cols").change(reset_board);
 
 function set_fixed_width_options()
 {
-    var fixed_width = board.fixedWidthSquares();
+    var fixed_width = game_control.fixedWidthSquares();
     if(fixed_width)
     {
         $("body").css("width", "auto");
@@ -262,7 +292,7 @@ set_fixed_width_options();
 
 $("#scale-to-fit").click(function()
 {
-    board.fixedWidthSquares(!board.fixedWidthSquares());
+    game_control.fixedWidthSquares(!game_control.fixedWidthSquares());
     set_fixed_width_options();
 
 });
