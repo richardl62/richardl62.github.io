@@ -1,9 +1,5 @@
 "use strict";
 
-function other_player (player) {
-    return (player%2)+1;
-}
-
 var game_control = new GameControl;
 setup_for_game_play();
 
@@ -56,12 +52,10 @@ function setup_for_game_play()
 
     $(".play-mode").css("display", "block");
     $(".setup-mode").css("display", "none");
-    game_control.clickBoardSquare(on_click_play);
+    game_control.game_move_callback(display_game_state);
     
     display_game_state();
 }
-
-
 
 // For use during play rather than customisation
 function display_game_state() {
@@ -71,24 +65,6 @@ function display_game_state() {
     // false -> check if possible, but don't make a change
     $("#undo").prop("disabled", game_control.undo(false));
     $("#redo").prop("disabled", game_control.redo(false));
-}
-
-
-function on_click_play(square)
-{
-    if(square.status().is_disabled())
-        return;
-
-    // Loose any old errror string
-    clear_error_string();
-    
-    if(game_control.game_move(game_control.current_player, square))
-    {
-        game_control.current_player(other_player(game_control.current_player));
-        game_control.history_record(); 
-    }
-
-    display_game_state(); 
 }
 
 function on_click_setup(square)
@@ -114,21 +90,10 @@ function on_click_setup(square)
 
     square.status(status);
 }
+ 
+$("#undo").click(() => game_control.undo());
 
-game_control.clickBoardSquare(on_click_play);
-
-
-function undo() {
-    game_control.undo();
-}
-
-function redo() {
-    game_control.redo();
-}
-
-$("#undo").click(undo);
-
-$("#redo").click(redo);
+$("#redo").click(() => game_control.redo());
 
 
 document.onkeydown = function (e) {
@@ -140,9 +105,7 @@ document.onkeydown = function (e) {
 };
 
 $("#pass").click(function(){
-    game_control.current_player(
-        other_player(game_control.current_player())
-    );
+    game_control.next_player();
     display_game_state();
 });
 
@@ -167,7 +130,7 @@ $("#num-cols").change(reset_board);
 
 function set_fixed_width_options()
 {
-    var fixed_width = game_control.fixedWidthSquares();
+    var fixed_width = game_control.fixed_width_squares();
     if(fixed_width)
     {
         $("body").css("width", "auto");
@@ -189,7 +152,7 @@ set_fixed_width_options();
 
 $("#scale-to-fit").click(function()
 {
-    game_control.fixedWidthSquares(!game_control.fixedWidthSquares());
+    game_control.fixed_width_squares(!game_control.fixed_width_squares()); //toggle
     set_fixed_width_options();
 
 });

@@ -71,6 +71,9 @@ class GridOfSquares {
                 this.grid_elements[row][col] = elem;
             }
         }
+
+        // re-apply any previous callback
+        this.clickGridSquare(this.callback);
     }
 
     fixedWidthSquares(on) {

@@ -24,9 +24,9 @@ class GamePlayDropdown {
     // Returns true if the next player should have the next move
     move(player, square) {
         var col = square.getCol();
-        for(var row = board.rows() -1; row >= 0; --row)
+        for(var row = this.board.rows() -1; row >= 0; --row)
         {
-            var sq = board.getSquare(row, col);
+            var sq = this.board.getSquare(row, col);
             if(sq.status().is_empty())
             {
                 sq.player(player);

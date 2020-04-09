@@ -1,4 +1,6 @@
 "use strict";
+
+
 class GameControl {
     constructor()
     {
@@ -8,7 +10,14 @@ class GameControl {
         
         this.game_play = undefined; // set in reset()
         this.current_player = undefined; // set in reset()
+        this.n_players = 2;
 
+        this.game_move_callback = function(){}
+
+        var game_control = this;
+        
+        this.board.clickBoardSquare(function(square){game_control.game_move(square)});
+        
         this.reset();
     }
 
@@ -19,8 +28,10 @@ class GameControl {
         this.board.status(init_stat);
 
         this.current_player = 1;
+        this.n_players = 2;
+
         this.game_history.clear();
-        this.history_record();
+        this.game_history.record(this.current_player);
     }
 
     game_index(index)
@@ -48,11 +59,6 @@ class GameControl {
     game_names() {return this.game_options.game_names();}
     initial_status_names() {return this.game_options.initial_status_names();}
 
-    history_record()
-    {
-        this.game_history.record(this.current_player);
-    }
-
     // If make_change is false (but not undefined) check if an undo is possible
     // but don't actually make the change.
     undo(make_change)
@@ -66,17 +72,30 @@ class GameControl {
         this.game_history.redo(make_change);
     }
 
-    game_move(square, player)
-    {
-        this.game_play.move(square, player);
-    }
-
-    clickBoardSquare(callback) {
-        this.board.clickBoardSquare(callback);
-    }
-
-    fixedWidthSquares(opt)
+    fixed_width_squares(opt)
     {
         return this.board.fixedWidthSquares(opt);
+    }
+
+    game_move(square)  // For internal use
+    {
+        if(square.status().is_disabled())
+            return;
+
+        if (this.game_play.move(this.current_player, square)) {
+            this.game_history.record(this.current_player);
+            this.next_player();
+        }
+        
+        this.game_move_callback();
+    }
+
+    next_player()
+    {
+        ++this.current_player;
+        if(this.current_player > this.n_players)
+        {
+            this.current_player = 1;
+        }
     }
 }
