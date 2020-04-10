@@ -12,7 +12,7 @@ class GameControl {
         this.current_player = undefined; // set in reset()
         this.n_players = 2;
 
-        this.game_move_callback = function(){}
+        this.the_move_callback = function(){}
 
         var game_control = this;
         
@@ -32,6 +32,14 @@ class GameControl {
 
         this.game_history.clear();
         this.game_history.record(this.current_player);
+    }
+
+    move_callback(callback)
+    {
+        if(callback !== undefined)
+            this.the_move_callback = callback;
+
+        return this.the_move_callback;
     }
 
     game_index(index)
@@ -59,17 +67,26 @@ class GameControl {
     game_names() {return this.game_options.game_names();}
     initial_status_names() {return this.game_options.initial_status_names();}
 
-    // If make_change is false (but not undefined) check if an undo is possible
-    // but don't actually make the change.
-    undo(make_change)
+    undo()
     {
-        this.game_history.undo(make_change);
+        this.game_history.undo();
+        this.current_player = this.game_history.user_data();
     }
 
-    // Analogous to undo()
-    redo(make_change)
+    redo()
     {
-        this.game_history.redo(make_change);
+        this.game_history.redo();
+        this.current_player = this.game_history.user_data();
+    }
+
+    undo_available()
+    {
+        return this.game_history.undo_available();
+    }
+
+    redo_available()
+    {
+        return this.game_history.redo_available();
     }
 
     fixed_width_squares(opt)
@@ -83,11 +100,14 @@ class GameControl {
             return;
 
         if (this.game_play.move(this.current_player, square)) {
-            this.game_history.record(this.current_player);
+            // Change the player before recoding this position in history
+            // as we want the new player to be recorded.
             this.next_player();
+            this.game_history.record(this.current_player);
+ 
         }
         
-        this.game_move_callback();
+        this.the_move_callback();
     }
 
     next_player()

@@ -55,7 +55,7 @@ class GamePlayOthello {
                 }
             }
             if (captured_squares.length == 0) {
-                set_error_string("Nothing captured");
+                this.error_string = "Nothing captured";
                 legal_move = false;
             }
             else {
