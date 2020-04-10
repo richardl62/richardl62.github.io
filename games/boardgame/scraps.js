@@ -35,29 +35,7 @@ function setup_for_game_play()
 }
 
 
-function on_click_setup(square)
-{
 
-    var status = square.status();
-    if(status.is_empty())
-    {
-        status.player(1);
-    }
-    else if(status.player() == 1)
-    {
-        status.player(2);
-    } 
-    else if(status.player() == 2)
-    {
-        status.disable();
-    }
-    else
-    {
-        status.make_empty();
-    }
-
-    square.status(status);
-}
  
 
 
@@ -84,14 +62,10 @@ $("#json").click(function(){
 
 function reset_board()
 {
-    var n_rows = parseInt($("#num-rows").val());
     var n_cols = parseInt($("#num-cols").val());
     board.reset(n_rows, n_cols);
     game_history.clear();
 }
-$("#clear").click(reset_board);
-$("#num-rows").change(reset_board);
-$("#num-cols").change(reset_board);
 
 
 function set_fixed_width_options()

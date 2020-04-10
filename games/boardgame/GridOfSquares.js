@@ -133,9 +133,3 @@ class GridOfSquares {
         }
     }
 }
-
-// My version of Edge does not support [].flat() do provide an alternative
-function flatten(arr) {
-    // From https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays
-    return [].concat.apply([], arr);
-}

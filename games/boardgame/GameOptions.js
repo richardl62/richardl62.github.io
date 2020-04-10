@@ -1,6 +1,6 @@
 "use strict";
 
-const  game_types = [GamePlayOthello, GamePlayDropdown, GamePlayUnrestricted];
+const  game_types = [GamePlayDropdown, GamePlayOthello, GamePlayUnrestricted];
 
 class GameOptions {
     constructor()
@@ -31,7 +31,8 @@ class GameOptions {
     }
 
     // return the names of initial statuss of the selected game (array of strings)
-    initial_status_names() {
+    game_option_names(index)
+   {
         var names = [];
         
         this.initial_statuses().forEach(elem => names.push(elem[0]));
@@ -41,7 +42,7 @@ class GameOptions {
 
     // Get or set the current initial status (indexes into initial_status_names())
     // Defaults to 0
-    initial_status_index(index)
+    game_option_index(index)
     {        
         if(index === undefined)
         {
@@ -60,7 +61,7 @@ class GameOptions {
     // Return the currently selected initial status
     initial_status()
     {
-        const isj = this.initial_statuses()[this.initial_status_index()]; 
+        const isj = this.initial_statuses()[this.game_option_index()]; 
         return JSON.parse(isj[1]);
     }
 

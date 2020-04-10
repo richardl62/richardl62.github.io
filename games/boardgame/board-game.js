@@ -40,7 +40,7 @@ $("#game-type").html(inner_html_for_select(
 
 // kludge: Copied below
 $("#game-option").html(inner_html_for_select(
-    game_control.initial_status_names()
+    game_control.game_option_names()
 ));
 
 $("#game-type").change(function(param) {
@@ -48,8 +48,17 @@ $("#game-type").change(function(param) {
     
     // kludge: Copied above
     $("#game-option").html(inner_html_for_select(
-        game_control.initial_status_names()
+        game_control.game_option_names()
     ));
+});
+
+$("#game-option").change(function(param) {
+    game_control.game_option_index(this.selectedIndex);
+});
+
+$("#restart").click(() => {
+    game_control.restart();
+    page_display.update();
 });
 
 $("#undo").click(() => {
@@ -61,3 +70,25 @@ $("#redo").click(() => {
     game_control.redo();
     page_display.update();
 });
+
+$("#customise-button").click(() => {
+    var custom = !game_control.customise_mode();
+    game_control.customise_mode(custom);
+
+    $("#customise-button").toggleClass("button_pressed", custom);
+    $("#customise-menu").css('display', custom ? 'block' : 'none');
+});
+
+$("#clear").click(()=>game_control.clear());
+
+$("#num-rows").change(()=>{
+    var n_rows = parseInt($("#num-rows").val())
+    game_control.rows(n_rows);
+});
+
+$("#num-cols").change(()=>{
+    var n_cols = parseInt($("#num-cols").val())
+    game_control.cols(n_cols);
+});
+
+

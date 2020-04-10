@@ -9,6 +9,10 @@ body {
     padding: 1%;
 }
 
+.button_pressed {
+    border: inset;
+}
+
 #play-options {
     font-size: 30px; /* default */
 }

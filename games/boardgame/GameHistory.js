@@ -50,8 +50,16 @@ class GameHistory {
         return this.select(this.current_pos + 1, false);
     }
 
+    restart() {
+        return this.select(0, true);
+    }
+
     select(new_pos, make_change) {
+        if(make_change === undefined)
+            throw Error("make_change is undefined");
+
         var ok = new_pos >= 0 && new_pos < this.history.length;
+
 
         if (ok && make_change) {
             var hist = this.history[new_pos];

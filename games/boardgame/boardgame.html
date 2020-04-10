@@ -19,32 +19,41 @@
 
         <div id="play-options">
             <div id="status-line">
-                <div id="status"> </div>
+                <div id="status"> Status message </div>
                 <div id="status-line-buttons">
-                    <button id="undo" type="button">Undo</button>
-                    <button id="redo" type="button">Redo</button>
-                    <button id="pass" type="button">Pass</button>
+                    <button id="undo" type="button">undo</button>
+                    <button id="redo" type="button">redo</button>
+                    <button id="pass" type="button">pass</button>
+                    <button id="restart" type="button">restart</button>
                 </div>
             </div>
+
             <div id="game-options">
                 <div>
                     <select id="game-type"> </select>
                     <select id="game-option"> </select>
                 </div>
-                
-                <button id="scale-to-fit" type="button">Scale to fit</button>
+
+                <div>
+                    <button id="customise-button" type="button">Customise</button>
+                    <button id="scale-to-fit" type="button">Scale to fit</button>
+                </div>
             </div>
-            <div id="error-box"> Placeholder for error messages </div>
+
+            <div id="customise-menu">
+                <label for="num-rows">Rows</label>
+                <input type="number" name="num-rows" id="num-rows" min="1" max="100" value="8">
+                <label for="num-cols">Cols</label>
+                <input type="number" name="num-cols" id="num-cols" min="1" max="100" value="8">
+                <label for="num-players">Num Players</label>
+                <input type="number" name="num-players" id="num-players" min="1" max="8" value="2">
+                <button id="clear" type="button">Clear</button>
+                <button id="json">JSON</button>
+            </div>
+            <!-- <div id="error-box"> Placeholder for error messages </div> -->
         </div>
     
-        <!-- <div id="customise">
-            <label for="num-rows">Rows</label>
-            <input type="number" name="num-rows" id="num-rows" min="1" max="100" value="8">
-            <label for="num-cols">Cols</label>
-            <input type="number name=" num-cols" id="num-cols" min="1" max="100" value="8">
-            <button id="clear" type="button">Clear</button>
-            <button id="json">JSON</button>
-        </div> -->
+
     
         <div id="board"> </div>
     
