@@ -1,0 +1,88 @@
+
+
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+
+
+body {
+    display: flex;
+    flex-direction: column;
+    padding: 2%;
+    box-sizing: border-box;
+
+    width: 720px;
+    font-size: 30px; /* default */
+}
+
+#board {
+    height: 100%;
+    width: 100%;
+}
+
+#before-board {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    margin-bottom: 4px;
+    flex-wrap: nowrap;
+
+    font-family: "Arial"; /* Let's be boring */
+}
+
+#before-board * {
+    font-size: inherit;
+    font-family: inherit;  
+}
+
+#status {
+    font-weight: bold;
+    font-size: 1.3em;
+    flex: 1;
+
+    display: flex;
+    white-space: nowrap;
+}
+
+#player1-score {
+    color : var(--game-board-player-colours-1);
+}
+
+#player2-score {
+    color : var(--game-board-player-colours-2);
+}
+
+/* Prevent line breaks within the divs */
+#buttons {
+    display: flex;
+    white-space: nowrap;
+}
+
+button {
+    border: 1px solid #0066cc;
+    background-color: green;
+    color: #ffffff;
+    padding: 1px 2px;
+}
+
+button:disabled {
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+}
+
+#error-box {
+    color: red;
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    white-space: nowrap;
+    display: none;
+}
+
+#num-rows,
+#num-cols {
+    width: 2em;
+}

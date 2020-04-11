@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid of Squares Test</title>
+
+    <link rel="stylesheet" href="game-board.css">
+</head>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+        }
+
+        #outerdiv {
+            height: 90%;
+            width: 90%;
+            margin: 5%;
+            border: 5px dashed black;
+        }
+    </style>
+
+    <body>
+
+    <div id=outerdiv></div>
+    
+    <script type="text/javascript" src="../lib/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="GridOfSquares.js"></script>
+
+    <script>
+        var urlParams = new URLSearchParams(window.location.search);
+
+        var rows = urlParams.get('rows');
+        if(!rows)
+            rows = 4; //arbitrary
+
+        var cols = urlParams.get('cols');
+        if (!cols) {
+            cols = rows;
+        }
+
+        var grid = new GridOfSquares($("#outerdiv"), rows, cols);
+        $(window).resize(function () {
+            grid.resize();
+        });
+
+        $(".grid-square").click(function(){
+            var pos = grid.getPosition(this);
+            console.log("Clicked square " + pos);
+            var elem = grid.getElement(...pos);
+            $(elem).css("background", "red");
+        });
+    </script>
+    
+</body>
+</html>
