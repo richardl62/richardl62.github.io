@@ -8,21 +8,25 @@ class PageDisplay
 
         this.undo_button = $("#undo");
         this.redo_button = $("#redo");
-
+        this.status_elem = $("#status")
         this.update();
     }
 
-    update()
-    {
-        this.undo_button.prop('disabled', 
+    update() {
+        this.undo_button.prop('disabled',
             !this.game_control.undo_available()
         );
 
-        this.redo_button.prop('disabled', 
+        this.redo_button.prop('disabled',
             !this.game_control.redo_available()
         );
 
-        // TO DO:  Display any error string
+
+        // TO DO: Allow game control classes to contol the status display.
+        const player = game_control.current_player;
+        this.status_elem.text("Player " + player);
+        this.status_elem.css("color", "VAR(--game-board-player-colours-"
+            + player + ")");
     }
 }
 

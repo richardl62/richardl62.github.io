@@ -62,14 +62,24 @@ class GameControl {
         this.reset();
     }
 
-    current_player(player)
-    {
-        if(player)
-        {
-            this.current_player = player;
-        }
+    // current_player(player)
+    // {
+    //     if(player)
+    //     {
+    //         this.current_player = player;
+    //     }
 
-        return this.current_player;
+    //     return this.current_player;
+    // }
+
+    
+    next_player()
+    {
+        ++this.current_player;
+        if(this.current_player > this.n_players)
+        {
+            this.current_player = 1;
+        }
     }
 
     game_names() {return this.game_options.game_names();}
@@ -124,14 +134,6 @@ class GameControl {
         this.the_move_callback();
     }
 
-    next_player()
-    {
-        ++this.current_player;
-        if(this.current_player > this.n_players)
-        {
-            this.current_player = 1;
-        }
-    }
 
     customise_mode(on_off)
     {
