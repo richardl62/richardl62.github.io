@@ -68,31 +68,4 @@ function reset_board()
 }
 
 
-function set_fixed_width_options()
-{
-    var fixed_width = game_control.fixed_width_squares();
-    if(fixed_width)
-    {
-        $("body").css("width", "auto");
-        $("#scale-to-fit").css({
-            border: "outset",
-            // color: "black"
-        });
-    }
-    else
-    {
-        $("body").css("width", "100%");
-        $("#scale-to-fit").css({
-            border: "inset",
-            // color: "red"
-        });
-    }
-}
-set_fixed_width_options();
 
-$("#scale-to-fit").click(function()
-{
-    game_control.fixed_width_squares(!game_control.fixed_width_squares()); //toggle
-    set_fixed_width_options();
-
-});

@@ -2,8 +2,9 @@
 
 * {
     box-sizing: border-box;
+    font-size: 20px;
 }
-
+ 
 body {
     display: inline-block;
     padding: 1%;
@@ -22,7 +23,6 @@ body {
     background-color: green;
     color: #ffffff;
     padding: 1px 2px;
-    font-size: inherit; 
 }
 
 #scale-to-fit {
@@ -68,6 +68,9 @@ body {
     white-space: nowrap;
 }
 
+#customise-menu {
+    display: none;
+}
 #player1-score {
     color : var(--game-board-player-colours-1);
 }
