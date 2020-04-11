@@ -180,6 +180,17 @@ class GameControl {
     {
         return this.board.status();
     }
+
+    // Get info for the on-page status display
+    get_game_status()
+    {
+        if(this.game_play.get_game_status)
+        {
+            return this.game_play.get_game_status();
+        }
+
+        return undefined;
+    }
 }
 
 function square_click_custome_mode(square, n_players)

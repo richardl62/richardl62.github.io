@@ -1,5 +1,17 @@
 "use strict";
 
+function status_span(text,
+    player,  // Player number - determines color
+    underline // Optional - text is underlined if true
+) {
+    var sp = '<span style="color:var(--game-board-player-colours-' + player + ');';
+
+    if (underline)
+        sp += ';text-decoration:underline';
+
+    return sp + '">' + text + '</span>';
+}
+
 class PageDisplay
 {
     constructor(game_control)
@@ -8,7 +20,8 @@ class PageDisplay
 
         this.undo_button = $("#undo");
         this.redo_button = $("#redo");
-        this.status_elem = $("#status")
+        this.status_elem = $("#status");
+
         this.update();
     }
 
@@ -21,13 +34,30 @@ class PageDisplay
             !this.game_control.redo_available()
         );
 
+        this.update_status_message(this.game_control.get_game_status());
+    }
 
-        // TO DO: Allow game control classes to contol the status display.
-        const player = game_control.current_player;
-        this.status_elem.text("Player " + player);
+    update_status_message(status)
+    {
+        const player = this.game_control.current_player;
+      
+        if(status === undefined)
+        {
+            this.status_elem.html("Player " + player); // default
+        }
+        else
+        {
+            this.status_elem.html(status); 
+        }
         this.status_elem.css("color", "VAR(--game-board-player-colours-"
             + player + ")");
     }
+
+    // display_scores(s1, s2) {
+    //     var html = status_span(s1, 1, player == 1)
+    //         + "-"
+    //         + status_span(s2, 2, player == 2);
+    // }
 }
 
 var game_control = new GameControl();
