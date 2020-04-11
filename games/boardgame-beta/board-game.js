@@ -91,4 +91,9 @@ $("#num-cols").change(()=>{
     game_control.cols(n_cols);
 });
 
+$("#json").click(function(){
+    var json = JSON.stringify(game_control.board_status());
+    var new_window = window.open("", "");
+    new_window.document.write("<p>" + json + "</p>");
+});
 

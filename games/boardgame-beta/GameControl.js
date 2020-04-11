@@ -173,6 +173,11 @@ class GameControl {
         this.board.reset(this.board.rows(), this.board.cols()); // inefficient
         this.reset_other_than_board();  
     }
+
+    board_status()
+    {
+        return this.board.status();
+    }
 }
 
 function square_click_custome_mode(square, n_players)
