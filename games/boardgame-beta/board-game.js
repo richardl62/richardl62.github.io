@@ -17,6 +17,7 @@ function status_span(text,
     return sp + '">' + text + '</span>';
 }
 
+const game_option_custom_string = "custom";
 class PageDisplay
 {
     constructor(game_control)
@@ -25,6 +26,7 @@ class PageDisplay
 
         this.undo_button = $("#undo");
         this.redo_button = $("#redo");
+        this.pass_button = $("#pass");
         this.status_elem = $("#status");
         this.customise_button = $("#customise-button");
         this.customise_menu = $("#customise-menu");
@@ -38,43 +40,66 @@ class PageDisplay
     }
 
     update() {
+        const custom = this.customise_mode();
+
         this.undo_button.prop('disabled',
-            !this.game_control.undo_available()
+            custom || !this.game_control.undo_available()
         );
 
         this.redo_button.prop('disabled',
-            !this.game_control.redo_available()
+            custom || !this.game_control.redo_available()
         );
 
-        this.update_status_message(this.game_control.get_game_status());
+        this.pass_button.prop('disabled', custom);
+
+        this.update_status_message();
     }
 
-    update_status_message(status) {
-        const player = this.game_control.current_player;
+    update_status_message() {
 
-        if (status === undefined) {
-            this.status_elem.html("Player " + player); // default
-            this.status_elem.css("color", player_color_css(player));
-        }
-        else if (typeof status === 'string') {
-            this.status_elem.html(status);
-            this.status_elem.css("color", player_color_css(player));
+        if(this.customise_mode()) {
+            this.status_elem.html("Customising");
+            this.status_elem.css("color", "inherit");
         }
         else {
-            var [s1, s2] = status;
+	    const status = this.game_control.get_game_status();
+            const player = this.game_control.current_player;
 
-            var html = status_span(s1, 1, player == 1)
-                + "-"
-                + status_span(s2, 2, player == 2);
-                
-            this.status_elem.html(html);
+            if (status === undefined) {
+                this.status_elem.html("Player " + player); // default
+                this.status_elem.css("color", player_color_css(player));
+            }
+            else if (typeof status === 'string') {
+                this.status_elem.html(status);
+                this.status_elem.css("color", player_color_css(player));
+            }
+            else {
+                var [s1, s2] = status;
+
+                var html = status_span(s1, 1, player == 1)
+                    + "-"
+                    + status_span(s2, 2, player == 2);
+
+                this.status_elem.html(html);
+            }
         }
     }
 
     customise_mode(custom)
     {
-        this.customise_button.toggleClass("button_pressed", custom);
-        this.customise_menu.css('display', custom ? 'block' : 'none');
+        if (custom !== undefined) {
+            game_control.customise_mode(custom);
+
+            this.customise_button.toggleClass("button_pressed", custom);
+            this.customise_menu.css('display', custom ? 'block' : 'none');
+            if (!custom) {
+                // To include 'custom' option
+                this.set_game_options(true /*add and select 'custom' */);
+            }
+            this.update();
+        }
+
+        return game_control.customise_mode();
     }
 
     set_game_types() {
@@ -83,11 +108,31 @@ class PageDisplay
         ));
     }
     
-    set_game_options()
+    set_game_options(add_and_select_custom)
     {
-        this.game_options.html(inner_html_for_select(
-            game_control.game_option_names()
-        ));
+        if(add_and_select_custom === undefined)
+            add_and_select_custom = false;  // Just to be explicit
+
+        var names = game_control.game_option_names();
+        if(add_and_select_custom)
+            names.push(game_option_custom_string);
+
+        this.game_options.html(inner_html_for_select(names));
+
+        if(add_and_select_custom)
+            this.game_options.val(game_option_custom_string);
+    }
+
+    game_option_changed()
+    {
+        if(!this.customise_mode())
+        {
+            // Remove the "custom" option if there is one.  
+            // The implementation is a kludge.
+            const val = this.game_options.val();
+            this.set_game_options();
+            this.game_options.val(val);
+        }
     }
 }
 
@@ -105,6 +150,7 @@ page_display.game_types.change(function() {
 
 page_display.game_options.change(function() {
     game_control.game_option_index(this.selectedIndex);
+    page_display.game_option_changed();
 });
 
 $("#restart").click(() => {
@@ -112,19 +158,23 @@ $("#restart").click(() => {
     page_display.update();
 });
 
-$("#undo").click(() => {
+page_display.undo_button.click(() => {
     game_control.undo();
     page_display.update();
 });
 
-$("#redo").click(() => {
+page_display.redo_button.click(() => {
     game_control.redo();
+    page_display.update();
+});
+
+page_display.pass_button.click(function(){
+    game_control.next_player();
     page_display.update();
 });
 
 $("#customise-button").click(() => {
     var custom = !game_control.customise_mode();
-    game_control.customise_mode(custom);
     page_display.customise_mode(custom);
 });
 
