@@ -34,12 +34,6 @@ function setup_for_game_play()
     $(".setup-mode").css("display", "none");
 }
 
-
-
- 
-
-
-
 document.onkeydown = function (e) {
     if (e.keyCode == 90 && e.ctrlKey)
         undo();

@@ -30,9 +30,11 @@ class PageDisplay
         this.status_elem = $("#status");
         this.customise_button = $("#customise-button");
         this.customise_menu = $("#customise-menu");
+        this.num_rows =  $("#num-rows");
+        this.num_cols =  $("#num-cols");
         this.game_types = $("#game-type");
         this.game_options = $("#game-option");
-        
+
         this.set_game_types();
         this.set_game_options();
 
@@ -49,6 +51,9 @@ class PageDisplay
         this.redo_button.prop('disabled',
             custom || !this.game_control.redo_available()
         );
+
+        this.num_rows.val(game_control.rows());
+        this.num_cols.val(game_control.cols());
 
         this.pass_button.prop('disabled', custom);
 
@@ -96,7 +101,6 @@ class PageDisplay
                 // To include 'custom' option
                 this.set_game_options(true /*add and select 'custom' */);
             }
-            this.update();
         }
 
         return game_control.customise_mode();
@@ -122,17 +126,12 @@ class PageDisplay
         if(add_and_select_custom)
             this.game_options.val(game_option_custom_string);
     }
-
-    game_option_changed()
+    remove_custom_game_option()
     {
-        if(!this.customise_mode())
-        {
-            // Remove the "custom" option if there is one.  
-            // The implementation is a kludge.
-            const val = this.game_options.val();
-            this.set_game_options();
-            this.game_options.val(val);
-        }
+        // This implementation is a kludge.
+        const val = this.game_options.val();
+        this.set_game_options();
+        this.game_options.val(val);
     }
 }
 
@@ -146,11 +145,17 @@ game_control.move_callback(function(){
 page_display.game_types.change(function() {
     game_control.game_index(this.selectedIndex);
     page_display.set_game_options();
+    page_display.update();
 });
 
 page_display.game_options.change(function() {
     game_control.game_option_index(this.selectedIndex);
-    page_display.game_option_changed();
+
+    if(!page_display.customise_mode())
+    {
+        page_display.remove_custom_game_option();
+    }
+    page_display.update();
 });
 
 $("#restart").click(() => {
@@ -176,16 +181,18 @@ page_display.pass_button.click(function(){
 $("#customise-button").click(() => {
     var custom = !game_control.customise_mode();
     page_display.customise_mode(custom);
+    page_display.update();
 });
 
 $("#clear").click(()=>game_control.clear());
 
-$("#num-rows").change(()=>{
+
+page_display.num_rows.change(()=>{
     var n_rows = parseInt($("#num-rows").val())
     game_control.rows(n_rows);
 });
 
-$("#num-cols").change(()=>{
+page_display.num_cols.change(()=>{
     var n_cols = parseInt($("#num-cols").val())
     game_control.cols(n_cols);
 });
