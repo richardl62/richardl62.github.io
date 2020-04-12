@@ -1,10 +1,15 @@
 "use strict";
 
+function player_color_css(player)
+{
+    return "var(--game-board-player-colours-" + player + ")";
+}
+
 function status_span(text,
     player,  // Player number - determines color
     underline // Optional - text is underlined if true
 ) {
-    var sp = '<span style="color:var(--game-board-player-colours-' + player + ');';
+    var sp = '<span style="' + player_color_css(player) + ';';
 
     if (underline)
         sp += ';text-decoration:underline';
@@ -21,6 +26,13 @@ class PageDisplay
         this.undo_button = $("#undo");
         this.redo_button = $("#redo");
         this.status_elem = $("#status");
+        this.customise_button = $("#customise-button");
+        this.customise_menu = $("#customise-menu");
+        this.game_types = $("#game-type");
+        this.game_options = $("#game-option");
+        
+        this.set_game_types();
+        this.set_game_options();
 
         this.update();
     }
@@ -37,27 +49,46 @@ class PageDisplay
         this.update_status_message(this.game_control.get_game_status());
     }
 
-    update_status_message(status)
-    {
+    update_status_message(status) {
         const player = this.game_control.current_player;
-      
-        if(status === undefined)
-        {
+
+        if (status === undefined) {
             this.status_elem.html("Player " + player); // default
+            this.status_elem.css("color", player_color_css(player));
         }
-        else
-        {
-            this.status_elem.html(status); 
+        else if (typeof status === 'string') {
+            this.status_elem.html(status);
+            this.status_elem.css("color", player_color_css(player));
         }
-        this.status_elem.css("color", "VAR(--game-board-player-colours-"
-            + player + ")");
+        else {
+            var [s1, s2] = status;
+
+            var html = status_span(s1, 1, player == 1)
+                + "-"
+                + status_span(s2, 2, player == 2);
+                
+            this.status_elem.html(html);
+        }
     }
 
-    // display_scores(s1, s2) {
-    //     var html = status_span(s1, 1, player == 1)
-    //         + "-"
-    //         + status_span(s2, 2, player == 2);
-    // }
+    customise_mode(custom)
+    {
+        this.customise_button.toggleClass("button_pressed", custom);
+        this.customise_menu.css('display', custom ? 'block' : 'none');
+    }
+
+    set_game_types() {
+        this.game_types.html(inner_html_for_select(
+            game_control.game_names()
+        ));
+    }
+    
+    set_game_options()
+    {
+        this.game_options.html(inner_html_for_select(
+            game_control.game_option_names()
+        ));
+    }
 }
 
 var game_control = new GameControl();
@@ -67,26 +98,12 @@ game_control.move_callback(function(){
     page_display.update();
 });
 
-
-$("#game-type").html(inner_html_for_select(
-    game_control.game_names()
-));
-
-// kludge: Copied below
-$("#game-option").html(inner_html_for_select(
-    game_control.game_option_names()
-));
-
-$("#game-type").change(function(param) {
+page_display.game_types.change(function() {
     game_control.game_index(this.selectedIndex);
-    
-    // kludge: Copied above
-    $("#game-option").html(inner_html_for_select(
-        game_control.game_option_names()
-    ));
+    page_display.set_game_options();
 });
 
-$("#game-option").change(function(param) {
+page_display.game_options.change(function() {
     game_control.game_option_index(this.selectedIndex);
 });
 
@@ -108,9 +125,7 @@ $("#redo").click(() => {
 $("#customise-button").click(() => {
     var custom = !game_control.customise_mode();
     game_control.customise_mode(custom);
-
-    $("#customise-button").toggleClass("button_pressed", custom);
-    $("#customise-menu").css('display', custom ? 'block' : 'none');
+    page_display.customise_mode(custom);
 });
 
 $("#clear").click(()=>game_control.clear());
