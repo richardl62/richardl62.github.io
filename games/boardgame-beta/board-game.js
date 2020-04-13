@@ -27,6 +27,7 @@ const jq = { // Get the jQuery elements that are used in this file.
     clear: $("#clear"),
     num_rows:  $("#num-rows"),
     num_cols:  $("#num-cols"),
+    num_players: $("#num-players"),
     game_types: $("#game-type"),
     game_options: $("#game-option"),
     restart: $("#restart"),
@@ -201,6 +202,12 @@ jq.num_rows.change(()=>{
 jq.num_cols.change(()=>{
     var n_cols = parseInt(jq.num_cols.val())
     game_control.cols(n_cols);
+});
+
+
+jq.num_players.change(()=>{
+    var n_rows = parseInt(jq.num_players.val())
+    game_control.num_players(n_rows);
 });
 
 jq.json.click(function(){

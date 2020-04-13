@@ -61,17 +61,16 @@ class GameControl {
         this.game_options.game_option_index(index);
         this.reset();
     }
+    
+    num_players(num)
+    {
+        if(num !== undefined)
+        {
+            this.n_players = num;
+        }
 
-    // current_player(player)
-    // {
-    //     if(player)
-    //     {
-    //         this.current_player = player;
-    //     }
-
-    //     return this.current_player;
-    // }
-
+        return this.n_players;
+    }
     
     next_player()
     {
