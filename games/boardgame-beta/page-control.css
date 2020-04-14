@@ -1,5 +1,3 @@
-
-
 * {
     box-sizing: border-box;
     font-size: inherit;
@@ -11,14 +9,14 @@ body {
 }
 
 .button_pressed {
-    border: inset;
+/*     border: inset; */
 }
 
 #play-options {
     font-size: 20px; /* default */
 }
 
-#status-line button {
+#game-control-line button {
     border: 1px solid #0066cc;
     background-color: green;
     color: #ffffff;
@@ -31,18 +29,18 @@ body {
     border-style: inset;
 }
 
-#status-line button:disabled {
+#game-control-line button:disabled {
     border: 1px solid #999999;
     background-color: #cccccc;
     color: #666666;
 }
 
-#status-line, #game-options {
+#game-control-line, #game-options, #customise-menu {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    margin-bottom: 3px;
 }
-
 
 #before-board {
     display: flex;
@@ -68,12 +66,14 @@ body {
     white-space: nowrap;
 }
 
-#customise-menu {
-    display: none;
-}
-#scores {
+#status {
     font-size: 1.6em;
 }
+
+#scores {
+    margin-left: 0.2em;
+}
+
 #player1-score {
     color : var(--game-board-player-colours-1);
 }
@@ -88,6 +88,19 @@ body {
     white-space: nowrap;
 }
 
+#customise-menu {
+    --custom-menu-diplay-type: flex; /* used when not hidden */
+    display: none;
+}
+
+#customise-menu input {
+    width: 2em;
+}
+
+#game-control {
+    margin-top: auto;
+}
+
 #error-box {
     color: red;
     font-size: 3rem;
@@ -97,12 +110,7 @@ body {
     display: none;
 }
 
-#num-rows,
-#num-cols {
-    width: 2em;
+.highlighted-score {
+    text-decoration: underline;
 }
 
-
-.highlighted-score {
-    text-decoration: underline black;
-  }

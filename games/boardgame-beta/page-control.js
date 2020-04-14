@@ -73,26 +73,30 @@ class PageDisplay
     }
 
     update_status_message() {
+        let show_score = false;
 
         if(this.customise_mode()) {
-            jq.status_message.html("Customising");
+            jq.status_message.text("Customising");
             jq.status_message.css("color", "inherit");
         }
         else {
-	    const status = this.game_control.get_game_status();
+	        const status = this.game_control.get_game_status();
             const player = this.game_control.current_player;
 
-            var is_message = true;
+
             if (status === undefined) {
                 jq.status_message.text("Player " + player); // default
                 jq.status_message.css("color", player_color_css(player));
             }
             else if (typeof status === 'string') {
                 jq.status_message.text(status);
-                jq.status_message.css("color", player_color_css(player));
+ 
             }
             else {
-                is_message = false;
+                show_score = true;
+
+                jq.status_message.text("Score: ");
+  
                 var [s1, s2] = status;
                 jq.player1_score.text(s1);
                 jq.player2_score.text(s2);
@@ -101,9 +105,9 @@ class PageDisplay
                 jq.player2_score.toggleClass("highlighted-score", player == 2);
             }
 
-            make_hidden(jq.scores, is_message);
-            make_hidden(jq.status_message, !is_message);
+            jq.status_message.css("color", player_color_css(player));
         }
+        make_hidden(jq.scores, !show_score);
     }
 
     customise_mode(custom)
@@ -111,8 +115,9 @@ class PageDisplay
         if (custom !== undefined) {
             game_control.customise_mode(custom);
 
-            jq.customise_menu.toggleClass("button_pressed", custom);
-            jq.customise_menu.css('display', custom ? 'block' : 'none');
+            jq.customise_button.toggleClass("button_pressed", custom);
+            // Kludge: Hard code that custom menu has type flex.
+            jq.customise_menu.css('display', custom ? "var(--custom-menu-diplay-type)" : 'none');
             if (!custom) {
                 // To include 'custom' option
                 this.set_game_options(true /*add and select 'custom' */);

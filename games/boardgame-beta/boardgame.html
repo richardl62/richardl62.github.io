@@ -18,16 +18,16 @@
     <body>
 
         <div id="play-options">
-            <div id="status-line">
-                <div>
-                    <div id="status-message"> </div>
+            <div id="game-control-line">
+                <div id=status>
+                    <div id="status-message"> Score </div>
                     <div id="scores">
-                        <span id="player1-score"></span>
+                        <span id="player1-score"> ? </span>
                         -
-                        <span id="player2-score"></span>
+                        <span id="player2-score"> ?</span>
                     </div>
                 </div>
-                <div id="status-line-buttons">
+                <div id="game-control">
                     <button id="undo" type="button">undo</button>
                     <button id="redo" type="button">redo</button>
                     <button id="pass" type="button">pass</button>
@@ -48,14 +48,18 @@
             </div>
 
             <div id="customise-menu">
-                <label for="num-rows">Rows</label>
-                <input type="number" name="num-rows" id="num-rows" min="1" max="100" value="8">
-                <label for="num-cols">Cols</label>
-                <input type="number" name="num-cols" id="num-cols" min="1" max="100" value="8">
-                <label for="num-players">Num Players</label>
-                <input type="number" name="num-players" id="num-players" min="1" max="8" value="2">
-                <button id="clear" type="button">Clear</button>
-                <button id="json">JSON</button>
+                <div>
+                    <label for="num-rows">Rows</label>
+                    <input type="number" name="num-rows" id="num-rows" min="1" max="100" value="8">
+                    <label for="num-cols">Cols</label>
+                    <input type="number" name="num-cols" id="num-cols" min="1" max="100" value="8">
+                    <label for="num-players">Players</label>
+                    <input type="number" name="num-players" id="num-players" min="1" max="8" value="2">
+                </div>
+                <div>
+                    <button id="clear" type="button">Clear</button>
+                    <button id="json">JSON</button>
+                </div>
             </div>
             <!-- <div id="error-box"> Placeholder for error messages </div> -->
         </div>
