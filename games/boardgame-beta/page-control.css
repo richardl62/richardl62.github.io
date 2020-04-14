@@ -8,31 +8,23 @@ body {
     padding: 1%;
 }
 
-.button_pressed {
-/*     border: inset; */
+button {
+    outline: 0 none;
+    background-color: #e8e8e8;
+}
+
+button:disabled {
+    border: 1px solid #999999;
+    background-color: #bbbbbb;
+    color: white;
+}
+
+.button-pressed {
+     border: inset;
 }
 
 #play-options {
     font-size: 20px; /* default */
-}
-
-#game-control-line button {
-    border: 1px solid #0066cc;
-    background-color: green;
-    color: #ffffff;
-    padding: 1px 2px;
-}
-
-#scale-to-fit {
-    outline: 0 none;
-    background-color: #e8e8e8;
-    border-style: inset;
-}
-
-#game-control-line button:disabled {
-    border: 1px solid #999999;
-    background-color: #cccccc;
-    color: #666666;
 }
 
 #game-control-line, #game-options, #customise-menu {

@@ -19,7 +19,7 @@ const jq = { // Get the jQuery elements that are used in this file.
     pass: $("#pass"),
     redo: $("#redo"),
     restart: $("#restart"),
-    scale_to_fit: $("#scale-to-fit"),
+    full_width: $("#full-width"),
     scores: $("#scores"),
     status_message: $("#status-message"),
     player1_score: $("#player1-score"),
@@ -115,7 +115,7 @@ class PageDisplay
         if (custom !== undefined) {
             game_control.customise_mode(custom);
 
-            jq.customise_button.toggleClass("button_pressed", custom);
+            jq.customise_button.toggleClass("button-pressed", custom);
             // Kludge: Hard code that custom menu has type flex.
             jq.customise_menu.css('display', custom ? "var(--custom-menu-diplay-type)" : 'none');
             if (!custom) {
@@ -237,23 +237,18 @@ function set_fixed_width_options()
     if(fixed_width)
     {
         $("body").css("width", "auto");
-        jq.scale_to_fit.css({
-            border: "outset",
-            // color: "black"
-        });
     }
     else
     {
         $("body").css("width", "100%");
-        jq.scale_to_fit.css({
-            border: "inset",
-            // color: "red"
-        });
     }
+
+    jq.full_width.toggleClass("button-pressed", fixed_width);
 }
+
 set_fixed_width_options();
 
-jq.scale_to_fit.click(function()
+jq.full_width.click(function()
 {
     game_control.fixed_width_squares(!game_control.fixed_width_squares()); //toggle
     set_fixed_width_options();
