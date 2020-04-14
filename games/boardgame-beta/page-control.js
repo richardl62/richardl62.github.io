@@ -230,27 +230,19 @@ jq.json.click(function(){
     new_window.document.write("<p>" + json + "</p>");
 });
 
-// To do: Consider tidying the scale to fit code
-function set_fixed_width_options()
+// To do: Consider tidying thia full width code
+function set_full_width_options()
 {
-    var fixed_width = game_control.fixed_width_squares();
-    if(fixed_width)
-    {
-        $("body").css("width", "auto");
-    }
-    else
-    {
-        $("body").css("width", "100%");
-    }
-
-    jq.full_width.toggleClass("button-pressed", fixed_width);
+    var full_width = game_control.full_width();
+    $("body").css("width", full_width ? "100%" : "auto");
+    jq.full_width.toggleClass("button-pressed", full_width);
 }
 
-set_fixed_width_options();
+set_full_width_options();
 
 jq.full_width.click(function()
 {
-    game_control.fixed_width_squares(!game_control.fixed_width_squares()); //toggle
-    set_fixed_width_options();
+    game_control.full_width(!game_control.full_width()); //toggle
+    set_full_width_options();
 
 });

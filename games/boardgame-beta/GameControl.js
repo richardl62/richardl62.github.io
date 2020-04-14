@@ -112,9 +112,9 @@ class GameControl {
         return this.game_history.redo_available();
     }
 
-    fixed_width_squares(opt)
+    full_width(opt)
     {
-        return this.board.fixedWidthSquares(opt);
+        return this.board.fullWidth(opt);
     }
 
     game_move(square)  // For internal use

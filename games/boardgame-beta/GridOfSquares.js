@@ -22,7 +22,7 @@ class GridOfSquares {
 
     constructor(elem /*div or similar*/, n_rows, n_cols) {
         this.user_supplied_elem = $(elem);
-        this.fixed_width_squares = true;
+        this.full_width = false;
 
         if (n_cols)
             this.reset(n_rows, n_cols);
@@ -31,7 +31,7 @@ class GridOfSquares {
     // Intended for internal use.
     setGridColunmTemplate()
     {
-        if (this.fixed_width_squares) {
+        if (!this.full_width) {
             this.board.css({
                 width: "auto",
                 gridTemplateColumns: "repeat(" + this.n_cols + ", var(--game-square-size))",
@@ -76,12 +76,12 @@ class GridOfSquares {
         this.clickGridSquare(this.callback);
     }
 
-    fixedWidthSquares(on) {
+    fullWidth(on) {
         if (on === undefined) {
-            return this.fixed_width_squares;
+            return this.full_width;
         }
         else {
-            this.fixed_width_squares = on;
+            this.full_width = on;
             this.setGridColunmTemplate();
         }
     }
