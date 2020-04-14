@@ -98,3 +98,8 @@ body {
 #num-cols {
     width: 2em;
 }
+
+
+.highlighted-score {
+    text-decoration: underline black;
+  }

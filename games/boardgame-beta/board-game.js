@@ -5,23 +5,12 @@ function player_color_css(player)
     return "var(--game-board-player-colours-" + player + ")";
 }
 
-function status_span(text,
-    player,  // Player number - determines color
-    underline // Optional - text is underlined if true
-) {
-    var sp = '<span style="' + player_color_css(player) + ';';
-
-    if (underline)
-        sp += ';text-decoration:underline';
-
-    return sp + '">' + text + '</span>';
-}
 
 const jq = { // Get the jQuery elements that are used in this file.
     undo: $("#undo"),
     redo: $("#redo"),
     pass: $("#pass"),
-    status: $("#status"),
+    status_message: $("#status-message"),
     customise_button: $("#customise-button"),
     customise_menu: $("#customise-menu"),
     clear: $("#clear"),
@@ -33,7 +22,19 @@ const jq = { // Get the jQuery elements that are used in this file.
     restart: $("#restart"),
     json: $("#json"),
     scale_to_fit: $("#scale-to-fit"),
+    scores: $("#scores"),
+    player1_score: $("#player1-score"),
+    player2_score: $("#player2-score"),
 }
+
+// Sanity check
+for (const [ key, value ] of Object.entries(jq)) {
+    if(value.length != 1)
+    {
+        throw Error(key + " matched " + value.length + " elements");
+    }
+}
+
 const game_option_custom_string = "custom";
 
 class PageDisplay
@@ -44,6 +45,10 @@ class PageDisplay
 
         this.set_game_types();
         this.set_game_options();
+
+        //kludge? Might be better doing this in css file.
+        jq.player1_score.css("color", player_color_css(1));
+        jq.player2_score.css("color", player_color_css(2));
 
         this.update();
     }
@@ -70,30 +75,34 @@ class PageDisplay
     update_status_message() {
 
         if(this.customise_mode()) {
-            jq.status.html("Customising");
-            jq.status.css("color", "inherit");
+            jq.status_message.html("Customising");
+            jq.status_message.css("color", "inherit");
         }
         else {
 	    const status = this.game_control.get_game_status();
             const player = this.game_control.current_player;
 
+            var is_message = true;
             if (status === undefined) {
-                jq.status.html("Player " + player); // default
-                jq.status.css("color", player_color_css(player));
+                jq.status_message.text("Player " + player); // default
+                jq.status_message.css("color", player_color_css(player));
             }
             else if (typeof status === 'string') {
-                jq.status.html(status);
-                jq.status.css("color", player_color_css(player));
+                jq.status_message.text(status);
+                jq.status_message.css("color", player_color_css(player));
             }
             else {
+                is_message = false;
                 var [s1, s2] = status;
+                jq.player1_score.text(s1);
+                jq.player2_score.text(s2);
 
-                var html = status_span(s1, 1, player == 1)
-                    + "-"
-                    + status_span(s2, 2, player == 2);
-
-                jq.status.html(html);
+                jq.player1_score.toggleClass("highlighted-score", player == 1);
+                jq.player2_score.toggleClass("highlighted-score", player == 2);
             }
+
+            make_hidden(jq.scores, is_message);
+            make_hidden(jq.status_message, !is_message);
         }
     }
 

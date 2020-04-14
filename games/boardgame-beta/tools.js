@@ -1,5 +1,12 @@
 "use strict";
 
+
+// My version of Edge does not support [].flat() do provide an alternative
+function flatten(arr) {
+    // From https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays
+    return [].concat.apply([], arr);
+}
+
 // Take an array of strings and return the inner html for a select element
 // with this strings as list items.
 function inner_html_for_select(names)
@@ -13,10 +20,25 @@ function inner_html_for_select(names)
     return html;
 }
 
-// My version of Edge does not support [].flat() do provide an alternative
-function flatten(arr) {
-    // From https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays
-    return [].concat.apply([], arr);
+function make_hidden(elem, hidden, 
+    display_mode // Used when visible. Defaults to block
+    )
+{
+    let mode;
+    if(hidden)
+    {
+        mode = "none";
+    }
+    else
+    {
+        if(display_mode == undefined)
+            mode = "block";
+        else
+            mode = display_mode;
+    }
+
+    $(elem).css("display", mode);
+
 }
 
 // cjson -> compact JSON - as JSON but 'null' removed. 
