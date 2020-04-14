@@ -2,7 +2,7 @@
 
 * {
     box-sizing: border-box;
-    font-size: 20px;
+    font-size: inherit;
 }
  
 body {
@@ -15,7 +15,7 @@ body {
 }
 
 #play-options {
-    font-size: 30px; /* default */
+    font-size: 20px; /* default */
 }
 
 #status-line button {
@@ -70,6 +70,9 @@ body {
 
 #customise-menu {
     display: none;
+}
+#scores {
+    font-size: 1.6em;
 }
 #player1-score {
     color : var(--game-board-player-colours-1);
