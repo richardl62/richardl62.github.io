@@ -70,6 +70,11 @@ class dice {
             this.dots[dn].css("visibility", vis);
         }
     }
+    
+    show_all_dots()
+    {
+        this.dots.forEach(dot => dot.css("visibility", "visible"));
+    }
 
     roll(spin /*define to true*/)
     {
@@ -85,6 +90,7 @@ class dice {
 
         if(spin)
         {
+            this.show_all_dots();
             rotate_360(this.dice_input_elem, 750 /*millisecs*/, do_roll);
         }
         else
