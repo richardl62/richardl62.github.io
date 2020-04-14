@@ -57,4 +57,7 @@
             height: 100%;
             text-align: right;
             padding: 2px;
+
+            white-space: nowrap;
+            overflow: hidden;
         }
