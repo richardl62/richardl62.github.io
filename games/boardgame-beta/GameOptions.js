@@ -1,6 +1,6 @@
 "use strict";
 
-const  game_types = [GamePlayOthello, GamePlayDropdown,  GamePlayUnrestricted];
+const  game_types = [GamePlayDropdown,  GamePlayOthello, GamePlayUnrestricted];
 
 class GameOptions {
     constructor()
