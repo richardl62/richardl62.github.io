@@ -12,10 +12,11 @@ body {
 
     --games-board-background-colour: darkred; /* uses for board  border, gaps between squares and disabled squares */
     --games-board-square-colour: lemonchiffon;
+    --game-square-size: 80px; /* used when fixed width squares is selected (the default) */
 }
 
 .grid-of-squares {
-    display: grid;
+    display: inline-grid;
     grid-gap: 2px;
 
     border: 5px solid var(--games-board-background-colour);
@@ -23,15 +24,12 @@ body {
 
     box-sizing: border-box;
     margin: 0px;
-
-    /* Height and width may be changes in JavaScript */
-    height: 100%;
-    width: 100%;
 }
 
 .grid-square {
+    position: relative;
     width: 100%;
-    height: 100%;
+    padding-bottom: 100%; /* Trick to force the element to be square */
     background: var(--games-board-square-colour);
 }
 
@@ -41,8 +39,12 @@ body {
 }
 
 .game-board-counter {
+    position: absolute;
+    top: 0; left: 0;
+
     margin: 10%;
     height: 80%;
     width: 80%;
     border-radius: 50%;
+    box-sizing: border-box;
 }

@@ -13,27 +13,45 @@ class GamePlayDropdown {
         return "dropdown";
     }
 
-   static starting_positions_json()
+    static initial_statuses_json()
     {
         return [
             ["8x8", "[8,8,[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1]]]"],
+            ["8x8 floats", "[8,8,[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,1,-1,-1,2,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,2,-1,-1,1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1]]]"], 
+            ["7x6 floats", "[6,7,[[-1,-1,-1,-1,-1,-1,-1],[-1,-1,2,-1,1,-1,-1],[-1,-1,-1,-1,-1,-1,-1],[-1,-1,1,-1,2,-1,-1],[-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1]]]"],
         ]
     };
 
     // Updates board squares.
     // Returns true if the next player should have the next move
     move(player, square) {
-        var col = square.getCol();
-        for(var row = board.rows() -1; row >= 0; --row)
-        {
-            var sq = board.getSquare(row, col);
-            if(sq.status().is_empty())
-            {
-                sq.player(player);
-                return true;
+        // NOTE: Row 0 is the top most row
+        const n_rows = this.board.rows();
+        const col = square.getCol();
+        const empty_row = (row) => this.board.getSquare(row, col).status().is_empty();
+        const select_row = (row) => this.board.getSquare(row, col).player(player);
+
+        var row = square.getRow();
+        if (empty_row(row)) {
+            // Search down for the last empty row
+            for (;;) {
+                ++row;
+                if (row == n_rows || !empty_row(row)) {
+                    select_row(row-1);
+                    return true;
+                }
             }
         }
-         
+        else {
+            // Search up for the first empty row
+            for (;row >= 0; --row) {
+                if(empty_row(row)) {
+                    select_row(row);
+                    return true;
+                }
+            }
+        }
+
         return false;
     }
 

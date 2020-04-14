@@ -3,18 +3,6 @@
 */
 "use strict";
 
-// Defining here is a kludge
-function status_span(text,
-    player,  // Player number - determines color
-    underline // Optional - text is underlined if true
-) {
-    var sp = '<span style="color:var(--game-board-player-colours-' + player + ');';
-
-    if (underline)
-        sp += ';text-decoration:underline';
-
-    return sp + '">' + text + '</span>';
-}
 
 class GamePlayOthello {
     constructor(board) {
@@ -26,7 +14,7 @@ class GamePlayOthello {
         return "othello";
     }
 
-    static starting_positions_json()
+    static initial_statuses_json()
     {
         return [
         ["8x8", "[8,8,[[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,1,2,-1,-1,-1],[-1,-1,-1,2,1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1],[-1,-1,-1,-1,-1,-1,-1,-1]]]"],
@@ -50,12 +38,12 @@ class GamePlayOthello {
         else {
             for (var c_step = -1; c_step <= 1; ++c_step) {
                 for (var r_step = -1; r_step <= 1; ++r_step) {
-                    var captures = this.get_captures(square, c_step, r_step);
+                    var captures = this.get_captures(square, c_step, r_step, player);
                     captured_squares.push(...captures);
                 }
             }
             if (captured_squares.length == 0) {
-                set_error_string("Nothing captured");
+                this.error_string = "Nothing captured";
                 legal_move = false;
             }
             else {
@@ -73,7 +61,7 @@ class GamePlayOthello {
         return legal_move;
     }
 
-    get_captures(square, r_step, c_step) {
+    get_captures(square, r_step, c_step, current_player) {
         var row = square.row;
         var col = square.col;
 
@@ -97,27 +85,30 @@ class GamePlayOthello {
         }
     }
 
-    display_status(player) {
-
-        var s1 = 0;
-        var s2 = 0;
-
-        for (var row = 0; row < board.n_rows; ++row) {
-            for (var col = 0; col < board.n_cols; ++col) {
-                var sq = board.getSquare(row, col);
-                if (sq.player() == 1)
-                    ++s1;
-
-                if (sq.player() == 2)
-                    ++s2;
-            }
+    get_game_status()
+    {
+        if(this.error_string)
+        {
+            return this.error_string;
         }
+        else
+        {
+            var s1 = 0;
+            var s2 = 0;
+            const n_rows = this.board.rows();
+            const n_cols = this.board.cols();
+            for (var row = 0; row < n_rows; ++row) {
+                for (var col = 0; col < n_cols; ++col) {
+                    var sq = this.board.getSquare(row, col);
+                    if (sq.player() == 1)
+                        ++s1;
+    
+                    if (sq.player() == 2)
+                        ++s2;
+                }
+            }
 
-        var html = status_span(s1, 1, player == 1)
-            + "-"
-            + status_span(s2, 2, player == 2);
-
-        console.log(html);
-        $("#status").html(html);
+            return [s1, s2];
+        }
     }
 }

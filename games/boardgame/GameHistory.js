@@ -28,7 +28,6 @@ class GameHistory {
             this.history = this.history.slice(0, this.current_pos)
         }
 
-  
         this.history.push({
             board_status: this.board.status(),
             user_data: data,
@@ -36,17 +35,33 @@ class GameHistory {
     }
 
     undo() {
-        return this.select( this.current_pos - 1);
+        return this.select( this.current_pos - 1, true);
     }
 
     redo() {
-        return this.select(this.current_pos + 1);
+        return this.select(this.current_pos + 1, true);
     }
 
-    select(new_pos) {
+    undo_available() {
+        return this.select( this.current_pos - 1, false);
+    }
+
+    redo_available() {
+        return this.select(this.current_pos + 1, false);
+    }
+
+    restart() {
+        return this.select(0, true);
+    }
+
+    select(new_pos, make_change) {
+        if(make_change === undefined)
+            throw Error("make_change is undefined");
+
         var ok = new_pos >= 0 && new_pos < this.history.length;
 
-        if (ok) {
+
+        if (ok && make_change) {
             var hist = this.history[new_pos];
             this.board.status(hist.board_status);
 
@@ -56,25 +71,8 @@ class GameHistory {
         return ok;
     }
 
-    user_data(user_data) {
-        if (this.current_pos < 0) {
-            throw new Error("No user data recorded");
-        }
-
-        if (user_data === undefined) {
-            return this.history[this.current_pos].user_data;
-        }
-        else {
-            this.history[this.current_pos].user_data = user_data;
-        }
-    }
-
-    n_items() {
-        return this.history.length;
-    }
-
-    pos() {
-        return this.current_pos;
+    user_data() {
+        return this.history[this.current_pos].user_data;
     }
 
     state()
