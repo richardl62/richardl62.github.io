@@ -7,24 +7,24 @@ function player_color_css(player)
 
 
 const jq = { // Get the jQuery elements that are used in this file.
-    undo: $("#undo"),
-    redo: $("#redo"),
-    pass: $("#pass"),
-    status_message: $("#status-message"),
+    clear: $("#clear"),
     customise_button: $("#customise-button"),
     customise_menu: $("#customise-menu"),
-    clear: $("#clear"),
-    num_rows:  $("#num-rows"),
+    game_options: $("#game-option"),
+    game_types: $("#game-type"),
+    json: $("#json"),
     num_cols:  $("#num-cols"),
     num_players: $("#num-players"),
-    game_types: $("#game-type"),
-    game_options: $("#game-option"),
+    num_rows:  $("#num-rows"),
+    pass: $("#pass"),
+    redo: $("#redo"),
     restart: $("#restart"),
-    json: $("#json"),
     scale_to_fit: $("#scale-to-fit"),
     scores: $("#scores"),
+    status_message: $("#status-message"),
     player1_score: $("#player1-score"),
     player2_score: $("#player2-score"),
+    undo: $("#undo"),
 }
 
 // Sanity check
