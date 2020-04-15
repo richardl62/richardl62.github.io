@@ -20,20 +20,14 @@ function gamesBoardPlayerColor(player)
     return color;
 }
 
-const gbs_empty = -1;
-const gbs_disabled = -2;
+const gbs_disabled = 0;
 
 // Is it worth having this a a separate class?
 class gamesBoardSquareStatus
 {
     constructor(
-        status_value // player number, gbs_emtpy gbs_disabled
+        status_value // player number, gbs_disabled or undefined for empty square
     ) {
-        if(status_value === undefined)
-        {
-            throw new Error("status value is not defined")
-        }
-
         this.status_value = status_value;
         
         if(!this.valid())
@@ -65,12 +59,12 @@ class gamesBoardSquareStatus
 
     make_empty()
     {
-        this.status_value = gbs_empty;
+        this.status_value = undefined;
     }
 
     is_empty()
     {
-        return this.status_value == gbs_empty;
+        return this.status_value === undefined;
     }
 
     disable()
@@ -104,7 +98,7 @@ class gamesBoardSquare {
         this.row = row;
         this.col = col;
 
-        this.gbs_status = new gamesBoardSquareStatus(gbs_empty);
+        this.gbs_status = new gamesBoardSquareStatus(); // default to empty
     }
 
     getRow() {return this.row;}
@@ -159,7 +153,7 @@ class gamesBoardSquare {
 
     make_empty()
     {
-        this.status(new gamesBoardSquareStatus(gbs_empty));
+        this.status(new gamesBoardSquareStatus());
     }
 
     disable()
