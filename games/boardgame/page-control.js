@@ -164,13 +164,16 @@ game_control.move_callback(function(){
 });
 
 jq.game_types.change(function() {
-    game_control.game_index(this.selectedIndex);
+    var name = this.options[this.selectedIndex].value;
+    game_control.game_name(name);
+
     page_display.set_game_options();
     page_display.update();
 });
 
 jq.game_options.change(function() {
-    game_control.game_option_index(this.selectedIndex);
+    var name = this.options[this.selectedIndex].value;
+    game_control.game_option_name(name);
 
     if(!page_display.customise_mode())
     {

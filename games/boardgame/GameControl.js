@@ -5,8 +5,11 @@ class GameControl {
     {
         this.board = new BasicGameBoard($("#board"));
         this.game_history = new GameHistory(this.board);
-        this.game_options = new GameOptions;
-        
+
+        // Default to the first listed game, and first listed
+        // initial state
+        this.game_type = game_types[game_names()[0]];
+        this.intitial_state_name = undefined; // set in reset()
         this.game_play = undefined; // set in reset()
         this.current_player = undefined; // set in reset()
         this.n_players = 2;
@@ -27,9 +30,15 @@ class GameControl {
 
     reset()
     {
-        this.game_play = this.game_options.new_game_play(this.board);
-        const init_stat = this.game_options.initial_status();
-        this.board.status(init_stat);
+        // Default ot the first state name
+        if(this.initial_state_name === undefined) {
+            this.initial_state_name = this.game_type.state_names()[0];
+        }
+        
+        this.game_play = this.game_type.new_controller(this.board);
+        const state_name = this.game_type.state(this.initial_state_name);
+
+        this.board.status(state_name);
 
         this.reset_other_than_board();
     }
@@ -49,15 +58,16 @@ class GameControl {
         return this.the_move_callback;
     }
 
-    game_index(index)
+    game_name(name)
     {
-        this.game_options.game_index(index);
+        this.game_type = game_types[name];
+        this.initial_state_name = undefined;
         this.reset();
     }
 
-    game_option_index(index)
+    game_option_name(name)
     {
-        this.game_options.game_option_index(index);
+        this.initial_state_name = name;
         this.reset();
     }
     
@@ -80,8 +90,8 @@ class GameControl {
         }
     }
 
-    game_names() {return this.game_options.game_names();}
-    game_option_names() {return this.game_options.game_option_names();}
+    game_names() {return game_names();}
+    game_option_names() {return this.game_type.state_names();}
 
     restart()
     {
