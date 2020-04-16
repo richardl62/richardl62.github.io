@@ -11,6 +11,8 @@ class GamePlayOthello {
 
     // Returns true if the next player should have the next move
     move(player, square) {
+        if(square.is_disabled())
+            return false;
 
         var captured_squares = [];
         this.error_string = undefined;

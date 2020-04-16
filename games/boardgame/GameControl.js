@@ -50,6 +50,8 @@ class GameControl {
         this.game_history.record(this.current_player);
     }
 
+    // Callback to be run after a  move.  This is intended to allow
+    // the display to be updated.
     move_callback(callback)
     {
         if(callback !== undefined)
@@ -83,11 +85,7 @@ class GameControl {
     
     next_player()
     {
-        ++this.current_player;
-        if(this.current_player > this.n_players)
-        {
-            this.current_player = 1;
-        }
+        this.current_player = next_player(this.current_player, this.n_players);
     }
 
     game_names() {return game_names();}
@@ -128,15 +126,11 @@ class GameControl {
 
     game_move(square)  // For internal use
     {
-        if (square.status().is_disabled())
-            return;
-
         if (this.game_play.move(this.current_player, square)) {
             // Change the player before recoding this position in history
             // as we want the new player to be recorded.
             this.next_player();
             this.game_history.record(this.current_player);
-
         }
 
         this.the_move_callback();

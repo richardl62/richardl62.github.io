@@ -6,6 +6,14 @@ TO DO:  Consider reviewing and simplifying this code.
 
 "use strict";
 
+function next_player(player, num_players = 2)
+{
+    if (player == num_players)
+        return 1;
+    else
+        return player + 1;
+}
+
 function gamesBoardPlayerColor(player)
 {
     var css_var = '--game-board-player-colours-' + player;
@@ -45,7 +53,7 @@ class gamesBoardSquareStatus
     {
         if(new_player === undefined)
         {
-            return this.status_value > 0 ? this.status_value : undefined;
+            return this.status_value == gbs_disabled ? undefined : this.status_value;
         }
         else
         {
@@ -151,6 +159,13 @@ class gamesBoardSquare {
         this.status(new gamesBoardSquareStatus(player));
     }
 
+    next_player(num_players)
+        {
+        const p = this.player();
+        assert(p, "No player currently selected");
+        this.player(next_player(p));
+        }
+        
     make_empty()
     {
         this.status(new gamesBoardSquareStatus());
@@ -159,6 +174,11 @@ class gamesBoardSquare {
     disable()
     {
         this.status(new gamesBoardSquareStatus(gbs_disabled));
+    }
+
+    is_disabled()
+    {
+        return this.status().is_disabled();
     }
 };
 

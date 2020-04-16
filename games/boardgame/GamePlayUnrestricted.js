@@ -19,8 +19,4 @@ class GamePlayUnrestricted {
          
         return false;
     }
-
-    display_status(player) {
-        $("#status").html(status_span("Player " + player, player));
-    }
 }

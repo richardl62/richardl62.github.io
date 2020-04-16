@@ -1,5 +1,17 @@
 "use strict";
 
+function assert(cond /* + optional arguments*/) {
+    if(!cond)
+        {
+        let message = "Assertion failed";
+        if(arguments.length > 1)
+        {
+            const args = [...arguments];
+            message += ": " + args.slice(1).join(" ");
+        }
+        throw Error(message);
+        }
+}
 
 // My version of Edge does not support [].flat() do provide an alternative
 function flatten(arr) {
@@ -40,6 +52,7 @@ function make_hidden(elem, hidden,
     $(elem).css("display", mode);
 
 }
+
 
 // cjson -> compact JSON - as JSON but 'null' removed. 
 function cjson_stringify(object)
