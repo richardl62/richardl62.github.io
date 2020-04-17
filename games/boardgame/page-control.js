@@ -10,6 +10,7 @@ const jq = { // Get the jQuery elements that are used in this file.
     clear: $("#clear"),
     customise_button: $("#customise-button"),
     customise_menu: $("#customise-menu"),
+    experimental: $("#experimental"),
     game_options: $("#game-option"),
     game_types: $("#game-type"),
     json: $("#json"),
@@ -116,8 +117,10 @@ class PageDisplay
             game_control.customise_mode(custom);
 
             jq.customise_button.toggleClass("button-pressed", custom);
+
             // Kludge: Hard code that custom menu has type flex.
-            jq.customise_menu.css('display', custom ? "var(--custom-menu-diplay-type)" : 'none');
+            jq.customise_menu.css('display', custom ? "flex" : 'none');
+            jq.experimental.css('display', custom ? "flex" : 'none');
             if (!custom) {
                 // To include 'custom' option
                 this.set_game_options(true /*add and select 'custom' */);

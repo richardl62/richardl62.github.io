@@ -27,26 +27,12 @@ button:disabled {
     font-size: 20px; /* default */
 }
 
-#game-control-line, #game-options, #customise-menu {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-bottom: 3px;
-}
 
-#before-board {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-    margin-bottom: 4px;
-    flex-wrap: nowrap;
-
-    font-family: "Arial"; /* Let's be boring */
-}
-
-#before-board * {
-    font-size: inherit;
-    font-family: inherit;  
+#play-options > * {
+        margin-bottom: 3px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
 }
 
 #status {
@@ -80,13 +66,18 @@ button:disabled {
     white-space: nowrap;
 }
 
-#customise-menu {
-    --custom-menu-diplay-type: flex; /* used when not hidden */
+#customise-menu, #experimental {
     display: none;
-}
+};
 
 #customise-menu input {
     width: 2em;
+}
+
+#experimental {
+    font-weight: bold;
+    font-size: 1.2em;
+
 }
 
 #game-control {
