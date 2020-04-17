@@ -8,7 +8,7 @@ class GameControl {
 
         // Default to the first listed game, and first listed
         // initial state
-        this.game_type = game_types[game_names()[0]];
+        this.game_type = get_game_type(game_names()[0]);
         this.intitial_state_name = undefined; // set in reset()
         this.game_play = undefined; // set in reset()
         this.current_player = undefined; // set in reset()
@@ -62,7 +62,7 @@ class GameControl {
 
     game_name(name)
     {
-        this.game_type = game_types[name];
+        this.game_type = get_game_type(name);
         this.initial_state_name = undefined;
         this.reset();
     }

@@ -37,16 +37,18 @@ class BasicGameBoard extends GridOfSquares {
                     squares[row][col] = this.squares[row][col].status_value();
                 }
             }
-            return [this.n_rows, this.n_cols, squares];
+            return squares;
         }
         else {
-            let new_n_rows, new_n_cols, new_squares;
-            [new_n_rows, new_n_cols, new_squares] = new_status;
+            let new_n_rows = new_status.length;
+            let new_n_cols = new_status[0].length;
+            
             this.reset(new_n_rows, new_n_cols);
             for (var row = 0; row < this.n_rows; ++row) {
+                assert(new_status[row].length == new_n_cols,"inconsisent board status");
                 for (var col = 0; col < this.n_cols; ++col) {
                     var sq = this.squares[row][col];
-                    var sta = new_squares[row][col];
+                    var sta = new_status[row][col];
                     sq.status_value(sta);
                 }
             }

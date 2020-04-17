@@ -36,6 +36,9 @@ class gamesBoardSquareStatus
     constructor(
         status_value // player number, gbs_disabled or undefined for empty square
     ) {
+        if(status_value === undefined)
+            status_value = null;
+            
         this.status_value = status_value;
         
         if(!this.valid())
@@ -67,12 +70,12 @@ class gamesBoardSquareStatus
 
     make_empty()
     {
-        this.status_value = undefined;
+        this.status_value = null;
     }
 
     is_empty()
     {
-        return this.status_value === undefined;
+        return this.status_value === null;
     }
 
     disable()

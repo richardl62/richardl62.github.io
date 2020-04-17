@@ -54,7 +54,8 @@ function make_hidden(elem, hidden,
 }
 
 
-// cjson -> compact JSON - as JSON but 'null' removed. 
+// cjson -> compact JSON. As JSON but the "null"s that arise from parsing undefined
+// are removed - e.g. [,1] => "[,1]" rather than "[null,1]"
 function cjson_stringify(object)
 {
     const json = JSON.stringify(object);
@@ -90,9 +91,14 @@ function cjson_parse(cjson)
     return JSON.parse(json);
 }
 
-// const object = [,1,,2,];
-// console.log("object", object, "(length", object.length, ")");
-// const cjson = cjson_stringify(object);
-// console.log("object stringified", cjson);
-// console.log("string parsed", cjson_parse(cjson));
+// let obj = [undefined,1,undefined];
+// console.log(obj);
+
+// let cj = cjson_stringify(obj);
+// console.log(cj);
+
+// let parsed = cjson_parse(cj);
+// console.log(parsed);
+
+
 
