@@ -231,7 +231,7 @@ jq.num_players.change(()=>{
 });
 
 jq.json.click(function(){
-    var json = JSON.stringify(game_control.board_status());
+    var json = cjson_stringify(game_control.board_status());
     var new_window = window.open("", "");
     new_window.document.write("<p>" + json + "</p>");
 });
