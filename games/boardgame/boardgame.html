@@ -37,6 +37,7 @@
 
                 <div>
                     <button id="customise-button" type="button">Customise</button>
+                    <button id="link">Make Link</button>
                 </div>
             </div>
 
@@ -58,7 +59,7 @@
                 <div></div> 
                 <div>
                     Experimental
-                    <button id="json">JSON</button>
+                    <button id="export">Export</button>
                     <button id="full-width" type="button">Full Width</button>
                 </div>
             </div>
@@ -81,7 +82,26 @@
         <script src="page-control.js"></script>
  
         <script>
-            var urlParams = new URLSearchParams(window.location.search);
+            const urlParams = new URLSearchParams(window.location.search);
+            const game = urlParams.get("g");
+            const option = urlParams.get("o");
+            const board = urlParams.get("b");
+            
+            if(game)
+            {
+                page_display.game_type(game);
+            }
+
+            if(option)
+            {
+                page_display.game_option(option);
+            }
+
+            if(board)
+            {
+                page_display.board_status_url(board);
+            }
+
         </script>
     </body>
     

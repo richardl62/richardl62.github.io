@@ -55,15 +55,18 @@ function make_hidden(elem, hidden,
 
 
 // cjson -> compact JSON. As JSON but the "null"s that arise from parsing undefined
-// are removed - e.g. [,1] => "[,1]" rather than "[null,1]"
-function cjson_stringify(object)
+// are removed - e.g. [,1,] => "[,1]" rather than "[null,1]"
+function cjson_stringify(arr)
 {
-    const json = JSON.stringify(object);
-    // console.log("json", json);
-    return json.replace(/null/g,'');
+    const json = JSON.stringify(arr);
+    //console.log("raw json", json);
+    //let res = json.replace(/\[null]/g,"[]").replace(/null]/g,"null,]").replace(/null/g,'');
+    let res = json.replace(/\[null\]/g,"[,]").replace(/null/g,'');
+    return res;
 }
 
 // restore object created by cjson_stringify. (Not perfect, but good enough for current purposes.)
+// TO DO:  Fix test - possibly by (someshow) sharing code with convert_row_from_url
 function cjson_parse(cjson)
 {
     // A ',' after a special character is replaced by ',null'.
@@ -91,14 +94,28 @@ function cjson_parse(cjson)
     return JSON.parse(json);
 }
 
-// let obj = [undefined,1,undefined];
-// console.log(obj);
-
-// let cj = cjson_stringify(obj);
-// console.log(cj);
-
-// let parsed = cjson_parse(cj);
-// console.log(parsed);
+function cjson_test(obj)
+{
 
 
+    let cj = cjson_stringify(obj);
+
+
+    let parsed = cjson_parse(cj);
+
+
+    if (JSON.stringify(obj) != JSON.stringify(parsed)) {
+        console.log("test object", obj);
+        console.log("   test object (as json)", JSON.stringify(obj));
+        console.log("   cjson", cj);
+        console.log("   parsed", parsed);
+        console.log("   parsed (as json)", JSON.stringify(parsed));
+        console.log("   Error: array changed by cjson_parse round trip");
+    }
+}
+//cjson_test([]);
+//cjson_test([null]);
+cjson_test([null,null],[1,2]);
+cjson_test([1,2,null]);
+cjson_test([1,2]);
 

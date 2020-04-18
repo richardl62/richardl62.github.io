@@ -8,7 +8,8 @@ class GameControl {
 
         // Default to the first listed game, and first listed
         // initial state
-        this.game_type = get_game_type(game_names()[0]);
+        this.m_game_name = game_names()[0]; // defa
+        this.m_game_type = get_game_type(this.m_game_name );
         this.intitial_state_name = undefined; // set in reset()
         this.game_play = undefined; // set in reset()
         this.current_player = undefined; // set in reset()
@@ -32,11 +33,11 @@ class GameControl {
     {
         // Default ot the first state name
         if(this.initial_state_name === undefined) {
-            this.initial_state_name = this.game_type.state_names()[0];
+            this.initial_state_name = this.m_game_type.state_names()[0];
         }
         
-        this.game_play = this.game_type.new_controller(this.board);
-        const state_name = this.game_type.state(this.initial_state_name);
+        this.game_play = this.m_game_type.new_controller(this.board);
+        const state_name = this.m_game_type.state(this.initial_state_name);
 
         this.board.status(state_name);
 
@@ -60,11 +61,16 @@ class GameControl {
         return this.the_move_callback;
     }
 
-    game_name(name)
+    game_type(name)
     {
-        this.game_type = get_game_type(name);
-        this.initial_state_name = undefined;
-        this.reset();
+        if(name !== undefined)
+        {
+            this.m_game_name = name;
+            this.m_game_type = get_game_type(name);
+            this.initial_state_name = undefined;
+            this.reset();
+        }
+        return this.the_game_name;
     }
 
     game_option_name(name)
@@ -89,7 +95,7 @@ class GameControl {
     }
 
     game_names() {return game_names();}
-    game_option_names() {return this.game_type.state_names();}
+    game_option_names() {return this.m_game_type.state_names();}
 
     restart()
     {
@@ -178,9 +184,9 @@ class GameControl {
         this.reset_other_than_board();  
     }
 
-    board_status()
+    board_status(status)
     {
-        return this.board.status();
+        return this.board.status(status);
     }
 
     // Get info for the on-page status display
@@ -216,4 +222,9 @@ function square_click_custome_mode(square, n_players)
     }
 
     square.status(status);
+}
+
+function setup_board(game, board)
+{
+    console.log(game, board);
 }

@@ -60,6 +60,9 @@ button:disabled {
     color : var(--game-board-player-colours-2);
 }
 
+#link {
+    color: blue;
+}
 /* Prevent line breaks within the divs */
 #buttons {
     display: flex;
@@ -76,8 +79,11 @@ button:disabled {
 
 #experimental {
     font-weight: bold;
-    font-size: 1.2em;
+    color: red;
+}
 
+#experimental button {
+   color: blue;
 }
 
 #game-control {

@@ -11,9 +11,10 @@ const jq = { // Get the jQuery elements that are used in this file.
     customise_button: $("#customise-button"),
     customise_menu: $("#customise-menu"),
     experimental: $("#experimental"),
-    game_options: $("#game-option"),
-    game_types: $("#game-type"),
-    json: $("#json"),
+    export: $("#export"),
+    game_option: $("#game-option"),
+    game_type: $("#game-type"),
+    link: $("#link"),
     num_cols:  $("#num-cols"),
     num_players: $("#num-players"),
     num_rows:  $("#num-rows"),
@@ -123,7 +124,8 @@ class PageDisplay
             jq.experimental.css('display', custom ? "flex" : 'none');
             if (!custom) {
                 // To include 'custom' option
-                this.set_game_options(true /*add and select 'custom' */);
+                this.set_game_options();
+                this.add_custom_game_option();
             }
         }
 
@@ -131,31 +133,74 @@ class PageDisplay
     }
 
     set_game_types() {
-        jq.game_types.html(inner_html_for_select(
+        jq.game_type.html(inner_html_for_select(
             game_control.game_names()
         ));
     }
     
-    set_game_options(add_and_select_custom)
+    set_game_options()
     {
-        if(add_and_select_custom === undefined)
-            add_and_select_custom = false;  // Just to be explicit
-
         var names = game_control.game_option_names();
-        if(add_and_select_custom)
-            names.push(game_option_custom_string);
-
-        jq.game_options.html(inner_html_for_select(names));
-
-        if(add_and_select_custom)
-            jq.game_options.val(game_option_custom_string);
+        jq.game_option.html(inner_html_for_select(names));
     }
+
+    // Add and select a 'custom' game option
+    add_custom_game_option()
+    {
+        // Kludge? Recreate the whole menu
+        var names = game_control.game_option_names();
+        names.push(game_option_custom_string);
+
+        jq.game_option.html(inner_html_for_select(names));
+
+        jq.game_option.val(game_option_custom_string);
+    }
+
+    game_type(name)
+    {
+        if(name !== undefined)
+        {
+            game_control.game_type(name);
+            this.set_game_options();
+            this.update();
+            jq.game_type.val(name);
+        }
+        return jq.game_type.val();
+    }
+
+    game_option(name)
+    {
+        if(name !== undefined)
+        {
+            game_control.game_option_name(name);
+
+            if(!page_display.customise_mode())
+            {
+                page_display.remove_custom_game_option();
+            }
+
+            this.update();
+            jq.game_option.val(name);
+        }
+        return jq.game_option.val();
+    }
+
+    board_status_url(status_from_url) {  
+        if(status_from_url === undefined)
+        {
+            return convert_board_status_for_url(game_control.board_status());
+        }  
+        
+        game_control.board_status(convert_board_status_from_url(status_from_url));
+        this.add_custom_game_option();
+    }
+
     remove_custom_game_option()
     {
         // This implementation is a kludge.
-        const val = jq.game_options.val();
+        const val = jq.game_option.val();
         this.set_game_options();
-        jq.game_options.val(val);
+        jq.game_option.val(val);
     }
 }
 
@@ -166,23 +211,14 @@ game_control.move_callback(function(){
     page_display.update();
 });
 
-jq.game_types.change(function() {
+jq.game_type.change(function() {
     var name = this.options[this.selectedIndex].value;
-    game_control.game_name(name);
-
-    page_display.set_game_options();
-    page_display.update();
+    page_display.game_type(name);
 });
 
-jq.game_options.change(function() {
+jq.game_option.change(function() {
     var name = this.options[this.selectedIndex].value;
-    game_control.game_option_name(name);
-
-    if(!page_display.customise_mode())
-    {
-        page_display.remove_custom_game_option();
-    }
-    page_display.update();
+    page_display.game_option(name);
 });
 
 jq.restart.click(() => {
@@ -224,16 +260,23 @@ jq.num_cols.change(()=>{
     game_control.cols(n_cols);
 });
 
-
 jq.num_players.change(()=>{
     var n_rows = parseInt(jq.num_players.val())
     game_control.num_players(n_rows);
 });
 
-jq.json.click(function(){
+jq.export.click(()=>{
     var json = cjson_stringify(game_control.board_status());
     var new_window = window.open("", "");
     new_window.document.write("<p>" + json + "</p>");
+});
+
+jq.link.click(()=>{
+    let urlParams = new URLSearchParams();
+    urlParams.set("g", page_display.game_type());
+    urlParams.set("b", page_display.board_status_url());
+
+    window.open(window.location.pathname + "?" + urlParams.toString());
 });
 
 // To do: Consider tidying thia full width code
@@ -252,3 +295,58 @@ jq.full_width.click(function()
     set_full_width_options();
 
 });
+
+function convert_board_status_for_url(board_status) {
+    let str = "";
+    board_status.forEach(row => {
+        // console.log(row);
+        row.forEach(sq =>{
+            assert(sq == null || (sq >= 0 && sq <= 9));
+           str += sq === null ? "." : sq; 
+        })
+        str += "-";
+    });
+
+    // Remove the final "-"
+    return str.slice(0, -1);
+}  
+
+
+function convert_row_from_url(row)
+{
+    let result = [];
+    row.split('').forEach(c => {
+        if(c == ".")
+            result.push(null);
+        else
+        {
+            const sq = parseInt(c);
+            assert(!isNaN(sq), "bad character: " + c);
+            result.push(sq);
+        }
+    });
+    return result;
+}
+
+function convert_board_status_from_url(str)
+{
+    let result = [];
+    str.split("-").forEach(row => {
+        result.push(convert_row_from_url(row));
+    });
+ 
+    return result;
+}
+
+// const test_status = [[null,1, 2],[3,4,5]];
+// console.log("test_status", JSON.stringify(test_status)); // JSON for easier reading
+
+// const for_url = convert_board_status_for_url(test_status);
+// const from_url = convert_board_status_from_url(for_url);
+
+// console.log("From url", JSON.stringify(from_url));
+
+// if(JSON.stringify(test_status) != JSON.stringify(from_url))
+// {
+//     console.log("BAH! The status is changed during the round trip");
+// }
