@@ -266,9 +266,13 @@ jq.num_players.change(()=>{
 });
 
 jq.export.click(()=>{
-    var json = cjson_stringify(game_control.board_status());
+    var stringified = stringify_array(
+        game_control.board_status(),
+        (elem) => elem === null ? "" : elem
+        );
+        
     var new_window = window.open("", "");
-    new_window.document.write("<p>" + json + "</p>");
+    new_window.document.write("<p>" + stringified + "</p>");
 });
 
 jq.link.click(()=>{

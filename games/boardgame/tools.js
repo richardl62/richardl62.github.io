@@ -65,57 +65,115 @@ function cjson_stringify(arr)
     return res;
 }
 
-// restore object created by cjson_stringify. (Not perfect, but good enough for current purposes.)
-// TO DO:  Fix test - possibly by (someshow) sharing code with convert_row_from_url
-function cjson_parse(cjson)
+
+class NestedArrayStringify
 {
-    // A ',' after a special character is replaced by ',null'.
-    function is_special(c1, c2)
+    constructor(preprocess_elem, same_line_depth)
     {
-        if(c2 == ',')
-            return c1 == ',' || c1 == '[';
-        if(c2 == ']')
-            return c1 == ',';
+        this.preprocess_elem = preprocess_elem; 
+        this.same_line_depth = same_line_depth;
+
+        if(this.preprocess_elem === undefined)
+            this.preprocess_elem = (x) => x;  
+            
+        if(this.same_line_depth === undefined)
+            this.same_line_depth = Number.MAX_VALUE;   
     }
 
-    const chars = cjson.split('');
-    
-    var json = '';
-    var last_ch = false;
 
-    chars.forEach((c) => {
-        if(is_special(last_ch, c))
-            json+='null';
-          
-        json += c
-        last_ch = c;
-    });
-    // console.log("processed string", json);
-    return JSON.parse(json);
+    // Set function to preprocess elements before stringification.  More precisely, the
+    // return of func(elem) will be stringify using the default JavaScript method.
+    // The default is to pass the elem though unchanged.
+    set_preprocessor(func) {this.preprocess_elem = func;}
+
+    do_array(arr, indent, level)
+    {
+        let str = "[";
+
+        for(let i = 0; i < arr.length; ++i)
+        {
+            str += this.do_element(arr[i], indent, level);
+        }
+        str += "]";
+
+        return str;
+    }
+
+    do_element(elem, indent, level)
+    {
+        let str = "";
+        if(Array.isArray(elem))
+        {
+            indent += "  ";
+            level += 1;
+
+            assert(this.same_line_depth !== undefined, "same_line_depth is undefined");
+            const separate_line = level >= this.same_line_depth;
+            if(separate_line)
+            {
+                str += "\n" + indent;
+            }
+
+            str += this.do_array(elem, indent + "  ", level+1) + ",";
+
+            if(separate_line)
+            {
+                str += "\n" + indent;
+            }
+        }
+        else
+            str += this.preprocess_elem(elem, indent, level) + ",";
+
+         return str;
+    }
 }
 
-function cjson_test(obj)
+// See comments on NestedArrayStringify
+function stringify_array(array, process_elems, same_line_depth)
 {
+    let nas = new NestedArrayStringify(process_elems, same_line_depth);
+    return nas.do_array(array, "", same_line_depth)
+}
 
+function stringify_array_test(arr, remove_undefined, same_line_depth)
+{
+    function do_remove_undefined(elem) {   
+        return elem === undefined ? "" : elem; 
+    }
 
-    let cj = cjson_stringify(obj);
+    let stringified = stringify_array(arr, 
+        remove_undefined ? do_remove_undefined : undefined, 
+        same_line_depth);
 
+    let round_trip;
+    try {
+        round_trip = eval(stringified)
+    }
+    catch(err)
+    {
+        round_trip = "Can't evaluate string";
+    }
 
-    let parsed = cjson_parse(cj);
-
-
-    if (JSON.stringify(obj) != JSON.stringify(parsed)) {
-        console.log("test object", obj);
-        console.log("   test object (as json)", JSON.stringify(obj));
-        console.log("   cjson", cj);
-        console.log("   parsed", parsed);
-        console.log("   parsed (as json)", JSON.stringify(parsed));
+    // KLUDGE: Use JSON stringfy to compare arrays.
+    if (JSON.stringify(arr) == JSON.stringify(round_trip)) {
+        console.log("stringified array is", stringified);
+    }
+    else
+    {
+        console.log("test object", arr);
+        console.log("   test object (as json)", JSON.stringify(arr));
+        console.log("   stringified", stringified);
+        console.log("   round-trip", round_trip);
+        console.log("   round-trip (as json)", JSON.stringify(round_trip));
         console.log("   Error: array changed by cjson_parse round trip");
     }
 }
-//cjson_test([]);
-//cjson_test([null]);
-cjson_test([null,null],[1,2]);
-cjson_test([1,2,null]);
-cjson_test([1,2]);
+
+//stringify_array_test([]);
+//stringify_array_test([,]);
+// stringify_array_test([[undefined,undefined],[1,2]]);
+// stringify_array_test([[undefined,undefined],[1,2]],true);
+// stringify_array_test([[undefined,undefined],[1,2]],true,0);
+// stringify_array_test([1,2,null]);
+// stringify_array_test([1,2]);
 
