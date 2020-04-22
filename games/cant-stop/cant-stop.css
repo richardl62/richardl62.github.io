@@ -1,0 +1,53 @@
+* {
+    margin: 0 0;
+    box-sizing: border-box;
+}
+#board {
+    display:flex;
+    align-items: center;
+
+    margin: 5px 20px;
+    --border-of-squares:  3px black solid;
+}
+.column {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+.column div {
+    width: 60px;
+    height: 40px;
+}
+
+.top-number, .bottom-number {
+    display: flex;
+    justify-content: center;
+
+    font-family:sans-serif;
+    font-weight:600;
+    font-size: 25px;
+}
+
+.top-number {
+    align-items: flex-end;
+}
+
+.bottom-number {
+    align-items: start-end;
+}
+
+.square {
+    background-color: cornsilk;
+
+}
+
+.bt {
+    border-top: var(--border-of-squares);
+}
+
+.bl  .square {
+    border-left: var(--border-of-squares);
+}
+.br  .square {
+    border-right: var(--border-of-squares);
+ }
