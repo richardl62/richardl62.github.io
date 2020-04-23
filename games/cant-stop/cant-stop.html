@@ -9,11 +9,14 @@
 <body>
     <div id="game">
         <div id="board"> </div>
+    
         <div id="below-board">
+    
+    
             <div id="controls">
-
+    
                 <button type="button">Roll</button>
-
+    
                 <table id="possible-moves">
                     <tr>
                         <td>1</td>
@@ -26,17 +29,25 @@
                         <td></td>
                     </tr>
                 </table>
-
+    
                 <button type="button">Don't</button>
-            </div>
-
+            </div>  <!-- controls -->
+    
             <div id="bust">Bust!</div>
             <div id="options">
                 <label>Number of players</label>
                 <input type="number" min=1 max=4 value=2>
             </div>
-            </div>
+    
+        </div>  <!-- board-below -->
+
+    <div class="dice" id="dice-1"></div>
+    <div class="dice" id="dice-2"></div>
+    <div class="dice" id="dice-3"></div>
+    <div class="dice" id="dice-4"></div>
+
     </div>
+
     <script src="../lib/jquery-3.4.1.min.js"></script>
     <script src="cant-stop.js"></script>
 </body>

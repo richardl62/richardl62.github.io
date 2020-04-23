@@ -1,20 +1,24 @@
 * {
     margin: 0 0;
-    box-sizing: border-box;
+
+    /* squares need contect box sizing */
+    /* box-sizing: border-box; */
 }
+
 #game {
+    position: relative; /* to force a positioning context */
     display: flex;
     flex-direction: column;
+    margin: 5px 10px;
 
-    margin: 5px 20px;
-  
     width: 660px; /* KLUDGE - should automatically resize */
-    --border-of-squares:  3px black solid;
 }
+
 #board {
     display:flex;
     align-items: center;
 }
+
 .column {
     display: inline-flex;
     flex-direction: column;
@@ -44,25 +48,52 @@
 
 .square {
     background-color: cornsilk;
-
+    
+    box-sizing: context-box;
+    border:  3px black solid; /* Default - switch off for same edges is JS */
 }
-
-.bt {
-    border-top: var(--border-of-squares);
-}
-
-.bl  .square {
-    border-left: var(--border-of-squares);
-}
-.br  .square {
-    border-right: var(--border-of-squares);
- }
 
 #below-board {
     display: flex;
     flex-direction: column;
     font-size: 30px;
     align-items: center;
+}
+
+.dice {
+    position:absolute;
+    width: 60px;
+    height: 60px;
+    background-color: red;
+
+}
+
+#dice-1  {
+    bottom: 20px;
+    left:10px;
+}
+
+#dice-2  {
+    bottom: 90px;
+    left:10px;
+}
+
+#dice-3  {
+    bottom: 20px;
+    right:10px;
+}
+
+#dice-4  {
+    bottom: 90px;
+    right:10px;
+}
+
+
+
+#possible-moves {
+    height: 100%;
+    background-color: #5050FF;
+    color: white;
 }
 #controls {
      display: flex;
