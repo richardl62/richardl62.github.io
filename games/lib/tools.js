@@ -19,6 +19,31 @@ function flatten(arr) {
     return [].concat.apply([], arr);
 }
 
+class SetVisiblity
+{
+    constructor(elem)
+    {
+        this.elem = $(elem);
+        this.intial_display_type = this.elem.css("display");
+    }
+
+    on() {
+        this.elem.css("display", this.intial_display_type);
+    }
+
+    off() {
+        this.elem.css("display", "none");
+    }
+
+    visible(on)
+    {
+        if(on)
+            this.on();
+        else
+            this.off();
+    }
+}
+
 // Take an array of strings and return the inner html for a select element
 // with this strings as list items.
 function inner_html_for_select(names)

@@ -76,7 +76,7 @@ class dice {
         this.dots.forEach(dot => dot.css("visibility", "visible"));
     }
 
-    roll(spin /*define to true*/)
+    roll(spin /*default to true*/)
     {
         if(spin === undefined)
         {

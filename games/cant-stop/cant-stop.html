@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cant Stop</title>
     <link rel="stylesheet" href="cant-stop.css">
+    <link rel="stylesheet" href="../dice/dice-set.css">
 </head>
 <body>
     <div id="game">
@@ -37,10 +38,16 @@
     
         </div>  <!-- board-below -->
 
-    <div class="dice" id="dice-1"></div>
-    <div class="dice" id="dice-2"></div>
-    <div class="dice" id="dice-3"></div>
-    <div class="dice" id="dice-4"></div>
+        <div id="left-dice">
+            <div class="csdice"></div>
+            <div class="csdice"></div>
+        </div>
+
+        <div id="right-dice">
+            <div class="csdice"></div>
+            <div class="csdice"></div>
+        </div>
+
 
     <div id="options">
         <div>
@@ -54,6 +61,7 @@
 
     <script src="../lib/jquery-3.4.1.min.js"></script>
     <script src="../lib/tools.js"></script>
+    <script src="../dice/dice-set.js"></script>
     <script src="cant-stop.js"></script>
 </body>
 </html>

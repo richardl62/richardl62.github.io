@@ -61,33 +61,26 @@
     align-items: center;
 }
 
-.dice {
+#left-dice, #right-dice {
+    display: flex;
+    flex-direction: column;
+
     position:absolute;
-    width: 60px;
-    height: 60px;
-    background-color: red;
-
+    bottom: 0px;
 }
 
-#dice-1  {
-    bottom: 0px;
+#left-dice  {
     left:10px;
 }
 
-#dice-2  {
-    bottom: 90px;
-    left:10px;
-}
-
-#dice-3  {
-    bottom: 0px;
+#right-dice  {
     right:10px;
 }
 
-#dice-4  {
-    bottom: 90px;
-    right:10px;
+.csdice {
+    margin-top:10%; /* Kludge - adds unnecessary margin above top dice */
 }
+
 
 #move-options {
     height: 100%;

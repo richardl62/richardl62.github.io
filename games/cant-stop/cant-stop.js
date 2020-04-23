@@ -41,12 +41,15 @@ for(let cn = 2; cn <= 12; ++cn) // cn -> column number
 const jq = { // Get the jQuery elements that are used in this file.
     bust: $("#bust"),
     controls: $("#controls"),
-    dice: $(".dice"),
+    dice: $(".csdice"),
     dont: $("#dont"),
     move_options: $("#move-options td"), 
     num_players: $("#num-players"),
     roll: $("#roll"),
 }
+
+const n_dice = 4;
+const max_move_options = 6;
 
 function sanity_check() {
     for (const [key, value] of Object.entries(jq)) {
@@ -54,39 +57,25 @@ function sanity_check() {
             key + " matched " + value.length + " elements");
     }
 
-    assert(jq.dice.length == 4, "4 dice expected");
-    assert(jq.move_options.length == 6, "6 move option expect");
+    assert(jq.dice.length == n_dice, "4 dice expected");
+    assert(jq.move_options.length == max_move_options, "6 move option expect");
 }
 sanity_check();
 
-class SetVisiblity
+var dice_array = new Array(n_dice);
+for(let i = 0; i< n_dice; i++)
 {
-    constructor(elem)
-    {
-        this.elem = $(elem);
-        this.intial_display_type = this.elem.css("display");
-    }
-
-    on() {
-        this.elem.css("display", this.intial_display_type);
-    }
-
-    off() {
-        this.elem.css("display", "none");
-    }
-
-    visible(on)
-    {
-        if(on)
-            this.on();
-        else
-            this.off();
-    }
+    dice_array[i] = new dice(jq.dice.get(i));
+    dice_array[i].roll(false /* don't spin */);
 }
 
 let controls_visibility = new SetVisiblity(jq.controls);
 let bust_visibility = new SetVisiblity(jq.bust);
 bust_visibility.off();
+
+jq.roll.click(() => {
+    dice_array.forEach((d)=>d.roll());
+});
 
 jq.dont.click(()=>{
     controls_visibility.off();
