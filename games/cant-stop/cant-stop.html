@@ -15,9 +15,9 @@
     
             <div id="controls">
     
-                <button type="button">Roll</button>
+                <button type="button" id="roll">Roll</button>
     
-                <table id="possible-moves">
+                <table id="move-options">
                     <tr>
                         <td>1</td>
                         <td>2</td>
@@ -30,13 +30,14 @@
                     </tr>
                 </table>
     
-                <button type="button">Don't</button>
+                <button type="button" id="dont">Don't</button>
             </div>  <!-- controls -->
     
-            <div id="bust">Bust!</div>
+            <button type="button" id="bust">Bust!</button>
+           
             <div id="options">
                 <label>Number of players</label>
-                <input type="number" min=1 max=4 value=2>
+                <input type="number" id="num-players" min=1 max=4 value=2>
             </div>
     
         </div>  <!-- board-below -->
@@ -49,6 +50,7 @@
     </div>
 
     <script src="../lib/jquery-3.4.1.min.js"></script>
+    <script src="../boardgame/tools.js"></script>
     <script src="cant-stop.js"></script>
 </body>
 </html>

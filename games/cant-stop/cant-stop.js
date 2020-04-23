@@ -36,3 +36,64 @@ for(let cn = 2; cn <= 12; ++cn) // cn -> column number
 
     n_squares += (cn < 7) ? 2 : -2;
 }
+
+
+const jq = { // Get the jQuery elements that are used in this file.
+    bust: $("#bust"),
+    controls: $("#controls"),
+    dice: $(".dice"),
+    dont: $("#dont"),
+    move_options: $("#move-options td"), 
+    num_players: $("#num-players"),
+    roll: $("#roll"),
+}
+
+function sanity_check() {
+    for (const [key, value] of Object.entries(jq)) {
+        assert(value.length > 0,
+            key + " matched " + value.length + " elements");
+    }
+
+    assert(jq.dice.length == 4, "4 dice expected");
+    assert(jq.move_options.length == 6, "6 move option expect");
+}
+sanity_check();
+
+class SetVisiblity
+{
+    constructor(elem)
+    {
+        this.elem = $(elem);
+        this.intial_display_type = this.elem.css("display");
+    }
+
+    on() {
+        this.elem.css("display", this.intial_display_type);
+    }
+
+    off() {
+        this.elem.css("display", "none");
+    }
+
+    visible(on)
+    {
+        if(on)
+            this.on();
+        else
+            this.off();
+    }
+}
+
+let controls_visibility = new SetVisiblity(jq.controls);
+let bust_visibility = new SetVisiblity(jq.bust);
+bust_visibility.off();
+
+jq.dont.click(()=>{
+    controls_visibility.off();
+    bust_visibility.on();
+})
+
+jq.bust.click(()=>{
+    controls_visibility.on();
+    bust_visibility.off();
+})

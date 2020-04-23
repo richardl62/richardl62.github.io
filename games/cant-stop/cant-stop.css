@@ -88,9 +88,7 @@
     right:10px;
 }
 
-
-
-#possible-moves {
+#moves-options {
     height: 100%;
     background-color: #5050FF;
     color: white;
@@ -112,10 +110,10 @@ input {
 }
 
 #bust {
-    display: none;
     color: red;
     font-size: 2em;
 }
+
 #controls table, #controls td {
     border: 1px solid black;
     border-collapse: collapse;
