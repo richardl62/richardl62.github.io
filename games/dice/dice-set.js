@@ -83,20 +83,18 @@ class dice {
             spin = true;
         }
 
-        var do_roll = () => {
-            var num = Math.floor((Math.random() * 6) + 1);
-            this.number(num);
-        }
+        let num = Math.floor((Math.random() * 6) + 1);
+            
+        //KLUDGE?: This function returns before the end of the spin.  
+        // Set the number before the spin incase calling code gets it during the spin.
+        this.number(num);
 
         if(spin)
         {
             this.show_all_dots();
-            rotate_360(this.dice_input_elem, 750 /*millisecs*/, do_roll);
+            rotate_360(this.dice_input_elem, 750 /*millisecs*/, ()=>this.number(num));
         }
-        else
-        {
-            do_roll();
-        }
+
     }
 }
 
