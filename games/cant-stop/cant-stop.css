@@ -88,9 +88,6 @@
     color: white;
 }
 
-
-
-
 #controls {
      display: flex;
 }
@@ -121,8 +118,8 @@ input {
   }
 
 #controls td {
-   width: 3.5em;
-   text-align:center;
+   padding-left: 0.2em;
+   width: 3.3em;
    height: 1.1em;
 }
 

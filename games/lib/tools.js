@@ -19,6 +19,43 @@ function flatten(arr) {
     return [].concat.apply([], arr);
 }
 
+// Return sorted array containing the unique elements of arr
+function sort_unique(arr,
+     compare // Optional.  If supplied, should be a "-ve, 0, +ve" comparison function
+          // suitable for use with standard array sort.
+     )
+{
+    if(arr.length <= 1)
+        return arr;
+
+    function equal(a,b)
+    {
+        if(compare === undefined)
+            return a == b;
+        else
+            return compare(a, b) == 0;
+    }
+    
+    let sorted = arr.sort(compare);
+
+    let result = [arr[0]];
+    for(let i = 1; i < arr.length; ++i)
+    {
+        if(!equal(arr[i], arr[i-1]))
+            result.push(arr[i]);
+    }
+
+
+    return result;
+}
+
+// const test_array = [3,3, 1,1,1, 5, 4];
+// console.log(
+//     test_array, 
+//     sort_unique(test_array), 
+//     sort_unique(test_array, (a, b) => b - a)
+//     );
+    
 class SetVisiblity
 {
     constructor(elem)

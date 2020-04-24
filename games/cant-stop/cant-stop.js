@@ -38,8 +38,8 @@ let controls_visibility = new SetVisiblity(jq.controls);
 let bust_visibility = new SetVisiblity(jq.bust);
 let required_roll_visibility = new SetVisiblity(jq.required_roll)
 
-let move_options = []; // WIP
-let selected_move_option = 0; // WIP
+var move_options = undefined;;
+var current_precommit = undefined;
 
 restart();
 /*
@@ -48,7 +48,7 @@ restart();
 
 function make_game_board() {
 
-    let board = new CantStopBoard();
+    let board = new CantStopBoard;
 
     function make_columm(n_squares, column_number) {
         let squares = new Array(n_squares);
@@ -117,8 +117,16 @@ function make_visible(visible)
 }
 
 
- function do_roll(spin)
- {
+function clear_last_precommit()
+{
+    if(current_precommit)
+        game_board.remove_precommit(current_precommit);
+
+    current_precommit = undefined;
+}
+
+function do_roll(spin)
+{
     assert(spin != undefined, "spin option not set");
 
     dice_array.forEach((d)=>d.roll(spin));
@@ -132,11 +140,13 @@ function make_visible(visible)
         make_visible(bust_visibility);
     }
     else {
-        record_move_options(move_options);
+        display_move_options();
     }
+
+    clear_last_precommit()
  }
 
- function record_move_options(move_options)
+ function display_move_options()
  {
      function option_string(opt)
      {
@@ -178,18 +188,13 @@ jq.required_roll.click(function(elem){
 });
 
 jq.move_options.click(function (elem) {
-    // TEMPORARY KLUDGE
-    let move = move_options[selected_move_option];
-    ++selected_move_option;
-    if(selected_move_option == move_options.length)
-        selected_move_option = 0;
+    let move_index = jq.move_options.index(this);
 
-    console.log("move:",move);
-    // END OF TEMPORARY KLUDGE
+    clear_last_precommit();
 
-    game_board.clear_last_pre_commit();
-    game_board.pre_commit(move);
-
+    current_precommit = move_options[move_index];
+    
+    game_board.add_precommit(current_precommit);
 });
 
 jq.dont.click(function(elem){
@@ -197,6 +202,7 @@ jq.dont.click(function(elem){
 });
 
 jq.bust.click(function(elem){
+    game_board.remove_all_commit();
     make_visible(required_roll_visibility);
 });
 
