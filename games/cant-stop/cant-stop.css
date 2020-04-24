@@ -102,7 +102,7 @@ input {
     width: 1.5em;
 }
 
-#bust {
+#bust, #required_roll {
     color: red;
     font-size: 1.9em;
 }
