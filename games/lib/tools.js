@@ -24,6 +24,7 @@ class SetVisiblity
     constructor(elem)
     {
         this.elem = $(elem);
+        assert(elem.length == 1, "SetVisiblity requires exactly 1 element");
         this.intial_display_type = this.elem.css("display");
     }
 

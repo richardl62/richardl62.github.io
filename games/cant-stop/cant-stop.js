@@ -131,6 +131,31 @@ function make_visible(visible)
     {
         make_visible(bust_visibility);
     }
+    else {
+        record_move_options(move_options);
+    }
+ }
+
+ function record_move_options(move_options)
+ {
+     function option_string(opt)
+     {
+        assert(opt.length == 1 || opt.length == 2);
+        let str = "" + opt[0]; 
+        if(opt.length == 2)
+            str += " & " + opt[1];
+
+        return str;
+     }
+
+     for(let n = 0; n < max_move_options; ++n)
+     {
+         let str = "";
+         if(n < move_options.length)
+            str = option_string(move_options[n]);
+
+        $(jq.move_options[n]).text(str);
+     }
  }
 
  function restart()

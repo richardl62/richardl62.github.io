@@ -88,6 +88,9 @@
     color: white;
 }
 
+
+
+
 #controls {
      display: flex;
 }
@@ -102,8 +105,13 @@ input {
     width: 1.5em;
 }
 
-#bust, #required_roll {
+#bust {
     color: red;
+    font-size: 1.9em;
+}
+
+#required-roll {
+    color: blue;
     font-size: 1.9em;
 }
 
@@ -113,8 +121,9 @@ input {
   }
 
 #controls td {
-   width: 3em;
+   width: 3.5em;
    text-align:center;
+   height: 1.1em;
 }
 
 #options {

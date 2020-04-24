@@ -22,7 +22,26 @@ class CantStopBoard {
     // 0 1 or 2 column numbers.
     options(dice_numbers /*array */)
     {
-        return [];
+        //TO DO - prune options to reflect the game status
+        
+        //BIG KLUDGE: Use JSON to simplify sorting and removing duplicates
+        let raw_options = new Set;
+        function add_option(index1a, index1b, index2a, index2b)
+        {
+            let s1 = dice_numbers[index1a] +  dice_numbers[index1b];
+            let s2 = dice_numbers[index2a] +  dice_numbers[index2b];
+            
+            raw_options.add(JSON.stringify([s1,s2].sort()));
+        }
+
+        add_option(0, 1, 2, 3);
+        add_option(0, 2, 1, 3);
+        add_option(0, 3, 1, 2);
+
+        let result = new Array;
+        [...raw_options].sort().forEach((opt) => result.push(JSON.parse(opt)));    
+        
+        return result;
     }
 
 
