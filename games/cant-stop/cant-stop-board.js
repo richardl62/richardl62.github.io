@@ -6,6 +6,67 @@ const sq_empty = 0;
 const sq_precommitted = 1;
 const sq_committed = 2;
 
+const precommitted_column_limit = 3;
+
+class CantStopOptionAccumulator
+{
+    constructor(has_precommits, is_full) 
+    {
+        this.has_precommits = has_precommits;
+        this.is_full = is_full;
+        this.options = new Array;
+    }
+
+    candidate_pair(a,b)
+    {
+        if(this.is_full.has(a))
+        {
+            this.candidate_single(b); 
+        }
+        else if(this.is_full.has(b))
+        {
+            this.candidate_single(a); 
+        }
+        else {
+            // Find that number of columns that would be precommitted if both
+            // a and b are accepted;
+            let tp = this.has_precommits.size;
+            if (!this.has_precommits.has(a))
+                ++tp;
+            if (a != b && !this.has_precommits.has(b))
+                ++tp;
+
+            if (tp <= precommitted_column_limit) {
+                // Both a and b can be accepted
+                this.options.push([a, b].sort());
+            }
+            else if (tp == precommitted_column_limit + 1) {
+                // Both a and b can't be accepted, but it might be possible
+                // to accept one of them.
+                this.candidate_single(a);
+                this.candidate_single(b);
+            }
+        }
+    }
+
+    candidate_single(a) {
+        if (this.is_full.has(a)) {
+            // do nothing
+        }
+        else if (this.has_precommits.has(a)) {
+            this.options.push([a]);
+        }
+        else if (this.has_precommits.size < precommitted_column_limit) {
+            this.options.push([a])
+        }
+    }
+
+    // Unsorted, and could contain duplicates.
+    // Individual pairs are sorted.
+    get_options() {
+        return this.options;
+    }
+} 
 
 class CantStopSquare {
     constructor(elem) {
@@ -50,6 +111,16 @@ class CantStopColumn {
     is_full() {
         for (const sq of this.squares) {
             if (sq.is_empty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    has_precommits() {
+        for (const sq of this.squares) {
+            if (sq.is_precommit()) {
                 return true;
             }
         }
@@ -77,7 +148,7 @@ class CantStopColumn {
     remove_last_precommit() {
         for (let i = this.squares.length - 1; i >= 0; --i) {
             let sq = this.squares[i];
-            
+
             if (sq.is_precommit()) {
                 sq.make_empty();
                 return;
@@ -123,20 +194,38 @@ class CantStopBoard {
     // This will be an array with each element being an array of
     // 0 1 or 2 column numbers.
     options(dice_numbers /*array */) {
-        //TO DO - prune options to reflect the game status
+        //TO DO - prune options to reflect columns that are full
+
+        let has_precommits = new Set;
+        let is_full = new Set;
+        for(let cn = 0; cn < this.columns.length; ++cn) {
+            let col = this.columns[cn];
+            if(col && col.has_precommits())
+            {
+                has_precommits.add(cn);
+            }
+
+            if(col && col.is_full())
+            {
+                is_full.add(cn);
+            }
+        }
+        
+        let accumulator = new CantStopOptionAccumulator(has_precommits, is_full);
 
         let options = new Array;
         function add_option(index1a, index1b, index2a, index2b) {
             let s1 = dice_numbers[index1a] + dice_numbers[index1b];
             let s2 = dice_numbers[index2a] + dice_numbers[index2b];
 
-            options.push([s1, s2].sort());
+    
+            accumulator.candidate_pair(s1, s2);
         }
 
         add_option(0, 1, 2, 3);
         add_option(0, 2, 1, 3);
         add_option(0, 3, 1, 2);
-        //options.push([12]); // TEMPORARY - to help initial testing
+
 
         function compare(o1, o2) {
             if (o1.lenght != o2.lenght) {
@@ -155,7 +244,7 @@ class CantStopBoard {
             return 0;
         }
 
-        return sort_unique(options, compare);
+        return sort_unique(accumulator.get_options(), compare);
     }
 
 

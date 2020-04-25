@@ -178,8 +178,13 @@ function do_roll(spin)
  * Game interaction
  */
 
-jq.roll.click(function(elem){
-    do_roll(true /*spin*/);
+jq.roll.click(function (elem) {
+    if (selected_precommits) {
+        do_roll(true /*spin*/);
+    }
+    else {
+        alert("Select option before rolling");
+    }
 });
 
 jq.required_roll.click(function(elem){
@@ -202,10 +207,18 @@ jq.dont.click(function(elem){
 });
 
 jq.bust.click(function(elem){
-    game_board.remove_precommits();
+    game_board.remove_all_precommits();
     make_visible(required_roll_visibility);
 });
 
 jq.restart.click(function(elem){
     restart()
+});
+
+$("#debug").click(function(elem){
+    let dice_numbers = [];
+    dice_array.forEach((d)=> dice_numbers.push(d.number()));
+
+    move_options = game_board.options(dice_numbers);
+    console.log(move_options);
 });
