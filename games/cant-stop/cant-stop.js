@@ -39,7 +39,7 @@ let bust_visibility = new SetVisiblity(jq.bust);
 let required_roll_visibility = new SetVisiblity(jq.required_roll)
 
 var move_options = undefined;;
-var current_precommit = undefined;
+var selected_precommits = undefined;
 
 restart();
 /*
@@ -119,16 +119,18 @@ function make_visible(visible)
 
 function clear_last_precommit()
 {
-    if(current_precommit)
-        game_board.remove_precommit(current_precommit);
+    if(selected_precommits)
+        game_board.remove_precommit(selected_precommits);
 
-    current_precommit = undefined;
+    selected_precommits = undefined;
 }
 
 function do_roll(spin)
 {
     assert(spin != undefined, "spin option not set");
-
+    
+    selected_precommits = undefined;
+    
     dice_array.forEach((d)=>d.roll(spin));
     
     let dice_numbers = [];
@@ -142,8 +144,6 @@ function do_roll(spin)
     else {
         display_move_options();
     }
-
-    clear_last_precommit()
  }
 
  function display_move_options()
@@ -192,9 +192,9 @@ jq.move_options.click(function (elem) {
 
     clear_last_precommit();
 
-    current_precommit = move_options[move_index];
+    selected_precommits = move_options[move_index];
     
-    game_board.add_precommit(current_precommit);
+    game_board.add_precommit(selected_precommits);
 });
 
 jq.dont.click(function(elem){
@@ -202,7 +202,7 @@ jq.dont.click(function(elem){
 });
 
 jq.bust.click(function(elem){
-    game_board.remove_all_commit();
+    game_board.remove_precommits();
     make_visible(required_roll_visibility);
 });
 
