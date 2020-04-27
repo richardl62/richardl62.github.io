@@ -48,10 +48,13 @@
 }
 
 .square {
+    display: flex;
     background-color: cornsilk;
-    
-    box-sizing: context-box;
-    border:  3px black solid; /* Default - switch off for same edges is JS */
+    border:  3px black solid; /* Default - switch off for some edges is JS */
+}
+
+.cs-player-square {
+    border: 1px black dashed; /* Default - switch off for some edges is JS */
 }
 
 #below-board {
@@ -124,6 +127,9 @@ input {
 }
 
 #options {
+   display: flex;
+   flex-direction: column;
+   align-items: flex-start;
    position: absolute;
    top: 0;
    left: 0

@@ -63,10 +63,49 @@ class CantStopOptionAccumulator {
     }
 }
 
+// Record the status in a board square for a particular player
 class CantStopSquare {
-    constructor(elem) {
-        this.elem = elem;
+    constructor(square_elem) {
+
+        this.square_elem = square_elem;
+        this.player_elems = null; // set by n_players
+    }
+
+    num_players(n_players) {
+
+        if(this.player_elems)
+        {
+            for(let elem of this.player_elems)
+            {
+                elem.remove();
+            }
+        }
+
+        this.player_elems = new Array(n_players);
+
+        for(let p = 0; p < n_players; ++p)
+        {
+            let elem = $("<div class='cs-player-square'></div>");
+            this.square_elem.append(elem);
+
+            this.elem = elem; // TEMPORARY
+
+            let css = {};
+
+            if(p == 0)
+                css["borderLeft"] = "none";
+            css["borderRight"] = "none";
+            css["borderBottom"] = "none";
+            css["borderTop"] = "none";
+
+            elem.css(css);
+
+            this.player_elems[p] = elem;
+        }
+
         this.status = sq_empty;
+
+        this.elem = this.player_elems[0]; // TEMPORARY;
     }
 
     make_precommit() {
@@ -101,9 +140,23 @@ class CantStopColumn {
     constructor(elems) {
         this.squares = new Array;
 
-        if (elems !== undefined)
-            for (let elem of elems)
+        if (elems !== undefined) {
+            for (let elem of elems) {
                 this.squares.push(new CantStopSquare(elem));
+            }
+        }
+    }
+
+    num_players(number)
+    {
+        for (let sq of this.squares) {
+            sq.num_players(number);
+        }
+    }
+
+    player_number()
+    {
+        // Come back to this
     }
 
     is_full() {
@@ -170,6 +223,7 @@ class CantStopColumn {
 
 class CantStopBoard {
     constructor() {
+        this.player_number = 1;
         this.columns = new Array;
     }
 
@@ -183,10 +237,33 @@ class CantStopBoard {
         }
 
         this.columns[column_number] = new CantStopColumn(elems);
+        this.columns[column_number].player_number(this.player_number);
+    }
+
+    // Must be called after last column is added
+    num_players(number)
+    {
+
+        this.player_number = number;
+        for(let col of this.columns)
+        {
+            col.num_players(number);
+        }
+    }
+    player_number(number)
+    {
+        if(number !== undefined)
+        {
+            this.player_number = number;
+            for(let c of this.columns)
+            {
+                c.player_number(number);
+            }
+        }
     }
 
     // Clear any existing game state and start a new game
-    start_game(/*n_players*/) {
+    start_game() {
         for (let col of this.columns) {
             col.clear();
         }

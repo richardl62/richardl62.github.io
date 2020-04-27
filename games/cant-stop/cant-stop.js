@@ -9,7 +9,7 @@ const jq = {
     dice: $(".csdice"),
     dont: $("#dont"),
     move_options: $("#move-options td"), 
-    // num_players: $("#num-players"),
+    num_players: $("#num-players"),
     required_roll: $("#required-roll"),
     restart: $("#restart"),
     roll: $("#roll"),
@@ -41,7 +41,8 @@ let required_roll_visibility = new SetVisiblity(jq.required_roll)
 var move_options = undefined;;
 var selected_precommits = undefined;
 
-restart();
+start_game();
+
 /*
  * helper functions
  */
@@ -93,6 +94,8 @@ function make_game_board() {
 
         n_squares += (cn < 7) ? 2 : -2;
     }
+
+    board.num_players(jq.num_players.val());
     return board;
 }
 
@@ -168,7 +171,7 @@ function do_roll(spin)
      }
  }
 
- function restart()
+ function start_game()
  {
     game_board.start_game(n_players);
     make_visible(required_roll_visibility);
@@ -212,13 +215,17 @@ jq.bust.click(function(elem){
 });
 
 jq.restart.click(function(elem){
-    restart()
+    start_game()
 });
 
-$("#debug").click(function(elem){
-    let dice_numbers = [];
-    dice_array.forEach((d)=> dice_numbers.push(d.number()));
-
-    move_options = game_board.options(dice_numbers);
-    console.log(move_options);
+jq.num_players.change(function(elem){
+    game_board.num_players(parseInt(this.value));
 });
+
+// $("#debug").click(function(elem){
+//     let dice_numbers = [];
+//     dice_array.forEach((d)=> dice_numbers.push(d.number()));
+
+//     move_options = game_this.columns().options(dice_numbers);
+//     console.log(move_options);
+// });
