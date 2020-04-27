@@ -8,24 +8,19 @@ const sq_committed = 2;
 
 const precommitted_column_limit = 3;
 
-class CantStopOptionAccumulator
-{
-    constructor(has_precommits, is_full) 
-    {
+class CantStopOptionAccumulator {
+    constructor(has_precommits, is_full) {
         this.has_precommits = has_precommits;
         this.is_full = is_full;
         this.options = new Array;
     }
 
-    candidate_pair(a,b)
-    {
-        if(this.is_full.has(a))
-        {
-            this.candidate_single(b); 
+    candidate_pair(a, b) {
+        if (this.is_full.has(a)) {
+            this.candidate_single(b);
         }
-        else if(this.is_full.has(b))
-        {
-            this.candidate_single(a); 
+        else if (this.is_full.has(b)) {
+            this.candidate_single(a);
         }
         else {
             // Find that number of columns that would be precommitted if both
@@ -66,7 +61,7 @@ class CantStopOptionAccumulator
     get_options() {
         return this.options;
     }
-} 
+}
 
 class CantStopSquare {
     constructor(elem) {
@@ -105,7 +100,10 @@ class CantStopSquare {
 class CantStopColumn {
     constructor(elems) {
         this.squares = new Array;
-        elems.forEach(elem => this.squares.push(new CantStopSquare(elem)));
+
+        if (elems !== undefined)
+            for (let elem of elems)
+                this.squares.push(new CantStopSquare(elem));
     }
 
     is_full() {
@@ -172,45 +170,46 @@ class CantStopColumn {
 
 class CantStopBoard {
     constructor() {
-        this.columns = Array(12);
+        this.columns = new Array;
     }
 
     add_column(column_number,
         elems // Array of divs or similar, starting with the lowest.
         // i.e. the first to be filled by pre_commit() and commit().
     ) {
+        // Pad with empty columns as necessary
+        while (this.columns.length < column_number) {
+            this.columns.push(new CantStopColumn);
+        }
+
         this.columns[column_number] = new CantStopColumn(elems);
     }
 
     // Clear any existing game state and start a new game
     start_game(/*n_players*/) {
-        this.columns.forEach(col => {
-            if (col)
-                col.clear();
-        });
+        for (let col of this.columns) {
+            col.clear();
+        }
     }
 
     // Return an array with the options available for the given dice_numbers.
     // This will be an array with each element being an array of
     // 0 1 or 2 column numbers.
-    options(dice_numbers /*array */) {
-        //TO DO - prune options to reflect columns that are full
+    options(dice_numbers/* array of numbers */) {
 
         let has_precommits = new Set;
         let is_full = new Set;
-        for(let cn = 0; cn < this.columns.length; ++cn) {
+        for (let cn = 0; cn < this.columns.length; ++cn) {
             let col = this.columns[cn];
-            if(col && col.has_precommits())
-            {
+            if (col && col.has_precommits()) {
                 has_precommits.add(cn);
             }
 
-            if(col && col.is_full())
-            {
+            if (col && col.is_full()) {
                 is_full.add(cn);
             }
         }
-        
+
         let accumulator = new CantStopOptionAccumulator(has_precommits, is_full);
 
         let options = new Array;
@@ -218,7 +217,7 @@ class CantStopBoard {
             let s1 = dice_numbers[index1a] + dice_numbers[index1b];
             let s2 = dice_numbers[index2a] + dice_numbers[index2b];
 
-    
+
             accumulator.candidate_pair(s1, s2);
         }
 
@@ -253,7 +252,8 @@ class CantStopBoard {
         dice_numbers // Array of columns numbers, typically one of the
         // sub-arrays returned by options()
     ) {
-        dice_numbers.forEach(d => this.columns[d].add_precommit());
+        for (let d of dice_numbers)
+            this.columns[d].add_precommit();
 
     }
 
@@ -261,21 +261,18 @@ class CantStopBoard {
         dice_numbers // Array of columns numbers, typically one of the
         // sub-arrays returned by options()
     ) {
-        dice_numbers.forEach(d => this.columns[d].remove_last_precommit());
+        for (let d of dice_numbers)
+            this.columns[d].remove_last_precommit();
     }
 
     remove_all_precommits() {
-        this.columns.forEach((c) => {
-            if (c)
-                c.remove_all_precommits();
-        });
+        for (let c of this.columns)
+            c.remove_all_precommits();
     }
 
     // Make the pre-committed numbers permanent.
     commit() {
-        this.columns.forEach((c) => {
-            if (c)
-                c.commit();
-        });
+        for (let c of this.columns)
+            c.commit();
     }
 }
