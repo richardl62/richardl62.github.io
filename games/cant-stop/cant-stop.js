@@ -42,13 +42,13 @@ var move_options = undefined;;
 var selected_precommits = undefined;
 
 let game_board = make_game_board();
-set_num_player();
+set_num_players();
 
 /*
  * helper functions
  */
 
- // Must call set_num_player() after make_game_board();
+ // Must call set_num_players() after make_game_board();
 function make_game_board() {
 
     let board = new CantStopBoard;
@@ -172,7 +172,7 @@ function do_roll(spin)
      }
  }
 
- function set_num_player()
+ function set_num_players()
  {
     num_players = parseInt(jq.num_players.val());
     game_board.num_players(num_players);

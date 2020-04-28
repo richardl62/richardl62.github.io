@@ -3,12 +3,12 @@ body {
     --game-board-player-colours-1: rgb(0, 0, 220);  /* slightly dark blue */
     --game-board-player-colours-2: rgb(200, 0, 0);  /* slightly dark red */
     --game-board-player-colours-3: green;
-    --game-board-player-colours-4: black;
+    --game-board-player-colours-4: purple;
     --game-board-player-colours-5: orange;
-    --game-board-player-colours-6: purple;
-    --game-board-player-colours-7: brown;
-    --game-board-player-colours-8: gold; /* Yellow was a bit to light for text to be readable against the normal background */
-
+    --game-board-player-colours-6: brown;
+    --game-board-player-colours-7: gold; /* Yellow was a bit to light for text to be readable against the normal background */
+    --game-board-player-colours-8: black;
+    
     --games-board-border-colour: darkred; /* uses for board  border, gaps between squares and disabled squares */
     --games-board-background-colour: lemonchiffon;
 }
