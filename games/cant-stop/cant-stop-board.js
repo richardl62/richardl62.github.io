@@ -56,7 +56,7 @@ class CantStopPlayerSquare {
         this.status = sq_empty;
     }
 
-    make_in_owned_column(owning_player_number)
+    make_in_owned_column()
     {
         this.status = sq_in_owned_column;
 //         this.elem.css({
@@ -98,9 +98,14 @@ function make_columm_and_square_elems(n_squares, column_number) {
 }
 
 class CantStopColumn {
-    constructor(column_elems, square_elems) {
-        this.column_elems = column_elems;
+    constructor(column_number,column_elem, square_elems) {
+        assert((column_elem === null) == (square_elems === null));
+
+
+        this.column_number = column_number; // To help with debugging
+        this.column_elem = column_elem;
         this.square_elems = square_elems;
+        this.m_is_owned = false;
 
         this.player_squares = null; // set in num_players() 
     }
@@ -200,20 +205,28 @@ class CantStopColumn {
     // and update elements to reflect this.
     mark_column_as_owned(owning_player_number) {
 
-
         for (let psq of this.player_squares) {
             for (let sq of psq) {
                 sq.make_in_owned_column(owning_player_number);
-                //sq.remove_added_elements();
             }
         }
 
-        // if (this.square_elems) {
-        //     let color = get_default_player_color(owning_player_number);
-        //     for (let elem of this.square_elems) {
-        //         elem.css("color", color);
-        //     }
-        // }
+        if(this.column_elem !== null)
+        {
+            let color = get_default_player_color(owning_player_number);
+            for(let elem of this.square_elems)
+            {
+                elem.empty();
+                elem.css("background-color", color);
+            }
+        }
+
+        this.m_is_owned = true;
+    }
+
+    is_owned()
+    {
+        return this.m_is_owned;
     }
 
     // Return to starting state for all player.
@@ -238,11 +251,6 @@ class CantStopBoard {
     {
         //TO DO:  Review and tidy up this code
 
-        // Pad with empty columns as necessary
-        while (this.columns.length < column_number) {
-            this.columns.push(new CantStopColumn(null, null));
-        }
-
         let [col, square_elems] =  make_columm_and_square_elems(n_squares, column_number);
         
         function array_css(arr, property, value)
@@ -259,7 +267,12 @@ class CantStopBoard {
             
         square_elems[0].css("border-top-style", "solid");
 
-        this.columns[column_number] = new CantStopColumn(col, square_elems.reverse());
+        // Pad with empty columns as necessary before added the requested column
+        assert(this.columns.length <= column_number);
+        while (this.columns.length < column_number) {
+            this.columns.push(new CantStopColumn(this.columns.length, null, null));
+        }
+        this.columns.push(new CantStopColumn(column_number, col, square_elems.reverse()));
 
         this.board_elem.append(col);
     }
@@ -367,8 +380,9 @@ class CantStopBoard {
             c.commit(player_number);
 
 
-            if(c.is_full(player_number))
-            {
+            if(c.is_full(player_number) && !c.is_owned())
+            {   
+                console.log("column", c.column_number, "owned by player", player_number);
                 c.mark_column_as_owned(player_number);
             }
         }
