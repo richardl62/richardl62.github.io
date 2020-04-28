@@ -8,7 +8,7 @@ const jq = {
     controls: $("#controls"),
     dice: $(".csdice"),
     dont: $("#dont"),
-    move_options: $("#move-options td"), 
+    move_options_td: $("#move-options td"), 
     num_players: $("#num-players"),
     required_roll: $("#required-roll"),
     restart: $("#restart"),
@@ -30,7 +30,7 @@ const n_dice = 4;
 assert(jq.dice.length == n_dice, "4 dice expected");
 
 const max_move_options = 6;
-assert(jq.move_options.length == max_move_options, "6 move options expect");
+assert(jq.move_options_td.length == max_move_options, "6 move options expect");
 
 let dice_array = make_dice_array();
 
@@ -42,13 +42,13 @@ var move_options = undefined;;
 var selected_precommits = undefined;
 
 let game_board = make_game_board();
-start_game();
+set_num_player();
 
 /*
  * helper functions
  */
 
- // Must call start_game() after make_game_board();
+ // Must call set_num_player() after make_game_board();
 function make_game_board() {
 
     let board = new CantStopBoard;
@@ -168,17 +168,24 @@ function do_roll(spin)
          if(n < move_options.length)
             str = option_string(move_options[n]);
 
-        $(jq.move_options[n]).text(str);
+        $(jq.move_options_td[n]).text(str);
      }
+ }
+
+ function set_num_player()
+ {
+    num_players = parseInt(jq.num_players.val());
+    game_board.num_players(num_players);
+
+    start_game();
  }
 
  function start_game()
  {
-    // KLUDGE? Set the numbers of players each restart, even if it has not changed.
-    num_players = parseInt(jq.num_players.val());
-    game_board.num_players(num_players);
-
-    current_player = 1;
+    // Set the current_player to 1 and set apporpriate colours.
+    // Method is a kludge.
+    current_player = num_players;
+    change_current_player();
 
     make_visible(required_roll_visibility);
  }
@@ -193,6 +200,10 @@ function do_roll(spin)
      {
          ++current_player;
      }
+
+     let col = get_default_player_color(current_player);
+     jq.move_options_td.css("background-color", col);
+     $("button").css("color", col);
  }
  /*
  * Game interaction
@@ -212,8 +223,8 @@ jq.required_roll.click(function(elem){
     do_roll(true /*spin*/); 
 });
 
-jq.move_options.click(function (elem) {
-    let move_index = jq.move_options.index(this);
+jq.move_options_td.click(function (elem) {
+    let move_index = jq.move_options_td.index(this);
 
     clear_last_precommit();
 
@@ -223,8 +234,14 @@ jq.move_options.click(function (elem) {
 });
 
 jq.dont.click(function(elem){
-    game_board.commit(current_player);
-    change_current_player();
+    if (selected_precommits) {
+        game_board.commit(current_player);
+        make_visible(required_roll_visibility);
+        change_current_player();
+    }
+    else {
+        alert("Select option before stopping");
+    }
 });
 
 jq.bust.click(function(elem){
@@ -238,13 +255,6 @@ jq.restart.click(function(elem){
 });
 
 jq.num_players.change(function(elem){
-    game_board.num_players(parseInt(this.value));
+    set_num_players();
 });
 
-// $("#debug").click(function(elem){
-//     let dice_numbers = [];
-//     dice_array.forEach((d)=> dice_numbers.push(d.number()));
-
-//     move_options = game_this.columns().options(dice_numbers);
-//     console.log(move_options);
-// });

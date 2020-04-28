@@ -37,17 +37,17 @@ class CantStopPlayerSquare {
     }
 
     make_precommit() {
-        this.elem.css("background-color", "gray");
+        this.elem.css("background-color", "gray"); // For now, at least
         this.status = sq_precommitted;
     }
 
     make_commit() {
-        this.elem.css("background-color", "red"); // Tmp
+        this.elem.css("background-color", get_default_player_color(this.player_number)); 
         this.status = sq_committed;
     }
 
     make_empty() {
-        this.elem.css("background-color", "cornsilk"); // Tmp
+        this.elem.css("background-color", "var(--board-game-background-color)"); // Tmp
         this.status = sq_empty;
     }
 

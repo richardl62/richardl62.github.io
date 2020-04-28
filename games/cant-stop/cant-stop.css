@@ -49,12 +49,12 @@
 
 .square {
     display: flex;
-    background-color: cornsilk;
-    border:  3px black solid; /* Default - switch off for some edges is JS */
+    background-color: var(--games-board-background-colour);
+    border:  3px var(--games-board-border-colour) solid; /* Default - switch off for some edges is JS */
 }
 
 .cs-player-square {
-    border: 1px black dashed; /* Default - switch off for some edges is JS */
+    border: 1px var(--games-board-border-colour) dashed; /* Default - switch off for some edges is JS */
 }
 
 #below-board {
@@ -87,7 +87,7 @@
 
 #move-options {
     height: 100%;
-    background-color: #5050FF;
+    /* background-color: #5050FF; */
     color: white;
 }
 
@@ -97,7 +97,6 @@
 
 button {
     font-size: 30px;
-    color:blue;
 }
 
 input {
@@ -106,12 +105,10 @@ input {
 }
 
 #bust {
-    color: red;
     font-size: 1.9em;
 }
 
 #required-roll {
-    color: blue;
     font-size: 1.9em;
 }
 
