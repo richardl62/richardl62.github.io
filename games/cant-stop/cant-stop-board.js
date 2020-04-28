@@ -5,6 +5,7 @@ const max_column_number = 12; //Kludge??
 const sq_empty = 0;
 const sq_precommitted = 1;
 const sq_committed = 2;
+const sq_in_owned_column = 3; // Used when the column is filled by any player.
 
 const precommitted_column_limit = 3;
 
@@ -33,7 +34,11 @@ class CantStopPlayerSquare {
 
     remove_added_elements()
     {
-        this.elem.remove();
+        if(this.elem)
+        {
+            this.elem.remove();
+            this.elem = null;
+        }
     }
 
     make_precommit() {
@@ -47,8 +52,17 @@ class CantStopPlayerSquare {
     }
 
     make_empty() {
-        this.elem.css("background-color", "var(--board-game-background-color)"); // Tmp
+        this.elem.css("background-color", "var(--board-game-background-color)");
         this.status = sq_empty;
+    }
+
+    make_in_owned_column(owning_player_number)
+    {
+        this.status = sq_in_owned_column;
+//         this.elem.css({
+//             backgroundColor: get_default_player_color(owning_player_number),
+//             border: "none",
+//             });
     }
 
     is_precommit() {
@@ -155,10 +169,31 @@ class CantStopColumn {
     }
 
     commit(player_number) {
-        for (const sq of this.squares(player_number)) {
+        let squares = this.squares(player_number);
+        for (const sq of squares) {
             if (sq.is_precommit())
                 sq.make_commit();
         }
+    }
+
+    // Record that the colum is 'owned' by the given player
+    // and update elements to reflect this.
+    mark_column_as_owned(owning_player_number) {
+
+
+        for (let psq of this.player_squares) {
+            for (let sq of psq) {
+                sq.make_in_owned_column(owning_player_number);
+                //sq.remove_added_elements();
+            }
+        }
+
+        // if (this.column_elems) {
+        //     let color = get_default_player_color(owning_player_number);
+        //     for (let elem of this.column_elems) {
+        //         elem.css("color", color);
+        //     }
+        // }
     }
 
     // Return to starting state for all player.
@@ -289,6 +324,14 @@ class CantStopBoard {
     // Make the pre-committed numbers permanent.
     commit(player_number) {
         for (let c of this.columns)
+        {
             c.commit(player_number);
+
+
+            if(c.is_full(player_number))
+            {
+                c.mark_column_as_owned(player_number);
+            }
+        }
     }
 }
