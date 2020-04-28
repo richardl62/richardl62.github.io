@@ -24,14 +24,14 @@ for (const [key, value] of Object.entries(jq)) {
  * Global variables (other the jq) and setup
  */
 
-let current_player = 2;
+let current_player = null; // set by start_game()
+let num_players = null; // set by start_game()
 const n_dice = 4;
 assert(jq.dice.length == n_dice, "4 dice expected");
 
 const max_move_options = 6;
 assert(jq.move_options.length == max_move_options, "6 move options expect");
 
-let game_board = make_game_board();
 let dice_array = make_dice_array();
 
 let controls_visibility = new SetVisiblity(jq.controls);
@@ -41,12 +41,14 @@ let required_roll_visibility = new SetVisiblity(jq.required_roll)
 var move_options = undefined;;
 var selected_precommits = undefined;
 
+let game_board = make_game_board();
 start_game();
 
 /*
  * helper functions
  */
 
+ // Must call start_game() after make_game_board();
 function make_game_board() {
 
     let board = new CantStopBoard;
@@ -95,7 +97,6 @@ function make_game_board() {
         n_squares += (cn < 7) ? 2 : -2;
     }
 
-    board.num_players(jq.num_players.val());
     return board;
 }
 
@@ -123,7 +124,7 @@ function make_visible(visible)
 function clear_last_precommit()
 {
     if(selected_precommits)
-        game_board.remove_precommit(selected_precommits);
+        game_board.remove_precommit(current_player, selected_precommits);
 
     selected_precommits = undefined;
 }
@@ -173,10 +174,26 @@ function do_roll(spin)
 
  function start_game()
  {
-    game_board.start_game(current_player, jq.num_players.val());
+    // KLUDGE? Set the numbers of players each restart, even if it has not changed.
+    num_players = parseInt(jq.num_players.val());
+    game_board.num_players(num_players);
+
+    current_player = 1;
+
     make_visible(required_roll_visibility);
  }
 
+ function change_current_player()
+ {
+     if(current_player == num_players)
+     {
+         current_player = 1;
+     }
+     else
+     {
+         ++current_player;
+     }
+ }
  /*
  * Game interaction
  */
@@ -207,10 +224,12 @@ jq.move_options.click(function (elem) {
 
 jq.dont.click(function(elem){
     game_board.commit(current_player);
+    change_current_player();
 });
 
 jq.bust.click(function(elem){
     game_board.remove_all_precommits(current_player);
+    change_current_player();
     make_visible(required_roll_visibility);
 });
 

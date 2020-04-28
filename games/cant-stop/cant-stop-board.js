@@ -9,48 +9,31 @@ const sq_committed = 2;
 const precommitted_column_limit = 3;
 
 // Record the status in a board square for a particular player
-class CantStopSquare {
-    constructor(square_elem) {
+class CantStopPlayerSquare {
+    constructor(square_elem, player_number) {
 
         this.square_elem = square_elem;
-        this.player_elems = null; // set by n_players
-    }
-
-    num_players(n_players) {
-
-        if(this.player_elems)
-        {
-            for(let elem of this.player_elems)
-            {
-                elem.remove();
-            }
-        }
-
-        this.player_elems = new Array(n_players);
-
-        for(let p = 0; p < n_players; ++p)
-        {
-            let elem = $("<div class='cs-player-square'></div>");
-            this.square_elem.append(elem);
-
-            this.elem = elem; // TEMPORARY
-
-            let css = {};
-
-            if(p == 0)
-                css["borderLeft"] = "none";
-            css["borderRight"] = "none";
-            css["borderBottom"] = "none";
-            css["borderTop"] = "none";
-
-            elem.css(css);
-
-            this.player_elems[p] = elem;
-        }
-
+        this.player_number = player_number;
         this.status = sq_empty;
 
-        this.elem = this.player_elems[0]; // TEMPORARY;
+        this.elem = $("<div class='cs-player-square'></div>");
+        this.square_elem.append(this.elem);
+
+        let css = {};
+
+        if (player_number == 0)
+            css["borderLeft"] = "none";
+        css["borderRight"] = "none";
+        css["borderBottom"] = "none";
+        css["borderTop"] = "none";
+
+        this.elem.css(css);
+
+    }
+
+    remove_added_elements()
+    {
+        this.elem.remove();
     }
 
     make_precommit() {
@@ -82,20 +65,36 @@ class CantStopSquare {
 }
 
 class CantStopColumn {
-    constructor(elems) {
-        this.player_squares = new Array;
+    constructor(column_elems) {
+        this.column_elems = column_elems;
 
-        if (elems !== undefined) {
-            for (let elem of elems) {
-                this.player_squares.push(new CantStopSquare(elem));
-            }
-        }
+        this.player_squares = null; // set in num_players() 
     }
 
-    num_players(number)
+    num_players(n_players)
     {
-        for (let psq of this.player_squares) {
-            psq.num_players(number);
+        if(this.player_squares)
+        {
+            for(let psq of this.player_squares)
+            {
+                for(let sq of psq)
+                {
+                    sq.remove_added_elements();
+                }
+            }
+        }
+
+        this.player_squares = new Array(n_players+1);
+        for(let player_number = 0; player_number <= n_players; ++player_number)
+        {
+            let ps = new Array();
+            if (this.column_elems && player_number >= 1) {
+                for (let elem of this.column_elems) {
+                    ps.push(new CantStopPlayerSquare(elem, player_number));
+                }
+            }
+            
+            this.player_squares[player_number] = ps;
         }
     }
 
@@ -103,7 +102,7 @@ class CantStopColumn {
     {
         assert(player_number);
 
-        let s = this.player_squares; // For now
+        let s = this.player_squares[player_number]; // For now
         return s;
     }
 
@@ -164,8 +163,12 @@ class CantStopColumn {
 
     // Return to starting state for all player.
     reset() {
-        for (const sq of this.player_squares) {
-            sq.make_empty();
+        if (this.player_squares) {
+            for (const psq of this.player_squares) {
+                for (let sq of psq) {
+                    sq.make_empty();
+                }
+            }
         }
     }
 }
@@ -181,7 +184,7 @@ class CantStopBoard {
     ) {
         // Pad with empty columns as necessary
         while (this.columns.length < column_number) {
-            this.columns.push(new CantStopColumn);
+            this.columns.push(new CantStopColumn(null));
         }
 
         this.columns[column_number] = new CantStopColumn(elems);
