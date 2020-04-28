@@ -116,6 +116,20 @@ function make_hidden(elem, hidden,
 
 }
 
+// Uses colours defined in preferred-colours.css
+function get_default_player_color(player)
+{
+    var css_var = '--game-board-player-colours-' + player;
+    
+    var bodyStyles = window.getComputedStyle(document.body); 
+    var color = bodyStyles.getPropertyValue(css_var);
+    
+    assert(color, "Cannot get colour for player " + player + " - "
+             + css_var + " was not found");
+
+    return color;
+}
+
 
 // cjson -> compact JSON. As JSON but the "null"s that arise from parsing undefined
 // are removed - e.g. [,1,] => "[,1]" rather than "[null,1]"

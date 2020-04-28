@@ -37,7 +37,7 @@ class CantStopPlayerSquare {
     }
 
     make_precommit() {
-        this.elem.css("background-color", "gray"); // Tmp
+        this.elem.css("background-color", "gray");
         this.status = sq_precommitted;
     }
 

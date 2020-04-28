@@ -14,20 +14,6 @@ function next_player(player, num_players = 2)
         return player + 1;
 }
 
-function gamesBoardPlayerColor(player)
-{
-    var css_var = '--game-board-player-colours-' + player;
-    
-    var bodyStyles = window.getComputedStyle(document.body); 
-    var color = bodyStyles.getPropertyValue(css_var);
-    
-    if(!color)
-        throw new Error("Cannot get colour for player " + player + " - "
-             + css_var + " was not found");
-
-    return color;
-}
-
 const gbs_disabled = 0;
 
 // Is it worth having this a a separate class?
@@ -60,7 +46,7 @@ class gamesBoardSquareStatus
         }
         else
         {
-            if(!gamesBoardPlayerColor(new_player))
+            if(!get_default_player_color(new_player))
             {
                 throw new Error("bad player: " + player);
             }
@@ -134,7 +120,7 @@ class gamesBoardSquare {
             var player = new_status.player();
             if (player) {
                 this.counter = $('<div class="game-board-counter"></div>');
-                this.counter.css("background-color", gamesBoardPlayerColor(player));
+                this.counter.css("background-color", get_default_player_color(player));
 
                 this.elem.append(this.counter);
             }
