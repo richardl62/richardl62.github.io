@@ -13,6 +13,7 @@ const jq = {
     required_roll: $("#required-roll"),
     restart: $("#restart"),
     roll: $("#roll"),
+    pass: $("#pass"),
 }
 
 for (const [key, value] of Object.entries(jq)) {
@@ -38,8 +39,8 @@ let controls_visibility = new SetVisiblity(jq.controls);
 let bust_visibility = new SetVisiblity(jq.bust);
 let required_roll_visibility = new SetVisiblity(jq.required_roll)
 
-var move_options = undefined;;
-var selected_precommits = undefined;
+var move_options = null;
+var selected_precommits = null;
 
 let game_board = make_game_board();
 set_num_players();
@@ -126,14 +127,14 @@ function clear_last_precommit()
     if(selected_precommits)
         game_board.remove_precommit(current_player, selected_precommits);
 
-    selected_precommits = undefined;
+    selected_precommits = null;
 }
 
 function do_roll(spin)
 {
     assert(spin != undefined, "spin option not set");
     
-    selected_precommits = undefined;
+    selected_precommits = null;
     
     dice_array.forEach((d)=>d.roll(spin));
     
@@ -190,21 +191,24 @@ function do_roll(spin)
     make_visible(required_roll_visibility);
  }
 
- function change_current_player()
- {
-     if(current_player == num_players)
-     {
-         current_player = 1;
-     }
-     else
-     {
-         ++current_player;
-     }
+function change_current_player() {
+    game_board.remove_all_precommits(current_player);
+    selected_precommits = null;
 
-     let col = get_default_player_color(current_player);
-     jq.move_options_td.css("background-color", col);
-     $("button").css("color", col);
- }
+    make_visible(required_roll_visibility);
+
+    if (current_player == num_players) {
+        current_player = 1;
+    }
+    else {
+        ++current_player;
+    }
+
+    let col = get_default_player_color(current_player);
+    jq.move_options_td.css("background-color", col);
+    $("button").css("color", col);
+}
+
  /*
  * Game interaction
  */
@@ -245,9 +249,11 @@ jq.dont.click(function(elem){
 });
 
 jq.bust.click(function(elem){
-    game_board.remove_all_precommits(current_player);
     change_current_player();
-    make_visible(required_roll_visibility);
+});
+
+jq.pass.click(function(elem){
+    change_current_player();
 });
 
 jq.restart.click(function(elem){
@@ -257,4 +263,6 @@ jq.restart.click(function(elem){
 jq.num_players.change(function(elem){
     set_num_players();
 });
+
+
 
