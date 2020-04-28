@@ -138,29 +138,32 @@ class CantStopSquare {
 
 class CantStopColumn {
     constructor(elems) {
-        this.squares = new Array;
+        this.player_squares = new Array;
 
         if (elems !== undefined) {
             for (let elem of elems) {
-                this.squares.push(new CantStopSquare(elem));
+                this.player_squares.push(new CantStopSquare(elem));
             }
         }
     }
 
     num_players(number)
     {
-        for (let sq of this.squares) {
-            sq.num_players(number);
+        for (let psq of this.player_squares) {
+            psq.num_players(number);
         }
     }
 
-    player_number()
+    squares(player_number)
     {
-        // Come back to this
+        assert(player_number);
+
+        let s = this.player_squares; // For now
+        return s;
     }
 
-    is_full() {
-        for (const sq of this.squares) {
+    is_full(player_number) {
+        for (const sq of this.squares(player_number)) {
             if (sq.is_empty()) {
                 return false;
             }
@@ -169,8 +172,8 @@ class CantStopColumn {
         return true;
     }
 
-    has_precommits() {
-        for (const sq of this.squares) {
+    has_precommits(player_number) {
+        for (const sq of this.squares(player_number)) {
             if (sq.is_precommit()) {
                 return true;
             }
@@ -179,8 +182,8 @@ class CantStopColumn {
         return false;
     }
 
-    add_precommit() {
-        for (const sq of this.squares) {
+    add_precommit(player_number) {
+       for (const sq of this.squares(player_number)) {
             if (sq.is_empty()) {
                 sq.make_precommit();
                 break;
@@ -188,17 +191,17 @@ class CantStopColumn {
         }
     }
 
-    remove_all_precommits() {
-        for (const sq of this.squares) {
+    remove_all_precommits(player_number) {
+        for (const sq of this.squares(player_number)) {
             if (sq.is_precommit()) {
                 sq.make_empty();
             }
         }
     }
 
-    remove_last_precommit() {
-        for (let i = this.squares.length - 1; i >= 0; --i) {
-            let sq = this.squares[i];
+    remove_last_precommit(player_number) {
+        for (let i = this.squares(player_number).length - 1; i >= 0; --i) {
+            let sq = this.squares(player_number)[i];
 
             if (sq.is_precommit()) {
                 sq.make_empty();
@@ -207,15 +210,16 @@ class CantStopColumn {
         }
     }
 
-    commit() {
-        for (const sq of this.squares) {
+    commit(player_number) {
+        for (const sq of this.squares(player_number)) {
             if (sq.is_precommit())
                 sq.make_commit();
         }
     }
 
-    clear() {
-        for (const sq of this.squares) {
+    // Return to starting state for all player.
+    reset() {
+        for (const sq of this.player_squares) {
             sq.make_empty();
         }
     }
@@ -223,7 +227,6 @@ class CantStopColumn {
 
 class CantStopBoard {
     constructor() {
-        this.player_number = 1;
         this.columns = new Array;
     }
 
@@ -237,52 +240,38 @@ class CantStopBoard {
         }
 
         this.columns[column_number] = new CantStopColumn(elems);
-        this.columns[column_number].player_number(this.player_number);
     }
 
     // Must be called after last column is added
     num_players(number)
     {
-
-        this.player_number = number;
         for(let col of this.columns)
         {
             col.num_players(number);
-        }
-    }
-    player_number(number)
-    {
-        if(number !== undefined)
-        {
-            this.player_number = number;
-            for(let c of this.columns)
-            {
-                c.player_number(number);
-            }
         }
     }
 
     // Clear any existing game state and start a new game
     start_game() {
         for (let col of this.columns) {
-            col.clear();
+            col.reset();
         }
     }
 
     // Return an array with the options available for the given dice_numbers.
     // This will be an array with each element being an array of
     // 0 1 or 2 column numbers.
-    options(dice_numbers/* array of numbers */) {
+    options(player_number, dice_numbers/* array of numbers */) {
 
         let has_precommits = new Set;
         let is_full = new Set;
         for (let cn = 0; cn < this.columns.length; ++cn) {
             let col = this.columns[cn];
-            if (col && col.has_precommits()) {
+            if (col && col.has_precommits(player_number)) {
                 has_precommits.add(cn);
             }
 
-            if (col && col.is_full()) {
+            if (col && col.is_full(player_number)) {
                 is_full.add(cn);
             }
         }
@@ -326,30 +315,32 @@ class CantStopBoard {
 
     // 'pre-commit' the given dice numbers. 
     add_precommit(
+        player_number,
         dice_numbers // Array of columns numbers, typically one of the
         // sub-arrays returned by options()
     ) {
         for (let d of dice_numbers)
-            this.columns[d].add_precommit();
+            this.columns[d].add_precommit(player_number);
 
     }
 
     remove_precommit(
+        player_number,
         dice_numbers // Array of columns numbers, typically one of the
         // sub-arrays returned by options()
     ) {
         for (let d of dice_numbers)
-            this.columns[d].remove_last_precommit();
+            this.columns[d].remove_last_precommit(player_number);
     }
 
-    remove_all_precommits() {
+    remove_all_precommits(player_number) {
         for (let c of this.columns)
-            c.remove_all_precommits();
+            c.remove_all_precommits(player_number);
     }
 
     // Make the pre-committed numbers permanent.
-    commit() {
+    commit(player_number) {
         for (let c of this.columns)
-            c.commit();
+            c.commit(player_number);
     }
 }

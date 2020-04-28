@@ -24,7 +24,7 @@ for (const [key, value] of Object.entries(jq)) {
  * Global variables (other the jq) and setup
  */
 
-const n_players = 2; // For now at least.
+let current_player = 1;
 const n_dice = 4;
 assert(jq.dice.length == n_dice, "4 dice expected");
 
@@ -139,7 +139,7 @@ function do_roll(spin)
     let dice_numbers = [];
     dice_array.forEach((d)=> dice_numbers.push(d.number()));
 
-    move_options = game_board.options(dice_numbers);
+    move_options = game_board.options(current_player, dice_numbers);
     if(move_options.length == 0)
     {
         make_visible(bust_visibility);
@@ -173,7 +173,7 @@ function do_roll(spin)
 
  function start_game()
  {
-    game_board.start_game(n_players);
+    game_board.start_game(current_player, jq.num_players.val());
     make_visible(required_roll_visibility);
  }
 
@@ -202,15 +202,15 @@ jq.move_options.click(function (elem) {
 
     selected_precommits = move_options[move_index];
     
-    game_board.add_precommit(selected_precommits);
+    game_board.add_precommit(current_player, selected_precommits);
 });
 
 jq.dont.click(function(elem){
-    game_board.commit();
+    game_board.commit(current_player);
 });
 
 jq.bust.click(function(elem){
-    game_board.remove_all_precommits();
+    game_board.remove_all_precommits(current_player);
     make_visible(required_roll_visibility);
 });
 
