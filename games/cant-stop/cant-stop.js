@@ -128,11 +128,11 @@ function do_roll(spin)
 
      for(let n = 0; n < max_move_options; ++n)
      {
-         let str = "";
-         if(n < move_options.length)
-            str = option_string(move_options[n]);
+        let str = "";
+        if(n < move_options.length)
+           str = option_string(move_options[n]);
 
-        $(jq.move_options_td[n]).text(str);
+       $(jq.move_options_td[n]).text(str);
      }
  }
 
@@ -192,12 +192,13 @@ jq.required_roll.click(function(elem){
 
 jq.move_options_td.click(function (elem) {
     let move_index = jq.move_options_td.index(this);
+    if (move_options[move_index]) {
+        clear_last_precommit();
 
-    clear_last_precommit();
+        selected_precommits = move_options[move_index];
 
-    selected_precommits = move_options[move_index];
-    
-    game_board.add_precommit(current_player, selected_precommits);
+        game_board.add_precommit(current_player, selected_precommits);
+    }
 });
 
 jq.dont.click(function(elem){
