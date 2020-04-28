@@ -24,7 +24,7 @@ for (const [key, value] of Object.entries(jq)) {
  * Global variables (other the jq) and setup
  */
 
-let current_player = 1;
+let current_player = 2;
 const n_dice = 4;
 assert(jq.dice.length == n_dice, "4 dice expected");
 
