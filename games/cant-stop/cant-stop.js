@@ -52,49 +52,12 @@ set_num_players();
  // Must call set_num_players() after make_game_board();
 function make_game_board() {
 
-    let board = new CantStopBoard;
-
-    function make_columm(n_squares, column_number) {
-        let squares = new Array(n_squares);
-
-        let col = $("<div class='column'></div>");
-
-        col.append("<div class='top-number'>" + column_number + "</div>");
-        
-
-        for (let i = 0; i < n_squares; ++i)
-            {
-            squares[i] = $("<div class='square'></div>");
-            col.append(squares[i]);
-            }
-
-        col.append("<div class='bottom-number'>" + column_number + "</div>");
-
-        return [col, squares];
-    }
-
-    function array_css(arr, property, value)
-    {
-        arr.forEach((s)=>s.css(property, value));
-    }
+    let board = new CantStopBoard(jq.board);
     
     let n_squares = 3;
     for (let cn = 2; cn <= 12; ++cn) // cn -> column number
     {
-        let [col, squares] = make_columm(n_squares, cn);
-
-        if (cn < 7)
-            array_css(squares, "border-right-style", "none");
-        if (cn > 7)
-            array_css(squares, "border-left-style", "none");
-
-        array_css(squares, "border-top-style", "none");
-            
-        squares[0].css("border-top-style", "solid");
-
-        board.add_column(cn, squares.reverse());
-        jq.board.append(col);
-
+        board.add_column(cn, n_squares);
         n_squares += (cn < 7) ? 2 : -2;
     }
 
@@ -261,6 +224,17 @@ jq.restart.click(function(elem){
 });
 
 jq.num_players.change(function(elem){
+    set_num_players();
+});
+
+$("#debug").click(function (elem) {
+    jq.board.empty();
+    game_board = new CantStopBoard(jq.board);
+    
+    for (let cn = 2; cn <= 12; ++cn) // cn -> column number
+    {
+        game_board.add_column(cn, 2);
+    }
     set_num_players();
 });
 

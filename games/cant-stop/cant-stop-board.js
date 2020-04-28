@@ -78,9 +78,29 @@ class CantStopPlayerSquare {
     }
 }
 
+function make_columm_and_square_elems(n_squares, column_number) {
+    let squares = new Array(n_squares);
+
+    let col = $("<div class='column'></div>");
+
+    col.append("<div class='top-number'>" + column_number + "</div>");
+    
+
+    for (let i = 0; i < n_squares; ++i)
+        {
+        squares[i] = $("<div class='square'></div>");
+        col.append(squares[i]);
+        }
+
+    col.append("<div class='bottom-number'>" + column_number + "</div>");
+
+    return [col, squares];
+}
+
 class CantStopColumn {
-    constructor(column_elems) {
+    constructor(column_elems, square_elems) {
         this.column_elems = column_elems;
+        this.square_elems = square_elems;
 
         this.player_squares = null; // set in num_players() 
     }
@@ -102,8 +122,8 @@ class CantStopColumn {
         for(let player_number = 0; player_number <= n_players; ++player_number)
         {
             let ps = new Array();
-            if (this.column_elems && player_number >= 1) {
-                for (let elem of this.column_elems) {
+            if (this.square_elems && player_number >= 1) {
+                for (let elem of this.square_elems) {
                     ps.push(new CantStopPlayerSquare(elem, player_number));
                 }
             }
@@ -188,9 +208,9 @@ class CantStopColumn {
             }
         }
 
-        // if (this.column_elems) {
+        // if (this.square_elems) {
         //     let color = get_default_player_color(owning_player_number);
-        //     for (let elem of this.column_elems) {
+        //     for (let elem of this.square_elems) {
         //         elem.css("color", color);
         //     }
         // }
@@ -209,20 +229,39 @@ class CantStopColumn {
 }
 
 class CantStopBoard {
-    constructor() {
+    constructor(board_elem) {
+        this.board_elem = board_elem;
         this.columns = new Array;
     }
 
-    add_column(column_number,
-        elems // Array of divs or similar, starting with the lowest.
-        // i.e. the first to be filled by pre_commit() and commit().
-    ) {
+    add_column(column_number, n_squares)
+    {
+        //TO DO:  Review and tidy up this code
+
         // Pad with empty columns as necessary
         while (this.columns.length < column_number) {
-            this.columns.push(new CantStopColumn(null));
+            this.columns.push(new CantStopColumn(null, null));
         }
 
-        this.columns[column_number] = new CantStopColumn(elems);
+        let [col, square_elems] =  make_columm_and_square_elems(n_squares, column_number);
+        
+        function array_css(arr, property, value)
+        {
+            arr.forEach((s)=>s.css(property, value));
+        }
+        
+        if (column_number < 7)
+            array_css(square_elems, "border-right-style", "none");
+        if (column_number > 7)
+            array_css(square_elems, "border-left-style", "none");
+
+        array_css(square_elems, "border-top-style", "none");
+            
+        square_elems[0].css("border-top-style", "solid");
+
+        this.columns[column_number] = new CantStopColumn(col, square_elems.reverse());
+
+        this.board_elem.append(col);
     }
 
     // Must be called after last column is added
