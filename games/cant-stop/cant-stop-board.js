@@ -59,10 +59,6 @@ class CantStopPlayerSquare {
     make_in_owned_column()
     {
         this.status = sq_in_owned_column;
-//         this.elem.css({
-//             backgroundColor: get_default_player_color(owning_player_number),
-//             border: "none",
-//             });
     }
 
     is_precommit() {
@@ -110,8 +106,26 @@ class CantStopColumn {
         this.player_squares = null; // set in num_players() 
     }
 
+    clear_added_elements() {
+        if (this.player_squares) {
+            for (let psq of this.player_squares) {
+                for (let sq of psq) {
+                    sq.remove_added_elements();
+                }
+            }
+        }
+    }
+    
+
     num_players(n_players)
     {
+        if(n_players === undefined)
+        {
+            return this.player_squares.length - 1;
+        }
+
+        this.clear_added_elements();
+
         if(this.player_squares)
         {
             for(let psq of this.player_squares)
@@ -201,6 +215,23 @@ class CantStopColumn {
         }
     }
 
+    set_internal_colors(background, border)
+    {
+        if(this.column_elem !== null)
+        {
+            for(let i = 0; i < this.square_elems.length; ++i)
+            {
+                let elem = this.square_elems[i];
+                elem.css("background-color", background);
+
+                if(i != 0)
+                {
+                    elem.css("border-bottom-color", border);
+                }
+            }
+
+        }
+    }
     // Record that the colum is 'owned' by the given player
     // and update elements to reflect this.
     mark_column_as_owned(owning_player_number) {
@@ -211,15 +242,10 @@ class CantStopColumn {
             }
         }
 
-        if(this.column_elem !== null)
-        {
-            let color = get_default_player_color(owning_player_number);
-            for(let elem of this.square_elems)
-            {
-                elem.empty();
-                elem.css("background-color", color);
-            }
-        }
+        this.clear_added_elements();
+
+        let color = get_default_player_color(owning_player_number);
+        this.set_internal_colors(color, color);
 
         this.m_is_owned = true;
     }
@@ -231,13 +257,12 @@ class CantStopColumn {
 
     // Return to starting state for all player.
     reset() {
-        if (this.player_squares) {
-            for (const psq of this.player_squares) {
-                for (let sq of psq) {
-                    sq.make_empty();
-                }
-            }
-        }
+        // KLUDGE: Use num_players to rebuild the board.  This will (in effect)
+        // reverse any change to the board elements made when columms become full.
+        this.num_players(this.num_players());
+
+        this.set_internal_colors("var(--games-board-background-colour)", 
+            "var(--games-board-border-colour)");
     }
 }
 
@@ -382,7 +407,7 @@ class CantStopBoard {
 
             if(c.is_full(player_number) && !c.is_owned())
             {   
-                c.mark_column_as_owned(player_number);
+                 c.mark_column_as_owned(player_number);
             }
         }
     }
