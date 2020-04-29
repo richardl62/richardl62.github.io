@@ -287,7 +287,7 @@ class CantStopBoard {
     }
 
     // Clear any existing game state and start a new game
-    start_game() {
+    reset() {
         for (let col of this.columns) {
             col.reset();
         }
@@ -382,7 +382,6 @@ class CantStopBoard {
 
             if(c.is_full(player_number) && !c.is_owned())
             {   
-                console.log("column", c.column_number, "owned by player", player_number);
                 c.mark_column_as_owned(player_number);
             }
         }

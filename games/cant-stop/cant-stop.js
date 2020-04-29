@@ -25,8 +25,8 @@ for (const [key, value] of Object.entries(jq)) {
  * Global variables (other the jq) and setup
  */
 
-let current_player = null; // set by start_game()
-let num_players = null; // set by start_game()
+let current_player = null; // set by restart_game()
+let num_players = null; // set by restart_game()
 const n_dice = 4;
 assert(jq.dice.length == n_dice, "4 dice expected");
 
@@ -141,11 +141,13 @@ function do_roll(spin)
     num_players = parseInt(jq.num_players.val());
     game_board.num_players(num_players);
 
-    start_game();
+    restart_game();
  }
 
- function start_game()
+ function restart_game()
  {
+    game_board.reset();
+
     // Set the current_player to 1 and set apporpriate colours.
     // Method is a kludge.
     current_player = num_players;
@@ -221,22 +223,28 @@ jq.pass.click(function(elem){
 });
 
 jq.restart.click(function(elem){
-    start_game()
+    restart_game()
 });
 
 jq.num_players.change(function(elem){
     set_num_players();
 });
 
-$("#debug").click(function (elem) {
+
+function cs_fixed_size_columns(size)
+{
     jq.board.empty();
     game_board = new CantStopBoard(jq.board);
     
     for (let cn = 2; cn <= 12; ++cn) // cn -> column number
     {
-        game_board.add_column(cn, 2);
+        game_board.add_column(cn, size);
     }
     set_num_players();
+}
+
+$("#debug").click(function (elem) {
+    cs_fixed_size_columns(2);
 });
 
 
