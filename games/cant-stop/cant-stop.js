@@ -112,6 +112,11 @@ function do_roll(spin)
     else {
         display_move_options();
     }
+
+    if(move_options.length == 1)
+    {
+        select_move_option(0);
+    }
  }
 
  function display_move_options()
@@ -174,6 +179,13 @@ function change_current_player() {
     $("button").css("color", col);
 }
 
+function select_move_option(index) {
+    clear_last_precommit();
+
+    selected_precommits = move_options[index];
+
+     game_board.add_precommit(current_player, selected_precommits);
+}
  /*
  * Game interaction
  */
