@@ -22,7 +22,7 @@ class CantStopPlayerSquare {
 
         let css = {};
 
-        if (player_number == 0)
+        if (player_number <= 1)
             css["borderLeft"] = "none";
         css["borderRight"] = "none";
         css["borderBottom"] = "none";

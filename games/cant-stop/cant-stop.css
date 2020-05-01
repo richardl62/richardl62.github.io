@@ -9,13 +9,9 @@
     margin: 5px 10px;
 
     font-size: 30px;
-    width: 660px; /* KLUDGE - should automatically resize */
+    width: fit-content;
 
-    --player-color: red;
-}
-
-.in-play-column {
-    color: var(--player-color);
+    --player-color: black; /* Changed in JS */
 }
 
 #board {
@@ -26,11 +22,18 @@
 .column {
     display: inline-flex;
     flex-direction: column;
+    color: #606060;
+    font-size: 1.3em;
+    font-weight: 400;
 }
 
+.in-play-column {
+    color: var(--player-color);
+    font-weight: 550;
+}
 .column div {
     width: 60px;
-    height: 40px;
+    min-height: 40px;
 }
 
 .top-number, .bottom-number {
@@ -38,8 +41,6 @@
     justify-content: center;
 
     font-family:sans-serif;
-    font-weight:600;
-    font-size: 25px;
 }
 
 .top-number {
@@ -80,11 +81,11 @@
 }
 
 #left-dice  {
-    left:10px;
+    left:0px;
 }
 
 #right-dice  {
-    right:10px;
+    right:0px;
 }
 
 .csdice {
