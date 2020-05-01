@@ -84,7 +84,6 @@
     margin-top:10%; /* Kludge - adds unnecessary margin above top dice */
 }
 
-
 #move-options {
     height: 100%;
     /* background-color: #5050FF; */
@@ -102,6 +101,16 @@ button {
 input {
     font-size: inherit;
     width: 1.5em;
+}
+
+#roll, #dont {
+  border: 3px outset;
+}
+#roll:disabled, #dont:disabled {
+  /* kludge to hide button text. Taken from 
+  https://stackoverflow.com/questions/471510/hide-text-using-css
+  */
+  border: none;
 }
 
 #bust {

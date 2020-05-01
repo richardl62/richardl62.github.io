@@ -93,6 +93,12 @@ function clear_last_precommit()
     selected_precommits = null;
 }
 
+function disable_roll_and_dont_buttons(disable)
+{
+    jq.roll.prop("disabled", disable);
+    jq.dont.prop("disabled", disable);
+}
+
 function do_roll(spin)
 {
     assert(spin != undefined, "spin option not set");
@@ -112,6 +118,8 @@ function do_roll(spin)
     else {
         display_move_options();
     }
+
+    disable_roll_and_dont_buttons(true);
 
     if(move_options.length == 1)
     {
@@ -180,24 +188,18 @@ function change_current_player() {
 }
 
 function select_move_option(index) {
-    clear_last_precommit();
+    if (move_options[index]) {
+        clear_last_precommit();
 
-    selected_precommits = move_options[index];
+        selected_precommits = move_options[index];
+        game_board.add_precommit(current_player, selected_precommits);
 
-     game_board.add_precommit(current_player, selected_precommits);
+        disable_roll_and_dont_buttons(false);
+    }
 }
  /*
  * Game interaction
  */
-
-jq.roll.click(function (elem) {
-    if (selected_precommits) {
-        do_roll(true /*spin*/);
-    }
-    else {
-        alert("Select option before rolling");
-    }
-});
 
 jq.required_roll.click(function(elem){
     make_visible(controls_visibility);
@@ -206,24 +208,21 @@ jq.required_roll.click(function(elem){
 
 jq.move_options_td.click(function (elem) {
     let move_index = jq.move_options_td.index(this);
-    if (move_options[move_index]) {
-        clear_last_precommit();
+    select_move_option(move_index);
+});
 
-        selected_precommits = move_options[move_index];
-
-        game_board.add_precommit(current_player, selected_precommits);
-    }
+jq.roll.click(function (elem) {
+    assert(selected_precommits);
+    
+    do_roll(true /*spin*/);
 });
 
 jq.dont.click(function(elem){
-    if (selected_precommits) {
-        game_board.commit(current_player);
-        make_visible(required_roll_visibility);
-        change_current_player();
-    }
-    else {
-        alert("Select option before stopping");
-    }
+    assert (selected_precommits);
+
+    game_board.commit(current_player);
+    make_visible(required_roll_visibility);
+    change_current_player();
 });
 
 jq.bust.click(function(elem){
