@@ -78,7 +78,6 @@ function make_columm_and_square_elems(n_squares, column_number) {
     let squares = new Array(n_squares);
 
     let col = $("<div class='column'></div>");
-
     col.append("<div class='top-number'>" + column_number + "</div>");
     
 
@@ -99,7 +98,7 @@ class CantStopColumn {
 
 
         this.column_number = column_number; // To help with debugging
-        this.column_elem = column_elem;
+        this.m_column_elem = column_elem;
         this.square_elems = square_elems;
         this.m_is_owned = false;
 
@@ -217,7 +216,7 @@ class CantStopColumn {
 
     set_internal_colors(background, border)
     {
-        if(this.column_elem !== null)
+        if(this.m_column_elem !== null)
         {
             for(let i = 0; i < this.square_elems.length; ++i)
             {
@@ -263,6 +262,12 @@ class CantStopColumn {
 
         this.set_internal_colors("var(--games-board-background-colour)", 
             "var(--games-board-border-colour)");
+    }
+
+    // Return the top-level HTML element for this column
+    column_elem()
+    {
+        return this.m_column_elem;
     }
 }
 
@@ -410,5 +415,11 @@ class CantStopBoard {
                  c.mark_column_as_owned(player_number);
             }
         }
+    }
+
+    // Return the top-level HTML element for the selected column
+    column_elem(column_number)
+    {
+        return this.columns[column_number].column_elem();
     }
 }

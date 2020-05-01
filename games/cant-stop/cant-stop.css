@@ -17,6 +17,10 @@
     --player-color: red;
 }
 
+.in-play-column {
+    color: var(--player-color);
+}
+
 #board {
     display:flex;
     align-items: center;
@@ -106,6 +110,9 @@
   border: 1px black solid;
 }
 
+.selected-move {
+    text-decoration: underline;
+}
 #controls {
      display: flex;
 }

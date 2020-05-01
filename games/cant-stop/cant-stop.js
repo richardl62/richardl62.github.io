@@ -29,6 +29,8 @@ for (const [key, value] of Object.entries(jq)) {
 let current_player = null; // set by restart_game()
 let num_players = null; // set by restart_game()
 const n_dice = 4;
+const last_column = 12;
+
 assert(jq.dice.length == n_dice, "4 dice expected");
 
 const max_move_options = 6;
@@ -44,8 +46,11 @@ var move_options = null;
 var selected_precommits = null;
 
 let game_board = make_game_board();
-set_num_players();
 
+const selected_move = "selected-move";
+const in_play_column = "in-play-column";
+
+set_num_players();
 /*
  * helper functions
  */
@@ -56,10 +61,10 @@ function make_game_board() {
     let board = new CantStopBoard(jq.board);
     
     let n_squares = 3;
-    for (let cn = 2; cn <= 12; ++cn) // cn -> column number
+    for (let cn = 2; cn <= last_column; ++cn) // cn -> column number
     {
         board.add_column(cn, n_squares);
-        n_squares += (cn < 7) ? 2 : -2;
+        n_squares += (cn <= (last_column/2)) ? 2 : -2;
     }
 
     return board;
@@ -104,8 +109,15 @@ function do_roll(spin)
 {
     assert(spin != undefined, "spin option not set");
     
-    selected_precommits = null;
-    
+    if(selected_precommits)
+    {
+        for(let p of selected_precommits)
+        {
+            game_board.column_elem(p).addClass(in_play_column);
+        }
+        selected_precommits = null;
+    }
+
     dice_array.forEach((d)=>d.roll(spin));
     
     let dice_numbers = [];
@@ -130,7 +142,9 @@ function do_roll(spin)
 
  function display_move_options()
  {
-     function option_string(opt)
+    clear_selected_move();
+
+    function option_string(opt)
      {
         assert(opt.length == 1 || opt.length == 2);
         let str = "" + opt[0]; 
@@ -183,15 +197,30 @@ function change_current_player() {
         ++current_player;
     }
 
+    clear_in_play_columns();
     let col = get_default_player_color(current_player);
     jq.game.get(0).style.setProperty("--player-color", col);
 }
 
+function clear_in_play_columns() {
+    for (let cn = 0; cn <= last_column; ++cn) {
+        let elem = game_board.column_elem(cn);
+        if (elem)
+            elem.removeClass(in_play_column);
+    }
+}
+
+function clear_selected_move() {
+    jq.move_option_buttons.removeClass(selected_move);
+}
+
 function select_move_option(index) {
     if (move_options[index]) {
+        clear_selected_move();
         clear_last_precommit();
 
         selected_precommits = move_options[index];
+        $(jq.move_option_buttons[index]).addClass(selected_move);
         game_board.add_precommit(current_player, selected_precommits);
 
         disable_roll_and_dont_buttons(false);
