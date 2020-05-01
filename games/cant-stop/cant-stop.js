@@ -8,7 +8,8 @@ const jq = {
     controls: $("#controls"),
     dice: $(".csdice"),
     dont: $("#dont"),
-    move_options_td: $("#move-options td"), 
+    game: $("#game"),
+    move_option_buttons: $("#move-options button"), 
     num_players: $("#num-players"),
     required_roll: $("#required-roll"),
     restart: $("#restart"),
@@ -31,7 +32,7 @@ const n_dice = 4;
 assert(jq.dice.length == n_dice, "4 dice expected");
 
 const max_move_options = 6;
-assert(jq.move_options_td.length == max_move_options, "6 move options expect");
+assert(jq.move_option_buttons.length == max_move_options, "6 move options expect");
 
 let dice_array = make_dice_array();
 
@@ -145,7 +146,7 @@ function do_roll(spin)
         if(n < move_options.length)
            str = option_string(move_options[n]);
 
-       $(jq.move_options_td[n]).text(str);
+       $(jq.move_option_buttons[n]).text(str);
      }
  }
 
@@ -183,8 +184,7 @@ function change_current_player() {
     }
 
     let col = get_default_player_color(current_player);
-    jq.move_options_td.css("background-color", col);
-    $("button").css("color", col);
+    jq.game.get(0).style.setProperty("--player-color", col);
 }
 
 function select_move_option(index) {
@@ -206,8 +206,8 @@ jq.required_roll.click(function(elem){
     do_roll(true /*spin*/); 
 });
 
-jq.move_options_td.click(function (elem) {
-    let move_index = jq.move_options_td.index(this);
+jq.move_option_buttons.click(function (elem) {
+    let move_index = jq.move_option_buttons.index(this);
     select_move_option(move_index);
 });
 
