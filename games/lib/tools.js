@@ -66,11 +66,11 @@ class SetVisiblity
     }
 
     on() {
-        this.elem.css("display", this.intial_display_type);
+        this.elem.css("visibility", "initial");
     }
 
     off() {
-        this.elem.css("display", "none");
+        this.elem.css("visibility", "hidden");
     }
 
     visible(on)

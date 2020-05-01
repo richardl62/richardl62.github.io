@@ -1,8 +1,5 @@
 * {
     margin: 0 0;
-
-    /* squares need contect box sizing */
-    /* box-sizing: border-box; */
 }
 
 #game {
@@ -67,7 +64,11 @@
     display: flex;
     flex-direction: column;
     font-size: 30px;
-    align-items: center;
+
+    width: fit-content;
+    margin: auto;
+
+    position: relative;
 }
 
 #left-dice, #right-dice {
@@ -136,15 +137,14 @@ input {
   border: none;
 }
 
-#bust {
+#bust, #required-roll {
     font-size: 1.9em;
     color: var(--player-color);
+    width: 100%;
+    height: 100%;
+    position: absolute;
 }
 
-#required-roll {
-    font-size: 1.9em;
-    color: var(--player-color);
-}
 
 #controls table, #controls td {
     border: 1px solid black;
