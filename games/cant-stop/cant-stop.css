@@ -63,48 +63,45 @@
 
 #below-board {
     display: flex;
-    flex-direction: column;
-    font-size: 30px;
+    flex-direction: row;
+    width: 100%;
+}
 
+#player-interactions {  /* move options, required roll, bust */
+    position: relative;
+    font-size: 30px;
     width: fit-content;
     margin: auto;
-
-    position: relative;
 }
 
-#left-dice, #right-dice {
+#move-options { /* dice-options, roll or don't */
     display: flex;
-    flex-direction: column;
-
-    position:absolute;
-    bottom: 0px;
+    flex-direction: row;
 }
 
-#left-dice  {
-    left:0px;
+#bust, #required-roll {
+    position: absolute;
+    top: 0;
+    font-size: 1.9em;
+    color: var(--player-color);
+    width: 100%;
+    height: 100%;
+    top: 0;
 }
 
-#right-dice  {
-    right:0px;
-}
-
-.csdice {
-    margin-top:10%; /* Kludge - adds unnecessary margin above top dice */
-}
-
-#move-options {
+#dice-options {
     display: flex;
     flex-direction: column;
     color: white;
 }
 
-#move-options div {
+#dice-options div {
     display: flex;
     flex-direction: row;
     height: 1.5em;
 }
 
-#move-options button {
+#dice-options button {
   font-size: 0.8em;
   width: 4.2em;
   color: white;
@@ -112,11 +109,19 @@
   border: 1px black solid;
 }
 
+#left-dice, #right-dice {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.csdice {
+    margin-top:10%; /* Kludge - adds unnecessary margin above top dice */
+}
+
+
 .selected-move {
     text-decoration: underline;
-}
-#controls {
-     display: flex;
 }
 
 button {
@@ -138,13 +143,6 @@ input {
   border: none;
 }
 
-#bust, #required-roll {
-    font-size: 1.9em;
-    color: var(--player-color);
-    width: 100%;
-    height: 100%;
-    position: absolute;
-}
 
 
 #controls table, #controls td {

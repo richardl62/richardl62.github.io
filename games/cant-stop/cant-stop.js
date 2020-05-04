@@ -5,11 +5,11 @@
 const jq = { 
     board: $("#board"),
     bust: $("#bust"),
-    controls: $("#controls"),
+    move_options: $("#move-options"),
     dice: $(".csdice"),
     dont: $("#dont"),
     game: $("#game"),
-    move_option_buttons: $("#move-options button"), 
+    dice_option_buttons: $("#dice-options button"), 
     num_players: $("#num-players"),
     required_roll: $("#required-roll"),
     restart: $("#restart"),
@@ -19,7 +19,7 @@ const jq = {
 
 for (const [key, value] of Object.entries(jq)) {
     assert(value.length > 0,
-        key + " matched " + value.length + " elements");
+        '"' + key + '"' + " matched " + value.length + " elements");
 }
 
 /*
@@ -34,11 +34,11 @@ const last_column = 12;
 assert(jq.dice.length == n_dice, "4 dice expected");
 
 const max_move_options = 6;
-assert(jq.move_option_buttons.length == max_move_options, "6 move options expect");
+assert(jq.dice_option_buttons.length == max_move_options, "6 move options expect");
 
 let dice_array = make_dice_array();
 
-let controls_visibility = new SetVisiblity(jq.controls);
+let move_options_visibility = new SetVisiblity(jq.move_options);
 let bust_visibility = new SetVisiblity(jq.bust);
 let required_roll_visibility = new SetVisiblity(jq.required_roll)
 
@@ -84,7 +84,7 @@ function make_dice_array() {
 function make_visible(visible)
 {
     bust_visibility.off();
-    controls_visibility.off();
+    move_options_visibility.off();
     required_roll_visibility.off();
 
     visible.on();
@@ -160,7 +160,7 @@ function do_roll(spin)
         if(n < move_options.length)
            str = option_string(move_options[n]);
 
-       $(jq.move_option_buttons[n]).text(str);
+       $(jq.dice_option_buttons[n]).text(str);
      }
  }
 
@@ -211,7 +211,7 @@ function clear_in_play_columns() {
 }
 
 function clear_selected_move() {
-    jq.move_option_buttons.removeClass(selected_move);
+    jq.dice_option_buttons.removeClass(selected_move);
 }
 
 function select_move_option(index) {
@@ -220,7 +220,7 @@ function select_move_option(index) {
         clear_last_precommit();
 
         selected_precommits = move_options[index];
-        $(jq.move_option_buttons[index]).addClass(selected_move);
+        $(jq.dice_option_buttons[index]).addClass(selected_move);
         game_board.add_precommit(current_player, selected_precommits);
 
         disable_roll_and_dont_buttons(false);
@@ -231,12 +231,12 @@ function select_move_option(index) {
  */
 
 jq.required_roll.click(function(elem){
-    make_visible(controls_visibility);
+    make_visible(move_options_visibility);
     do_roll(true /*spin*/); 
 });
 
-jq.move_option_buttons.click(function (elem) {
-    let move_index = jq.move_option_buttons.index(this);
+jq.dice_option_buttons.click(function (elem) {
+    let move_index = jq.dice_option_buttons.index(this);
     select_move_option(move_index);
 });
 

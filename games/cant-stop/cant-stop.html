@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,60 +10,64 @@
     <link rel="stylesheet" href="cant-stop.css">
 
 </head>
+
 <body>
     <div id="game">
         <div id="board"> </div>
-    
+
         <div id="below-board">
-    
-    
-            <div id="controls">
-    
-                <button type="button" id="roll">Roll</button>
-    
-                <div id="move-options">
-                    <div>
-                        <button></button>
-                        <button></button>
-                        <button></button>
+
+            <div id="dice-column">
+                <div class="csdice"></div>
+                <div class="csdice"></div>
+            </div>
+
+            <div id="player-interactions"> <!-- move options, required roll, bust -->
+
+                <div id="move-options"> <!-- dice-options, roll or don't -->
+                    <button type="button" id="roll">Roll</button>
+
+                    <div id="dice-options">
+                        <div>
+                            <button></button>
+                            <button></button>
+                            <button></button>
+                        </div>
+                        <div>
+                            <button></button>
+                            <button></button>
+                            <button></button>
+                        </div>
                     </div>
-                    <div>
-                        <button></button>
-                        <button></button>
-                        <button></button>
-                    </div>
-                </div>
-    
-                <button type="button" id="dont">Don't</button>
-            </div>  <!-- controls -->
-    
-            <button type="button" id="bust">Bust!</button>
-            <button type="button" id="required-roll">Roll</button>
-    
-        </div>  <!-- board-below -->
 
-        <div id="left-dice">
-            <div class="csdice"></div>
-            <div class="csdice"></div>
-        </div>
+                    <button type="button" id="dont">Don't</button>
+                </div> <!-- move-options -->
 
-        <div id="right-dice">
-            <div class="csdice"></div>
-            <div class="csdice"></div>
-        </div>
+                <button type="button" id="bust">Bust!</button>
+                <button type="button" id="required-roll">Roll</button>
+
+            </div> <!-- player-interactions -->
 
 
-    <div id="options">
-        <div>
-            <label for="num-players">Num players</label>
-            <input type="number" name="num-players" id="num-players" min=1 max=8 value=2>
-        </div>
-        <button type="button" id="restart">Restart</button>
-        <button type="button" id="pass">Pass</button>
-    </div>
-    <!-- <button type="debug" id="debug">debug</button> -->
+            <div id="dice-column">
+                <div class="csdice"></div>
+                <div class="csdice"></div>
+            </div>
 
-    </div>
+        </div> <!-- board-below -->
+
+        <div id="options">
+            <div>
+                <label for="num-players">Num players</label>
+                <input type="number" name="num-players" id="num-players" min=1 max=8 value=2>
+            </div>
+            <button type="button" id="restart">Restart</button>
+            <button type="button" id="pass">Pass</button>
+            <!-- <button type="debug" id="debug">debug</button> -->
+        </div> <!-- options -->
+
+
+    </div> <!-- game -->
 
     <script src="../lib/jquery-3.5.0.js"></script>
     <script src="../lib/tools.js"></script>
@@ -71,4 +76,5 @@
     <script src="cant-stop-board.js"></script>
     <script src="cant-stop.js"></script>
 </body>
+
 </html>

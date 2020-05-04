@@ -62,7 +62,6 @@ class SetVisiblity
     {
         this.elem = $(elem);
         assert(elem.length == 1, "SetVisiblity requires exactly 1 element");
-        this.intial_display_type = this.elem.css("display");
     }
 
     on() {
@@ -82,6 +81,32 @@ class SetVisiblity
     }
 }
 
+class SetHidden
+{
+    constructor(elem)
+    {
+        this.elem = $(elem);
+        assert(elem.length == 1, "SetHidden requires exactly 1 element");
+        this.intial_display_type = this.elem.css("display");
+    }
+
+    on() {
+        this.elem.css("display", "none");
+    }
+
+    off() {
+        this.elem.css("display", this.intial_display_type);
+
+    }
+
+    hidden(on)
+    {
+        if(on)
+            this.on();
+        else
+            this.off();
+    }
+}
 // Take an array of strings and return the inner html for a select element
 // with this strings as list items.
 function inner_html_for_select(names)
