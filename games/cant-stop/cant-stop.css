@@ -62,14 +62,14 @@
   border: 1px black solid;
 }
 
-#left-dice, #right-dice {
+.dice-columm {
     display: flex;
     flex-direction: column;
 }
 
 
-.csdice {
-    margin-top:10%; /* Kludge - adds unnecessary margin above top dice */
+.dice-column > div:not(:first-child) {
+    margin-top: 10px;
 }
 
 

@@ -77,17 +77,17 @@ class CantStopPlayerSquare {
 function make_columm_and_square_elems(n_squares, column_number) {
     let squares = new Array(n_squares);
 
-    let col = $("<div class='column'></div>");
-    col.append("<div class='top-number'>" + column_number + "</div>");
+    let col = $("<div class='cs-column'></div>");
+    col.append("<div class='cs-top-number'>" + column_number + "</div>");
     
 
     for (let i = 0; i < n_squares; ++i)
         {
-        squares[i] = $("<div class='square'></div>");
+        squares[i] = $("<div class='cs-square'></div>");
         col.append(squares[i]);
         }
 
-    col.append("<div class='bottom-number'>" + column_number + "</div>");
+    col.append("<div class='cs-bottom-number'>" + column_number + "</div>");
 
     return [col, squares];
 }
@@ -273,7 +273,8 @@ class CantStopColumn {
 
 class CantStopBoard {
     constructor(board_elem) {
-        this.board_elem = board_elem;
+        this.board_elem = $(board_elem);
+        this.board_elem.addClass("cs-board");
         this.columns = new Array;
     }
 

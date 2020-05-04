@@ -48,7 +48,10 @@ var selected_precommits = null;
 let game_board = make_game_board();
 
 const selected_move = "selected-move";
-const in_play_column = "in-play-column";
+
+// KLUDGE??: Show highlighting of in-play columns be done by the can't stop game board
+// rather than in this file?
+const in_play_column = "cs-in-play-column";
 
 set_num_players();
 /*

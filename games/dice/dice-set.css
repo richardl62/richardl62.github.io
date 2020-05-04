@@ -14,13 +14,10 @@
      background-color: darkred;
      border-radius: 20%;
      margin-right: 5px; /* For now */
-
      transform-origin: center center;
-
      --spot-size: 16%; /* If chamged, also change --spot-offset-mid */
      --spot-offset-edge: 15%; /* arbitrary. Use with any edge*/
      --spot-offset-mid: 42%; /* 50% - spot-size / 2.  Use with left and top */
-
  }
 
  .dice-held {

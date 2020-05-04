@@ -1,9 +1,9 @@
-#board {
+.cs-board {
     display:flex;
     align-items: center;
 }
 
-.column {
+.cs-column {
     display: inline-flex;
     flex-direction: column;
     color: #606060;
@@ -11,31 +11,31 @@
     font-weight: 400;
 }
 
-.in-play-column {
+.cs-in-play-column {
     color: var(--player-color);
     font-weight: 550;
 }
-.column div {
+.cs-column div {
     width: 60px;
     min-height: 40px;
 }
 
-.top-number, .bottom-number {
+.cs-top-number, .cs-bottom-number {
     display: flex;
     justify-content: center;
 
     font-family:sans-serif;
 }
 
-.top-number {
+.cs-top-number {
     align-items: flex-end;
 }
 
-.bottom-number {
+.cs-bottom-number {
     align-items: start-end;
 }
 
-.square {
+.cs-square {
     display: flex;
     background-color: var(--games-board-background-colour);
     border:  3px var(--games-board-border-colour) solid; /* Default - switch off for some edges is JS */
