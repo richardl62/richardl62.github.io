@@ -14,53 +14,6 @@
     --player-color: black; /* Changed in JS */
 }
 
-#board {
-    display:flex;
-    align-items: center;
-}
-
-.column {
-    display: inline-flex;
-    flex-direction: column;
-    color: #606060;
-    font-size: 1.3em;
-    font-weight: 400;
-}
-
-.in-play-column {
-    color: var(--player-color);
-    font-weight: 550;
-}
-.column div {
-    width: 60px;
-    min-height: 40px;
-}
-
-.top-number, .bottom-number {
-    display: flex;
-    justify-content: center;
-
-    font-family:sans-serif;
-}
-
-.top-number {
-    align-items: flex-end;
-}
-
-.bottom-number {
-    align-items: start-end;
-}
-
-.square {
-    display: flex;
-    background-color: var(--games-board-background-colour);
-    border:  3px var(--games-board-border-colour) solid; /* Default - switch off for some edges is JS */
-}
-
-.cs-player-square {
-    border: 1px var(--games-board-border-colour) dashed; /* Default - switch off for some edges is JS */
-}
-
 #below-board {
     display: flex;
     flex-direction: row;
