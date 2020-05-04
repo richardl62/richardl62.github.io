@@ -1,17 +1,15 @@
-* {
+#game {
+    position: relative; /* to force a positioning context */
+    display: inline-flex;
+    flex-direction: column;
+    margin: 5px 10px;
+    font-size: 30px;
+    --player-color: black; /* Changed in JS */
     margin: 0 0;
 }
 
-#game {
-    position: relative; /* to force a positioning context */
-    display: flex;
-    flex-direction: column;
-    margin: 5px 10px;
-
-    font-size: 30px;
-    width: fit-content;
-
-    --player-color: black; /* Changed in JS */
+#game * {
+    font-family: Arial; /* Let's be boring, or now at least */
 }
 
 #below-board {
@@ -23,7 +21,6 @@
 #player-interactions {  /* move options, required roll, bust */
     position: relative;
     font-size: 30px;
-    width: fit-content;
     margin: auto;
 }
 
@@ -42,21 +39,22 @@
     top: 0;
 }
 
-#dice-options {
+#dice-option-grid {
     display: flex;
     flex-direction: column;
     color: white;
 }
 
-#dice-options div {
+#dice-option-grid div {
     display: flex;
     flex-direction: row;
-    height: 1.5em;
+    border: 1px black solid;
 }
 
-#dice-options button {
+.dice-option {
   font-size: 0.8em;
-  width: 4.2em;
+  width: 4.1em;
+  height: 1.3em;
   color: white;
   background-color: var(--player-color);
   border: 1px black solid;
@@ -67,28 +65,19 @@
     flex-direction: column;
 }
 
-
 .dice-column > div:not(:first-child) {
     margin-top: 10px;
 }
-
 
 .selected-move {
     text-decoration: underline;
 }
 
-button {
-    font-size: 30px;
-}
-
-input {
-    font-size: inherit;
-    width: 1.5em;
-}
-
 #roll, #dont {
   border: 3px outset;
+  font-size: 1.3em;
 }
+
 #roll:disabled, #dont:disabled {
   /* kludge to hide button text. Taken from 
   https://stackoverflow.com/questions/471510/hide-text-using-css
@@ -96,24 +85,32 @@ input {
   border: none;
 }
 
-
-
-#controls table, #controls td {
-    border: 1px solid black;
-    border-collapse: collapse;
-  }
-
-#options {
+#non-game-play-options { /* Options not used in normal game play */
    display: flex;
    flex-direction: column;
-   align-items: flex-start;
+   align-items: flex-end;
    position: absolute;
    top: 0;
-   left: 0
+   right: 0
 }
 
-#debug {
+#restart{
+    margin-top: 4px;
+}
+
+#non-game-play-options button {
+    font-size: 30px;
+}
+
+#non-game-play-options input {
+    font-size: inherit;
+    width: 1.5em;
+}
+
+#pass {
+    font-size: 30px;
+    color: var(--player-color);
     position: absolute;
     top: 0;
-    right: 0;
- }
+    left: 0
+}

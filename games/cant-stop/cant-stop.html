@@ -28,16 +28,16 @@
                 <div id="move-options"> <!-- dice-options, roll or don't -->
                     <button type="button" id="roll">Roll</button>
 
-                    <div id="dice-options">
+                    <div id="dice-option-grid">
                         <div>
-                            <button></button>
-                            <button></button>
-                            <button></button>
+                            <div class="dice-option"></div>
+                            <div class="dice-option"></div>
+                            <div class="dice-option"></div>
                         </div>
                         <div>
-                            <button></button>
-                            <button></button>
-                            <button></button>
+                            <div class="dice-option"></div>
+                            <div class="dice-option"></div>
+                            <div class="dice-option"></div>
                         </div>
                     </div>
 
@@ -56,15 +56,15 @@
 
         </div> <!-- board-below -->
 
-        <div id="options">
+        <div id="non-game-play-options"> <!-- Options not used in normal game play -->
             <div>
                 <label for="num-players">Num players</label>
                 <input type="number" name="num-players" id="num-players" min=1 max=8 value=2>
             </div>
             <button type="button" id="restart">Restart</button>
-            <button type="button" id="pass">Pass</button>
             <!-- <button type="debug" id="debug">debug</button> -->
         </div> <!-- options -->
+        <button type="button" id="pass">Pass</button>
 
 
     </div> <!-- game -->

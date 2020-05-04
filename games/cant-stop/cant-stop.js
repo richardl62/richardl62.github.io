@@ -9,7 +9,7 @@ const jq = {
     dice: $(".csdice"),
     dont: $("#dont"),
     game: $("#game"),
-    dice_option_buttons: $("#dice-options button"), 
+    dice_options: $(".dice-option"), 
     num_players: $("#num-players"),
     required_roll: $("#required-roll"),
     restart: $("#restart"),
@@ -34,7 +34,7 @@ const last_column = 12;
 assert(jq.dice.length == n_dice, "4 dice expected");
 
 const max_move_options = 6;
-assert(jq.dice_option_buttons.length == max_move_options, "6 move options expect");
+assert(jq.dice_options.length == max_move_options, "6 move options expect");
 
 let dice_array = make_dice_array();
 
@@ -163,7 +163,7 @@ function do_roll(spin)
         if(n < move_options.length)
            str = option_string(move_options[n]);
 
-       $(jq.dice_option_buttons[n]).text(str);
+       $(jq.dice_options[n]).text(str);
      }
  }
 
@@ -214,7 +214,7 @@ function clear_in_play_columns() {
 }
 
 function clear_selected_move() {
-    jq.dice_option_buttons.removeClass(selected_move);
+    jq.dice_options.removeClass(selected_move);
 }
 
 function select_move_option(index) {
@@ -223,7 +223,7 @@ function select_move_option(index) {
         clear_last_precommit();
 
         selected_precommits = move_options[index];
-        $(jq.dice_option_buttons[index]).addClass(selected_move);
+        $(jq.dice_options[index]).addClass(selected_move);
         game_board.add_precommit(current_player, selected_precommits);
 
         disable_roll_and_dont_buttons(false);
@@ -238,8 +238,8 @@ jq.required_roll.click(function(elem){
     do_roll(true /*spin*/); 
 });
 
-jq.dice_option_buttons.click(function (elem) {
-    let move_index = jq.dice_option_buttons.index(this);
+jq.dice_options.click(function (elem) {
+    let move_index = jq.dice_options.index(this);
     select_move_option(move_index);
 });
 
