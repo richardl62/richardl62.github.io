@@ -1,5 +1,13 @@
 "use strict";
 
+function div_with_title_and_text(text) {
+    let div = $("<div>");
+    div.text(text); // jQuery makes the text safe for use in html.
+    div.attr("title", text);
+    return div;
+
+}
+
 const score_pad_html = `
 <input type="text" class="player-name" placeholder="Player name">
 <input type="text" class="enter-score" placeholder="Enter score">
@@ -32,18 +40,26 @@ class scorePad {
         this.resetScores();
     }
 
-    enter_score_text(value /* text - typically a number, but can be text like e.g. '-' or 'pass' */)
+    // The input text is typically a number, but can be text like e.g. '-' or 'pass' 
+    // or '1235 bah!'
+    enter_score_text(input_text)
     {
-        var score = parseInt(value);
-        if (!isNaN(score)) {
-            this.total_score += score;
-            this.current_score.append(score + "<br>");
+        // Look for a numbers in the input string.
+        let match = input_text.match(/-?\d+/g);
+        if(match && match.length > 1) {
+            alert('More than one number found in "'
+              +input_text+'"');
         }
         else {
-            this.current_score.append(value + "<br>");
+            if(match) {
+                let number = parseInt(match);
+                assert(!isNaN(number));
+                this.total_score += number;
+            }
+
+            this.current_score.append(div_with_title_and_text(input_text));
+            this.total_score_elem.append(div_with_title_and_text(this.total_score));
         }
-        
-        this.total_score_elem.append(this.total_score + "<br>");
     }
 
     resetScores()

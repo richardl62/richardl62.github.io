@@ -279,3 +279,47 @@ function stringify_array_test(arr, remove_undefined, same_line_depth)
 // stringify_array_test([1,2,null]);
 // stringify_array_test([1,2]);
 
+// At time of writting this was not used.
+//
+// Return an array of sub-strings which together make up the input string.
+// Each of the integers in the input string are in separate substrings.
+// The other sub strings contain the characters between integers.
+// Example: "00 + 11" => ["00", " + ", "11"]
+function split_at_integers(input_str)
+{
+    //  Repeatedly search for this regex
+    const regex = /[+-]?\d+/;;
+
+    let str = input_str;
+    let result = new Array;
+
+    let match = str.match(regex);
+    while(match) {
+        let matched = match[0];
+        
+        if(match.index != 0) {
+            result.push(str.substr(0, match.index));
+        }
+        
+        result.push(matched);
+        str = str.substr(match.index + matched.length);
+        match = str.match(regex);
+    }
+
+    if(str != "")
+        result.push(str);
+
+    return result;
+}
+
+function get_integers_test(str)
+{
+    console.log('"'+str+'"', split_at_integers(str)); 
+}
+
+// get_integers_test("");
+// get_integers_test("1 + 1");
+// get_integers_test("00");
+// get_integers_test("ab");
+// get_integers_test("-00+2 != +333");
+// get_integers_test("+2 - 233 != -01234 ");
