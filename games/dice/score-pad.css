@@ -1,76 +1,74 @@
 
-        .score-pads {
-            display: flex;
-            flex-wrap: wrap;
-            /* align-items: flex-start; */
-        }
+.score-pads {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-items: left;
+}
 
-        .score-pads .score-pad {
-            margin-right: 10px;
-            margin-bottom: 5px;
-        }
+.score-pads .score-pad {
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
 
-        .score-pad {
-            display: flex;
-            flex-direction: column;
-
-            width: 10em;
-            border: 5px solid darkred;
-
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bolder;
-            font-size: large;
-
-            background-color: lemonchiffon;
-        }
+.score-pad {
+    width: 10em;
+    display: inline-flex;
+    flex-direction: column;
+    border: 5px solid darkred;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bolder;
+    font-size: large;
+    background-color: lemonchiffon;
+}
 
 
-        .score-pad > * {
-            border: 0px; /* Some boarders are re-added below */
-        }
+.score-pad > * {
+    border: 0px; /* Some boarders are re-added below */
+}
 
-        .player-name {
-            background-color: inherit;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: x-large;
-            font-weight: bold;
-        }
+.player-name {
+    background-color: inherit;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: x-large;
+    font-weight: bold;
+}
 
-        .enter-score{
-            border-top: 1px solid black;
-            border-bottom: 1px solid black;
-            font-family: inherit;
-            font-weight: inherit;
-            font-size: inherit;
-        }
+.enter-score{
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    font-family: inherit;
+    font-weight: inherit;
+    font-size: inherit;
+}
 
-        .current-score {
-            border: none;
-            border-right: 1px solid black;
-        }
+.current-score {
+    border: none;
+    border-right: 1px solid black;
+}
 
-        .scores {
-            display: flex;
-            flex-direction: row;
-            height: 100%;
-        }
-        .current-score, .total-score  {
-            min-height: 1em;
-            height: 100%;
-            padding: 2px;
+.scores {
+    display: inline-flex;
+    flex-direction: row;
+    height: 100%;
+}
+.current-score, .total-score  {
+    min-height: 1em;
+    height: 100%;
+    padding: 2px;
 
-            display:flex;
-            flex-direction:column;
+    display:inline-flex;
+    flex-direction:column;
 
-            align-items:flex-end;
-            white-space: nowrap;
-            overflow: hidden;
-        }
+    align-items:flex-end;
+    white-space: nowrap;
+    overflow: hidden;
+}
 
-        .current-score {
-            width: 55%;
-        }
-        
-        .total-score {
-            width: 45%;
-        }
+.current-score {
+    width: 100%;
+}
+.total-score {
+    width: 6em;
+}
+

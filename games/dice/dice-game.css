@@ -6,7 +6,6 @@ button
 
 #game-control {
    display:  inline-block;
-   /* width: 330px; For now */
 }
 
 #game-control > div {
