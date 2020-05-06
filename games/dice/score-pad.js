@@ -66,8 +66,8 @@ class scorePad {
     {
         this.total_score = 0;
 
-        this.current_score.append("<div class='score-column-header'>Score</div>"); 
-        this.total_score_elem.append("<div class='score-column-header'>Total</div>"); 
+        this.current_score.html("<div class='score-column-header'>Score</div>"); 
+        this.total_score_elem.html("<div class='score-column-header'>Total</div>"); 
     }
 
     defaultPlayerName(name) {

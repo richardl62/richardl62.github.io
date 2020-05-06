@@ -17,8 +17,8 @@ class CantStopPlayerSquare {
         this.player_number = player_number;
         this.status = sq_empty;
 
-        this.elem = $("<div class='cs-player-square'></div>");
-        this.square_elem.append(this.elem);
+        this.player_elem = $("<div class='cs-player-square'></div>");
+        this.square_elem.append(this.player_elem);
 
         let css = {};
 
@@ -28,31 +28,33 @@ class CantStopPlayerSquare {
         css["borderBottom"] = "none";
         css["borderTop"] = "none";
 
-        this.elem.css(css);
+        this.player_elem.css(css);
 
     }
 
     remove_added_elements()
     {
-        if(this.elem)
+        if(this.player_elem)
         {
-            this.elem.remove();
-            this.elem = null;
+            this.player_elem.remove();
+            this.player_elem = null;
         }
     }
 
     make_precommit() {
-        this.elem.css("background-color", "gray"); // For now, at least
+        this.player_elem.addClass("cs-precommit");
         this.status = sq_precommitted;
     }
 
     make_commit() {
-        this.elem.css("background-color", get_default_player_color(this.player_number)); 
+        this.player_elem.css("background-color", get_default_player_color(this.player_number));
+        this.player_elem.removeClass("cs-precommit"); 
         this.status = sq_committed;
     }
 
-    make_empty() {
-        this.elem.css("background-color", "var(--board-game-background-color)");
+    clear_precommit() {
+        assert(this.status == sq_precommitted);
+        this.player_elem.removeClass("cs-precommit");
         this.status = sq_empty;
     }
 
@@ -71,6 +73,10 @@ class CantStopPlayerSquare {
 
     is_empty() {
         return this.status == sq_empty;
+    }
+
+    elem() {
+        return this.player_elem;
     }
 }
 
@@ -190,20 +196,21 @@ class CantStopColumn {
     remove_all_precommits(player_number) {
         for (const sq of this.squares(player_number)) {
             if (sq.is_precommit()) {
-                sq.make_empty();
+                sq.clear_precommit();
             }
         }
     }
 
-    remove_last_precommit(player_number) {
+    last_precommit(player_number) {
         for (let i = this.squares(player_number).length - 1; i >= 0; --i) {
             let sq = this.squares(player_number)[i];
 
             if (sq.is_precommit()) {
-                sq.make_empty();
-                return;
+                return sq;
             }
         }
+
+        return null;
     }
 
     commit(player_number) {
@@ -265,7 +272,7 @@ class CantStopColumn {
     }
 
     // Return the top-level HTML element for this column
-    column_elem()
+    elem()
     {
         return this.m_column_elem;
     }
@@ -396,7 +403,7 @@ class CantStopBoard {
         // sub-arrays returned by options()
     ) {
         for (let d of dice_numbers)
-            this.columns[d].remove_last_precommit(player_number);
+            this.columns[d].last_precommit(player_number).clear_precommit();
     }
 
     remove_all_precommits(player_number) {
@@ -418,9 +425,9 @@ class CantStopBoard {
         }
     }
 
-    // Return the top-level HTML element for the selected column
-    column_elem(column_number)
+    // Return the Column class for selected column
+    column(column_number)
     {
-        return this.columns[column_number].column_elem();
+        return this.columns[column_number];
     }
 }

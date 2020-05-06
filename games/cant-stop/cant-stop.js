@@ -47,11 +47,13 @@ var selected_precommits = null;
 
 let game_board = make_game_board();
 
+
 const selected_move = "selected-move";
 
 // KLUDGE??: Show highlighting of in-play columns be done by the can't stop game board
 // rather than in this file?
 const in_play_column = "cs-in-play-column";
+const current_precommit = "current-precommit";
 
 set_num_players();
 /*
@@ -116,7 +118,7 @@ function do_roll(spin)
     {
         for(let p of selected_precommits)
         {
-            game_board.column_elem(p).addClass(in_play_column);
+            game_board.column(p).elem().addClass(in_play_column);
         }
         selected_precommits = null;
     }
@@ -207,7 +209,7 @@ function change_current_player() {
 
 function clear_in_play_columns() {
     for (let cn = 0; cn <= last_column; ++cn) {
-        let elem = game_board.column_elem(cn);
+        let elem = game_board.column(cn).elem();
         if (elem)
             elem.removeClass(in_play_column);
     }
@@ -225,6 +227,15 @@ function select_move_option(index) {
         selected_precommits = move_options[index];
         $(jq.dice_options[index]).addClass(selected_move);
         game_board.add_precommit(current_player, selected_precommits);
+
+        // Remove all instances of a class current_precommit, then readd for the selected
+        // precommits
+        $("."+ current_precommit).removeClass(current_precommit);
+        
+        for(let sp of selected_precommits)
+        {
+            game_board.column(sp).last_precommit(current_player).elem().addClass(current_precommit);
+        }
 
         disable_roll_and_dont_buttons(false);
     }

@@ -114,3 +114,11 @@
     top: 0;
     left: 0
 }
+
+.cs-precommit {
+    background-color: grey;
+}
+
+.current-precommit {
+    background-color: black;
+}
