@@ -101,6 +101,8 @@ function clear_last_precommit()
     if(selected_precommits)
         game_board.remove_precommit(current_player, selected_precommits);
 
+
+
     selected_precommits = null;
 }
 
@@ -212,6 +214,8 @@ function clear_in_play_columns() {
         let elem = game_board.column(cn).elem();
         if (elem)
             elem.removeClass(in_play_column);
+
+        $("."+ current_precommit).removeClass(current_precommit);
     }
 }
 
@@ -228,10 +232,7 @@ function select_move_option(index) {
         $(jq.dice_options[index]).addClass(selected_move);
         game_board.add_precommit(current_player, selected_precommits);
 
-        // Remove all instances of a class current_precommit, then readd for the selected
-        // precommits
         $("."+ current_precommit).removeClass(current_precommit);
-        
         for(let sp of selected_precommits)
         {
             game_board.column(sp).last_precommit(current_player).elem().addClass(current_precommit);

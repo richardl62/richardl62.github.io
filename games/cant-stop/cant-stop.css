@@ -116,9 +116,9 @@
 }
 
 .cs-precommit {
-    background-color: grey;
+    background-color: var(--games-board-non-player-color);
 }
 
 .current-precommit {
-    background-color: black;
+  border-radius: 50%;
 }

@@ -11,4 +11,6 @@ body {
     
     --games-board-border-colour: darkred; /* uses for board  border, gaps between squares and disabled squares */
     --games-board-background-colour: lemonchiffon;
+
+    --games-board-non-player-color: gray;
 }
