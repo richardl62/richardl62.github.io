@@ -64,6 +64,11 @@ set_num_players();
  * helper functions
  */
 
+ function remove_class_instances(class_name)
+ {
+    $("."+ class_name).removeClass(class_name);
+ }
+
  // Must call set_num_players() after make_game_board();
 function make_game_board() {
 
@@ -120,6 +125,8 @@ function disable_roll_and_dont_buttons(disable)
 function do_roll(spin)
 {
     assert(spin != undefined, "spin option not set");
+
+    remove_class_instances(current_precommit);
     
     if(selected_precommits)
     {
@@ -217,6 +224,7 @@ function change_current_player() {
         // The game is over, so do nothing.
         return;
     }
+    remove_class_instances(current_precommit);
 
     game_board.remove_all_precommits(current_player);
     selected_precommits = null;
@@ -242,8 +250,6 @@ function clear_in_play_columns() {
         let elem = game_board.column(cn).elem();
         if (elem)
             elem.removeClass(in_play_column);
-
-        $("."+ current_precommit).removeClass(current_precommit);
     }
 }
 
@@ -260,10 +266,20 @@ function select_move_option(index) {
         $(jq.dice_options[index]).addClass(selected_move);
         game_board.add_precommit(current_player, selected_precommits);
 
-        $("."+ current_precommit).removeClass(current_precommit);
-        for(let sp of selected_precommits)
+        remove_class_instances(current_precommit);
+
+        const distinct_selected_precommits = [... new Set(selected_precommits)];
+        for(let sp of distinct_selected_precommits)
         {
-            game_board.column(sp).last_precommit(current_player).elem().addClass(current_precommit);
+            // Find the number of precommits with the current value.
+            let n_sp = selected_precommits.filter(e => e == sp).length;
+
+            let game_board_precommits = game_board.column(sp).precommits(current_player);
+            assert(game_board_precommits.length >= n_sp);
+
+            for(let i = 0; i < n_sp; ++i) {
+                game_board_precommits[i].elem().addClass(current_precommit);
+            }
         }
 
         disable_roll_and_dont_buttons(false);

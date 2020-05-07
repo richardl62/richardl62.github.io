@@ -201,16 +201,17 @@ class CantStopColumn {
         }
     }
 
-    last_precommit(player_number) {
+    precommits(player_number) {
+        let result = new Array;
         for (let i = this.squares(player_number).length - 1; i >= 0; --i) {
             let sq = this.squares(player_number)[i];
 
             if (sq.is_precommit()) {
-                return sq;
+                result.push(sq);
             }
         }
 
-        return null;
+        return result;
     }
 
     commit(player_number) {
@@ -403,7 +404,7 @@ class CantStopBoard {
         // sub-arrays returned by options()
     ) {
         for (let d of dice_numbers)
-            this.columns[d].last_precommit(player_number).clear_precommit();
+            this.columns[d].precommits(player_number)[0].clear_precommit();
     }
 
     remove_all_precommits(player_number) {
