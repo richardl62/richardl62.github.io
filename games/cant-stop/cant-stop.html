@@ -46,6 +46,7 @@
 
                 <button type="button" id="bust">Bust!</button>
                 <button type="button" id="required-roll">Roll</button>
+                <div id="game-over">Game Over</div>
 
             </div> <!-- player-interactions -->
 
@@ -56,7 +57,12 @@
 
         </div> <!-- board-below -->
 
-        <div id="non-game-play-options"> <!-- Options not used in normal game play -->
+        <div id="player-options">
+            <button type="button" id="pass">Pass</button>
+            <button type="button" id="leave">Leave</button>
+        </div>
+
+        <div id="setup-options"> <!-- Options not used in normal game play -->
             <div>
                 <label for="num-players">Num players</label>
                 <input type="number" name="num-players" id="num-players" min=1 max=8 value=2>
@@ -64,7 +70,7 @@
             <button type="button" id="restart">Restart</button>
             <!-- <button type="debug" id="debug">debug</button> -->
         </div> <!-- options -->
-        <button type="button" id="pass">Pass</button>
+
 
 
     </div> <!-- game -->

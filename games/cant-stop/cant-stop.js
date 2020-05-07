@@ -5,6 +5,8 @@
 const jq = { 
     board: $("#board"),
     bust: $("#bust"),
+    leave: $("#leave"),
+    game_over: $("#game-over"),
     move_options: $("#move-options"),
     dice: $(".csdice"),
     dont: $("#dont"),
@@ -38,12 +40,14 @@ assert(jq.dice_options.length == max_move_options, "6 move options expect");
 
 let dice_array = make_dice_array();
 
+let game_over_visibility = new SetVisiblity(jq.game_over);
 let move_options_visibility = new SetVisiblity(jq.move_options);
 let bust_visibility = new SetVisiblity(jq.bust);
 let required_roll_visibility = new SetVisiblity(jq.required_roll)
 
 var move_options = null;
 var selected_precommits = null;
+var player_left = null;
 
 let game_board = make_game_board();
 
@@ -88,6 +92,7 @@ function make_dice_array() {
 
 function make_visible(visible)
 {
+    game_over_visibility.off();
     bust_visibility.off();
     move_options_visibility.off();
     required_roll_visibility.off();
@@ -183,6 +188,7 @@ function do_roll(spin)
  {
     game_board.reset();
 
+    player_left = new Array(num_players+1).fill(false);
     // Set the current_player to 1 and set apporpriate colours.
     // Method is a kludge.
     current_player = num_players;
@@ -191,22 +197,44 @@ function do_roll(spin)
     make_visible(required_roll_visibility);
  }
 
+// Return null if all players have left
+function next_unfinished_player(in_p)
+{
+    let p = in_p;
+
+    do {
+        ++p;
+        if(p > num_players)
+            p = 1;
+    } while(player_left[p] && p != in_p);
+
+    return player_left[p] ? null : p;
+}
+
 function change_current_player() {
+    if(!current_player)
+    {
+        // The game is over, so do nothing.
+        return;
+    }
+
     game_board.remove_all_precommits(current_player);
     selected_precommits = null;
 
     make_visible(required_roll_visibility);
 
-    if (current_player == num_players) {
-        current_player = 1;
-    }
-    else {
-        ++current_player;
+    current_player = next_unfinished_player(current_player);
+
+    let player_color;
+    if(current_player) {
+        player_color = get_default_player_color(current_player);
+    } else {
+        player_color = "var(--games-board-non-player-color)"
+        make_visible(game_over_visibility);
     }
 
     clear_in_play_columns();
-    let col = get_default_player_color(current_player);
-    jq.game.get(0).style.setProperty("--player-color", col);
+    jq.game.get(0).style.setProperty("--player-color", player_color);
 }
 
 function clear_in_play_columns() {
@@ -274,6 +302,12 @@ jq.bust.click(function(elem){
 });
 
 jq.pass.click(function(elem){
+    change_current_player();
+});
+
+jq.leave.click(function(elem){
+    player_left[current_player] = true;
+    game_board.commit(current_player);
     change_current_player();
 });
 
