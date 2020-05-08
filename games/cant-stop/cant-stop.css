@@ -96,13 +96,6 @@
     width: 1.5em;
 }
 
-.cs-precommit {
-    background-color: var(--games-board-non-player-color);
-}
-
-.current-precommit {
-  border-radius: 50%;
-}
 
 #player-options {
     display: flex;

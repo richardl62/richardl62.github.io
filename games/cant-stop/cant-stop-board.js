@@ -3,22 +3,20 @@
 const max_column_number = 12; //Kludge??
 
 const sq_empty = 0;
-const sq_precommitted = 1;
-const sq_committed = 2;
-const sq_in_owned_column = 3; // Used when the column is filled by any player.
+const sq_provisonally_precommitted = 1;
+const sq_precommitted = 2;
+const sq_committed = 3;
+const sq_in_owned_column = 4; // Used when the column is filled by any player.
 
 const precommitted_column_limit = 3;
 
 // Record the status in a board square for a particular player
 class CantStopPlayerSquare {
-    constructor(square_elem, player_number) {
-
-        this.square_elem = square_elem;
-        this.player_number = player_number;
-        this.status = sq_empty;
+    constructor(input_elem, player_number) {
 
         this.player_elem = $("<div class='cs-player-square'></div>");
-        this.square_elem.append(this.player_elem);
+        input_elem.append(this.player_elem)
+
 
         let css = {};
 
@@ -29,6 +27,11 @@ class CantStopPlayerSquare {
         css["borderTop"] = "none";
 
         this.player_elem.css(css);
+
+        this.precommit_elem = null;
+
+        this.player_number = player_number;
+        this.status = sq_empty;
 
     }
 
@@ -41,21 +44,42 @@ class CantStopPlayerSquare {
         }
     }
 
+    clear()
+    {
+        assert((this.precommit_elem == null) == (this.status == sq_empty));
+        if(this.precommit_elem)
+        {
+            this.precommit_elem.remove();
+            this.precommit_elem = null;
+        }
+
+        this.status = sq_empty;
+    }
+
+    make_provisional_precommit() {
+        this.make_precommit();
+        this.precommit_elem.addClass("cs-provisional-precommit");
+ 
+        this.status = sq_provisonally_precommitted;
+    }
+
     make_precommit() {
-        this.player_elem.addClass("cs-precommit");
+        this.clear();
+
+        this.precommit_elem = $("<div>");
+        this.precommit_elem.addClass("cs-precommit");
+        this.player_elem.append(this.precommit_elem);
+
+        console.log("player_elem width", this.player_elem.width(), "precommit_elem width", this.precommit_elem.width());
+
         this.status = sq_precommitted;
     }
 
     make_commit() {
-        this.player_elem.css("background-color", get_default_player_color(this.player_number));
-        this.player_elem.removeClass("cs-precommit"); 
-        this.status = sq_committed;
-    }
+        this.clear();
 
-    clear_precommit() {
-        assert(this.status == sq_precommitted);
-        this.player_elem.removeClass("cs-precommit");
-        this.status = sq_empty;
+        this.player_elem.css("background-color", get_default_player_color(this.player_number));
+        this.status = sq_committed;
     }
 
     make_in_owned_column()
@@ -63,8 +87,12 @@ class CantStopPlayerSquare {
         this.status = sq_in_owned_column;
     }
 
+    is_provisional_precommit() {
+        return this.status == sq_provisonally_precommitted;
+    }
+    
     is_precommit() {
-        return this.status == sq_precommitted;
+        return this.status == sq_precommitted || this.status == sq_provisonally_precommitted;
     }
 
     is_commit() {
@@ -193,10 +221,35 @@ class CantStopColumn {
         }
     }
 
+    add_provisional_precommit(player_number) {
+        for (const sq of this.squares(player_number)) {
+            if (sq.is_empty()) {
+                sq.make_provisional_precommit();
+                break;
+            }
+        }
+    }
+
+    promot_all_provisional_precommits(player_number) {
+        for (const sq of this.squares(player_number)) {
+            if (sq.is_provisional_precommit()) {
+                sq.make_precommit();
+            }
+        }
+    }
+
+    
+    remove_all_provisional_precommits(player_number) {
+        for (const sq of this.squares(player_number)) {
+            if (sq.is_provisional_precommit()) {
+                sq.clear();
+            }
+        }
+    }
     remove_all_precommits(player_number) {
         for (const sq of this.squares(player_number)) {
             if (sq.is_precommit()) {
-                sq.clear_precommit();
+                sq.clear();
             }
         }
     }
@@ -386,6 +439,17 @@ class CantStopBoard {
         return sort_unique(accumulator.get_options(), compare);
     }
 
+    
+    // 'pre-commit' the given dice numbers. 
+    add_provisional_precommit(
+        player_number,
+        dice_numbers // Array of columns numbers, typically one of the
+        // sub-arrays returned by options()
+    ) {
+        for (let d of dice_numbers)
+            this.columns[d].add_provisional_precommit(player_number);
+
+    }
 
     // 'pre-commit' the given dice numbers. 
     add_precommit(
@@ -404,7 +468,17 @@ class CantStopBoard {
         // sub-arrays returned by options()
     ) {
         for (let d of dice_numbers)
-            this.columns[d].precommits(player_number)[0].clear_precommit();
+            this.columns[d].precommits(player_number)[0].clear();
+    }
+
+    promot_all_provisional_precommits(player_number) {
+        for (let c of this.columns)
+            c.promot_all_provisional_precommits(player_number);
+    }
+
+    remove_all_provisional_precommits(player_number) {
+        for (let c of this.columns)
+            c.remove_all_provisional_precommits(player_number);
     }
 
     remove_all_precommits(player_number) {

@@ -57,7 +57,6 @@ const selected_move = "selected-move";
 // KLUDGE??: Show highlighting of in-play columns be done by the can't stop game board
 // rather than in this file?
 const in_play_column = "cs-in-play-column";
-const current_precommit = "current-precommit";
 
 set_num_players();
 /*
@@ -105,17 +104,6 @@ function make_visible(visible)
     visible.on();
 }
 
-
-function clear_last_precommit()
-{
-    if(selected_precommits)
-        game_board.remove_precommit(current_player, selected_precommits);
-
-
-
-    selected_precommits = null;
-}
-
 function disable_roll_and_dont_buttons(disable)
 {
     jq.roll.prop("disabled", disable);
@@ -126,7 +114,7 @@ function do_roll(spin)
 {
     assert(spin != undefined, "spin option not set");
 
-    remove_class_instances(current_precommit);
+    game_board.promot_all_provisional_precommits(current_player);
     
     if(selected_precommits)
     {
@@ -224,7 +212,7 @@ function change_current_player() {
         // The game is over, so do nothing.
         return;
     }
-    remove_class_instances(current_precommit);
+    game_board.remove_all_provisional_precommits(current_player);
 
     game_board.remove_all_precommits(current_player);
     selected_precommits = null;
@@ -260,27 +248,12 @@ function clear_selected_move() {
 function select_move_option(index) {
     if (move_options[index]) {
         clear_selected_move();
-        clear_last_precommit();
 
         selected_precommits = move_options[index];
         $(jq.dice_options[index]).addClass(selected_move);
-        game_board.add_precommit(current_player, selected_precommits);
 
-        remove_class_instances(current_precommit);
-
-        const distinct_selected_precommits = [... new Set(selected_precommits)];
-        for(let sp of distinct_selected_precommits)
-        {
-            // Find the number of precommits with the current value.
-            let n_sp = selected_precommits.filter(e => e == sp).length;
-
-            let game_board_precommits = game_board.column(sp).precommits(current_player);
-            assert(game_board_precommits.length >= n_sp);
-
-            for(let i = 0; i < n_sp; ++i) {
-                game_board_precommits[i].elem().addClass(current_precommit);
-            }
-        }
+        game_board.remove_all_provisional_precommits(current_player);
+        game_board.add_provisional_precommit(current_player, selected_precommits);
 
         disable_roll_and_dont_buttons(false);
     }

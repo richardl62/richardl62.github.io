@@ -4,20 +4,17 @@
 }
 
 .cs-column {
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
     color: #606060;
     font-size: 1.3em;
     font-weight: 400;
+    width: 60px;
 }
 
 .cs-in-play-column {
     color: var(--player-color);
     font-weight: 550;
-}
-.cs-column div {
-    width: 60px;
-    min-height: 40px;
 }
 
 .cs-top-number, .cs-bottom-number {
@@ -32,15 +29,33 @@
 }
 
 .cs-bottom-number {
-    align-items: start-end;
+    align-items: flex-start;
 }
 
 .cs-square {
     display: flex;
     background-color: var(--games-board-background-colour);
     border:  3px var(--games-board-border-colour) solid; /* Default - switch off for some edges is JS */
+    height: 40px;
 }
 
 .cs-player-square {
     border: 1px var(--games-board-border-colour) dashed; /* Default - switch off for some edges is JS */
+    width: 100%; /* Kludge: Gives all player squares equal width, but I don't understand
+                    why it works */
+
+   display: flex; /* To help with centering the precommit element */
+}
+
+.cs-precommit {
+    background-color: var(--games-board-non-player-color);
+    width: 100%;
+    height: 100%;
+}
+
+.cs-provisional-precommit{
+  width: 80%;
+  height: 80%;
+  border-radius: 20%;
+  margin: auto;
 }
