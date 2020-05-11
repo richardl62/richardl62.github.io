@@ -44,13 +44,13 @@ class CantStopPlayerSquare {
 
     clear()
     {
-        assert((this.precommit_elem == null) == (this.status == sq_empty));
+        //assert((this.precommit_elem == null) == (this.status == sq_empty));
         if(this.precommit_elem)
         {
             this.precommit_elem.remove();
             this.precommit_elem = null;
         }
-
+        this.player_elem.css("background-color", "var(--games-board-background-colour)");
         this.status = sq_empty;
     }
 
@@ -132,7 +132,7 @@ class CantStopColumn {
         this.square_elems = square_elems;
         this.m_is_owned = false;
 
-        this.player_squares = null; // set in num_players() 
+        this.player_squares = null; // [player-number][square] - set in num_players() 
     }
 
     clear_added_elements() {
@@ -313,12 +313,19 @@ class CantStopColumn {
 
     // Return to starting state for all player.
     reset() {
-        // KLUDGE: Use num_players to rebuild the board.  This will (in effect)
-        // reverse any change to the board elements made when columms become full.
-        this.num_players(this.num_players());
+        for (let psq of this.player_squares) {
+            for (let sq of psq) {
+                sq.clear();
+            }
+        }
+    }
 
-        this.set_internal_colors("var(--games-board-background-colour)", 
-            "var(--games-board-border-colour)");
+    // Return to starting state for a single player.
+    reset_player(player_number) {
+        for(let sq of this.squares(player_number))
+        {   
+            sq.clear();
+        }
     }
 
     // Return the top-level HTML element for this column

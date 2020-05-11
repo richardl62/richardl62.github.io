@@ -5,7 +5,7 @@ class CantStopBoard {
     constructor(board_elem) {
         this.board_elem = $(board_elem);
         this.board_elem.addClass("cs-board");
-        this.columns = new Array;
+        this.m_columns = new Array;
     }
 
     add_column(column_number, n_squares)
@@ -29,11 +29,11 @@ class CantStopBoard {
         square_elems[0].css("border-top-style", "solid");
 
         // Pad with empty columns as necessary before added the requested column
-        assert(this.columns.length <= column_number);
-        while (this.columns.length < column_number) {
-            this.columns.push(new CantStopColumn(this.columns.length, null, null));
+        assert(this.m_columns.length <= column_number);
+        while (this.m_columns.length < column_number) {
+            this.m_columns.push(new CantStopColumn(this.m_columns.length, null, null));
         }
-        this.columns.push(new CantStopColumn(column_number, col, square_elems.reverse()));
+        this.m_columns.push(new CantStopColumn(column_number, col, square_elems.reverse()));
 
         this.board_elem.append(col);
     }
@@ -41,7 +41,7 @@ class CantStopBoard {
     // Must be called after last column is added
     num_players(number)
     {
-        for(let col of this.columns)
+        for(let col of this.m_columns)
         {
             col.num_players(number);
         }
@@ -49,7 +49,7 @@ class CantStopBoard {
 
     // Clear any existing game state and start a new game
     reset() {
-        for (let col of this.columns) {
+        for (let col of this.m_columns) {
             col.reset();
         }
     }
@@ -61,8 +61,8 @@ class CantStopBoard {
 
         let has_precommits = new Set;
         let is_full = new Set;
-        for (let cn = 0; cn < this.columns.length; ++cn) {
-            let col = this.columns[cn];
+        for (let cn = 0; cn < this.m_columns.length; ++cn) {
+            let col = this.m_columns[cn];
             if (col && col.has_precommits(player_number)) {
                 has_precommits.add(cn);
             }
@@ -116,7 +116,7 @@ class CantStopBoard {
         // sub-arrays returned by options()
     ) {
         for (let d of dice_numbers)
-            this.columns[d].add_provisional_precommit(player_number);
+            this.m_columns[d].add_provisional_precommit(player_number);
 
     }
 
@@ -127,37 +127,37 @@ class CantStopBoard {
         // sub-arrays returned by options()
     ) {
         for (let d of dice_numbers)
-            this.columns[d].add_precommit(player_number);
+            this.m_columns[d].add_precommit(player_number);
 
     }
 
     remove_precommit(
         player_number,
-        dice_numbers // Array of columns numbers, typically one of the
+        dice_numbers // Array of m_columns numbers, typically one of the
         // sub-arrays returned by options()
     ) {
         for (let d of dice_numbers)
-            this.columns[d].precommits(player_number)[0].clear();
+            this.m_columns[d].precommits(player_number)[0].clear();
     }
 
     promot_all_provisional_precommits(player_number) {
-        for (let c of this.columns)
+        for (let c of this.m_columns)
             c.promot_all_provisional_precommits(player_number);
     }
 
     remove_all_provisional_precommits(player_number) {
-        for (let c of this.columns)
+        for (let c of this.m_columns)
             c.remove_all_provisional_precommits(player_number);
     }
 
     remove_all_precommits(player_number) {
-        for (let c of this.columns)
+        for (let c of this.m_columns)
             c.remove_all_precommits(player_number);
     }
 
     // Make the pre-committed numbers permanent.
     commit(player_number) {
-        for (let c of this.columns)
+        for (let c of this.m_columns)
         {
             c.commit(player_number);
 
@@ -172,6 +172,11 @@ class CantStopBoard {
     // Return the Column class for selected column
     column(column_number)
     {
-        return this.columns[column_number];
+        return this.m_columns[column_number];
+    }
+
+    columns()
+    {
+        return this.m_columns;
     }
 }

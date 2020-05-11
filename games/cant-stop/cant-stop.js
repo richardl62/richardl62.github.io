@@ -334,6 +334,12 @@ jq.pass.click(function(elem){
 jq.leave.click(function(elem){
     player_left[current_player] = true;
     game_board.commit(current_player);
+
+    for(let c of game_board.columns())
+    {
+        if(!c.is_owned())
+            c.reset_player(current_player);
+    }
     change_current_player();
 });
 
