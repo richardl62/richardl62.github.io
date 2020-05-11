@@ -106,6 +106,17 @@
     left: 0;
 }
 
+#player-name {
+  border: none;
+  width: 6em;
+  font-weight: bold;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: inherit;
+  opacity: 1; /* Firefox */
+}
+
 #setup-options { 
     display: flex;
     flex-direction: column;

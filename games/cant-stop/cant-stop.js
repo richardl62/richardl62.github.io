@@ -17,6 +17,7 @@ const jq = {
     restart: $("#restart"),
     roll: $("#roll"),
     pass: $("#pass"),
+    player_name: $("#player-name"),
 }
 
 for (const [key, value] of Object.entries(jq)) {
@@ -48,6 +49,9 @@ let required_roll_visibility = new SetVisiblity(jq.required_roll)
 var move_options = null;
 var selected_precommits = null;
 var player_left = null;
+
+const max_players = 8;
+var player_names = new Array(max_players + 1);
 
 let game_board = make_game_board();
 
@@ -231,6 +235,8 @@ function change_current_player() {
 
     clear_in_play_columns();
     jq.game.get(0).style.setProperty("--player-color", player_color);
+
+    set_current_player_name();
 }
 
 function clear_in_play_columns() {
@@ -258,6 +264,25 @@ function select_move_option(index) {
         disable_roll_and_dont_buttons(false);
     }
 }
+
+
+function set_current_player_name() {
+    let elem = jq.player_name[0];
+
+    if(!current_player)
+    {
+        // All player have left the game
+        elem.placeholder = "Player";
+        elem.value = "";
+    }
+    else if (player_names[current_player]) {
+        elem.value = player_names[current_player];
+    } else {
+        elem.placeholder = "Player " + current_player;
+        elem.value = "";
+    }
+}
+
  /*
  * Game interaction
  */
@@ -308,6 +333,10 @@ jq.num_players.change(function(elem){
     set_num_players();
 });
 
+jq.player_name.change(function(elem){
+    let new_name = this.value;
+    player_names[current_player] = new_name;
+});
 
 function cs_fixed_size_columns(size)
 {
