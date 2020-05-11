@@ -7,6 +7,8 @@ const jq = {
     bust: $("#bust"),
     leave: $("#leave"),
     game_over: $("#game-over"),
+    loading: $("#loading"),
+    load_error: $("#load-error"),
     move_options: $("#move-options"),
     dice: $(".csdice"),
     dont: $("#dont"),
@@ -26,7 +28,7 @@ for (const [key, value] of Object.entries(jq)) {
 }
 
 /*
- * Global variables (other the jq) and setup
+ * Global variables (other the jq)
  */
 
 let current_player = null; // set by restart_game()
@@ -53,16 +55,26 @@ var player_left = null;
 const max_players = 8;
 var player_names = new Array(max_players + 1);
 
-let game_board = make_game_board();
-
-
 const selected_move = "selected-move";
-
-// KLUDGE??: Show highlighting of in-play columns be done by the can't stop game board
-// rather than in this file?
 const in_play_column = "cs-in-play-column";
 
-set_num_players();
+// Setup to the board
+let game_board;
+try {
+    game_board = make_game_board();
+    set_num_players();
+    jq.game.css("visibility", "visible");
+}
+catch (err) {
+    jq.load_error.css("display", "block");
+    console.log(err);
+
+}
+finally {
+    jq.loading.css("display", "none");
+}
+
+
 /*
  * helper functions
  */

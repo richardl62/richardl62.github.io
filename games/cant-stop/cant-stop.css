@@ -1,4 +1,20 @@
+#loading, #load-error{
+  font-family:helvetica;
+  font-size: x-large;
+  text-align:center;
+}
+
+#load-error {
+  display:none;
+}
+
+#load-error div:first-child {
+  color:red;
+  font-size: xx-large;
+}
+
 #game {
+    /* visibility: visible; */
     position: relative; /* to force a positioning context */
     display: inline-flex;
     flex-direction: column;
@@ -6,6 +22,7 @@
     font-size: 30px;
     --player-color: black; /* Changed in JS */
     margin: 0 0;
+    visibility: hidden; /* Startup option */
 }
 
 #game * {
