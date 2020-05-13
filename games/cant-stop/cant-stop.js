@@ -27,6 +27,7 @@ for (const [key, value] of Object.entries(jq)) {
         '"' + key + '"' + " matched " + value.length + " elements");
 }
 
+const disable_at_end_of_game = [jq.pass, jq.leave];
 /*
  * Global variables (other the jq)
  */
@@ -206,6 +207,8 @@ function do_roll(spin)
     change_current_player();
 
     make_visible(required_roll_visibility);
+
+    disable_at_end_of_game.forEach(e => e.prop("disabled", false));
  }
 
 // Return null if all players have left
@@ -223,11 +226,8 @@ function next_unfinished_player(in_p)
 }
 
 function change_current_player() {
-    if(!current_player)
-    {
-        // The game is over, so do nothing.
-        return;
-    }
+    assert(current_player);
+
     game_board.remove_all_provisional_precommits(current_player);
 
     game_board.remove_all_precommits(current_player);
@@ -242,7 +242,8 @@ function change_current_player() {
         player_color = get_default_player_color(current_player);
     } else {
         player_color = "var(--games-board-non-player-color)"
-        make_visible(game_over_visibility);
+        make_visible(game_over_visibility); 
+        disable_at_end_of_game.forEach(e => e.prop("disabled", true));
     }
 
     clear_in_play_columns();
