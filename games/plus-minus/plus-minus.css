@@ -1,14 +1,17 @@
 #number {
     font-size: 5em;
     font-weight: bold;
-    /* width: 40rem;
-    height: 6rem;
-    border: 1px #000000 solid;
-    overflow: auto; */
-    margin-bottom: 0.5rem;
 }
 
 button {
-    font-size: 2em;
+    font-size:2em;
     min-width:2em;
+    margin-top: 0.5rem;
+}
+#connect-locally-button {
+    font-size:1em;
+}
+
+#connect-button, #connect-locally-button {
+    visibility: hidden;
 }
