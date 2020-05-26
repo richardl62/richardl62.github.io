@@ -36,16 +36,30 @@ body {
     justify-self: end;  
 }
 
-#send-message-div {
+#chat-text-and-send {
     display: flex;
+    margin-top: 0.5em;
 }
 
-#message-text {
-
+#chat-text {
     resize: none;
 }
 
 #name {
     width: 8em;
+}
+
+#chat {
+    font-family:helvetica;
+}
+
+
+#chat-text {
+    font-family:inherit;
+    font-size:inherit;
+}
+
+#connection-form { /* for now */
+    display: none;
 }
 
