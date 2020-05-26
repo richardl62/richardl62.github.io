@@ -1,17 +1,51 @@
+body {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+#number-and-buttons {
+    display: inline-flex;
+    flex-direction:column;
+    align-items: center;
+}
+
 #number {
-    font-size: 5em;
+    font-size: 5rem;
     font-weight: bold;
 }
 
-button {
-    font-size:2em;
-    min-width:2em;
-    margin-top: 0.5rem;
-}
-#connect-locally-button {
-    font-size:1em;
+#plus-minus button {
+    font-size:2rem;
+    min-width:2rem;
 }
 
-#connect-button, #connect-locally-button {
-    visibility: hidden;
+#connect-div {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
 }
+
+#group-form-inputs {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    grid-column-gap: 0.3rem;
+
+}
+
+#group-form-inputs label {
+    justify-self: end;  
+}
+
+#send-message-div {
+    display: flex;
+}
+
+#message-text {
+
+    resize: none;
+}
+
+#name {
+    width: 8em;
+}
+

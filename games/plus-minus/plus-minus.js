@@ -25,7 +25,7 @@ class gameManager {
 var move_server = new gameServer(new gameManager);
 move_server.web_connect();
 
-plus_button.addEventListener("click", () => move_server.state(number + 1));
-minus_button.addEventListener("click", () => move_server.state(number - 1));
-connect_button.addEventListener("click", () => move_server.web_connect());
-connect_locally_button.addEventListener("click", () => move_server.local_connect());
+//plus_button.addEventListener("click", () => move_server.state(number + 1));
+//minus_button.addEventListener("click", () => move_server.state(number - 1));
+//connect_button.addEventListener("click", () => move_server.web_connect());
+//connect_locally_button.addEventListener("click", () => move_server.local_connect());

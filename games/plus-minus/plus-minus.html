@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,16 +12,58 @@
     <script src="../lib/game-server.js"></script>
     <script defer src="plus-minus.js"></script>
 </head>
+
 <body>
-    <div id="number">0</div>
-    <div>
-        <button type="button" id="plus-button">+</button>
-        <button type="button" id="minus-button">-</button>
-        <button type="button" id="connect-button">Connect</button>
+    <div id=number-and-buttons>
+        <div id="number">0</div>
+        <div id="plus-minus">
+            <button type="button" id="plus-button">+</button>
+            <button type="button" id="minus-button">-</button>
+        </div>
     </div>
 
-    <div>
-        <button type="button" id="connect-locally-button">Connect locally (test)</button>
-    </div>       
+    <fieldset id="messages">
+        <legend>Messages</legend>
+        <div id="messsage-display">
+        </div>
+        <div id="send-message-div">
+            <textarea id="message-text" cols=40 rows=2> </textarea>
+            <button type="button" id="send-button">Send</button>
+        </div>
+    </fieldset>
+    
+    <fieldset id="group-form">
+        <legend>Connection group</legend>
+
+        <div id="connect-option">
+            <label for="new-connection"> New </label>
+            <input type="radio" id="new-connection" name="connection" checked>
+            <label for="join-existing"> Existing </label>
+            <input type="radio" id="join-existing" name="connection">
+        </div>
+
+        <div id="group-form-inputs">
+            <label for="name">Name (optional)</label>
+            <input type="text" name="name" id="name" placeholder="Your name">
+            <label class="new-contection-only" for="min-player">Min players</label>
+            <input class="new-contection-only" type="number" name="min-player" id="min-players" value=2 min=2 max=999>
+            <label class="new-contection-only" for="max-player">Max players</label>
+            <input class="new-contection-only" type="number" name="max-player" id="max-players" value=2 min=2 max=999>
+            <label class="joining-contection-only" for="group-id">ID</label>
+            <input class="joining-contection-only" type="text" name="group-id" placeholder="Group id">
+        </div>
+
+        <div id="connect-div">
+            <input type="submit" value="Connect">
+
+            <div id="test-mode-div">
+                <input type="checkbox" id="test-mode" name="test-mode" value="on">
+                <label for="test-mode">Test mode</label><br>
+            </div>
+        </div>
+
+    </fieldset>
+
 </body>
+
 </html>
