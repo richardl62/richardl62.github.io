@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="plus-minus.css">
     <script src="../lib/jquery-3.5.0.min.js"></script>
     <script src="../lib/socket.io.dev.js"></script>
+    <script src="../lib/tools.js"></script>
     <script src="../lib/game-server.js"></script>
     <script defer src="plus-minus.js"></script>
 </head>
@@ -22,13 +23,13 @@
         </div>
     </div>
 
-    <fieldset id="chat">
-        <legend>Chat</legend>
-        <div id="chat-display">
+    <fieldset id="messages">
+        <legend>Messages</legend>
+        <div id="message-display">
         </div>
-        <div id="chat-text-and-send">
+        <div id="chat">
             <textarea id="chat-text" cols=40 rows=2></textarea>
-            <button type="button" id="send-button">Send</button>
+            <button type="button" id="chat-send">Send</button>
         </div>
     </fieldset>
     
@@ -54,7 +55,7 @@
         </div>
 
         <div id="connect-div">
-            <input type="submit" value="Connect">
+            <input type="submit" id="connect" value="Connect">
 
             <div id="test-mode-div">
                 <input type="checkbox" id="test-mode" name="test-mode" value="on">

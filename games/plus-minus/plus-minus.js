@@ -1,12 +1,19 @@
 'use strict';
-const number_div = document.getElementById("number");
-const plus_button = document.getElementById("plus-button");
-const minus_button = document.getElementById("minus-button");
-const connect_button = document.getElementById("connect-button");
-const connect_locally_button = document.getElementById("connect-locally-button");
-const send_button = document.getElementById("send-button");
-const chat_text = document.getElementById("chat-text");
-const chat_display = document.getElementById("chat-display");
+function getElementById_Checked(id)
+{
+    let elem = document.getElementById(id);
+    assert(elem, 'Element "' + id + '" not found');
+    return elem;
+}
+
+const chat_text = getElementById_Checked("chat-text");
+const chat_send = getElementById_Checked("chat-text");
+const connect = getElementById_Checked("connect");
+const number_div = getElementById_Checked("number");
+const plus_button = getElementById_Checked("plus-button");
+const minus_button = getElementById_Checked("minus-button");
+const message_display = getElementById_Checked("message-display");
+const test_mode= getElementById_Checked("test-mode");
 
 var number = 0;
 
@@ -18,10 +25,15 @@ class gameManager {
         number_div.innerText = "" + number;
     }
 
+    show_message(message)
+    {
+        message_display.innerText += message;  
+    }
+
     receiveChat(sender, message)
     {
         let name = (sender === false) ? "You" : "Not you";
-        chat_display.innerText += name + ": " + message + "\n";
+        this.show_message(name + ": " + message + "\n");
     }
     
     receiveState(state)
@@ -31,14 +43,25 @@ class gameManager {
     }
 }
 
-var game_server = new gameServer(new gameManager);
+var game_manager = new gameManager;
+var game_server = new gameServer(game_manager);
 
-game_server.web_connect();
+
+function connect_to_server(local)
+{
+    const server = local ? gameServer_localserver : gameServer_webserver;
+
+    game_manager.show_message("Connecting to " + server +  " ");
+    game_server.connect(server);
+    game_manager.show_message("DONE\n");
+}
+
+
 
 plus_button.addEventListener("click", () => game_server.state(number + 1));
 minus_button.addEventListener("click", () => game_server.state(number - 1));
 
-send_button.addEventListener("click", () => {
+chat_send.addEventListener("click", () => {
     let message = chat_text.value.trim();
     if(message != "")
     {
@@ -46,3 +69,12 @@ send_button.addEventListener("click", () => {
     }
     chat_text.value = "";
 });
+
+
+connect.addEventListener("click", function(event){
+    event.preventDefault();
+
+    // Use local connect in test mode
+    const local_connect = test_mode.checked; 
+    connect_to_server(local_connect);
+  });

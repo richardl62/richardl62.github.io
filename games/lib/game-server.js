@@ -3,6 +3,8 @@
 const gameServer_localserver = "http://localhost:5000";
 const gameServer_webserver = "https://glacial-chamber-12465.herokuapp.com/";
 
+
+
 class gameServer {
 
     constructor(gameManager) {
@@ -39,7 +41,9 @@ class gameServer {
 
     connect(server)
     {
-        this.socket = io(server);
+        this.disconnect();
+        
+        this.socket = io(server, ()=>console.log("connected"));
 
         this.socket.on('game-move', (move) => 
              this.gameManager.receiveMove(move));
@@ -49,15 +53,19 @@ class gameServer {
 
         this.socket.on('chat', (message) => 
              this.gameManager.receiveChat(true,message));
+
+        var res = this.socket.emit('am i connected', (data) => {
+            console.log('The server says', data);
+        });
+        console.log("connect() finished", res);
     }
 
-    web_connect()
+    disconnect()
     {
-        return this.connect(gameServer_webserver);
-    }
-
-    local_connect()
-    {
-        return this.connect(gameServer_localserver);
+        if(this.socket)
+        {
+            this.socket.disconnect();
+            this.socket = null;
+        }
     }
 }
