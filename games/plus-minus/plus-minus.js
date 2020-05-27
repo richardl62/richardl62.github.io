@@ -7,7 +7,7 @@ function getElementById_Checked(id)
 }
 
 const chat_text = getElementById_Checked("chat-text");
-const chat_send = getElementById_Checked("chat-text");
+const chat_send = getElementById_Checked("chat-send");
 const connect = getElementById_Checked("connect");
 const number_div = getElementById_Checked("number");
 const plus_button = getElementById_Checked("plus-button");
@@ -47,16 +47,22 @@ var game_manager = new gameManager;
 var game_server = new gameServer(game_manager);
 
 
-function connect_to_server(local)
+async function connect_to_server(local)
 {
     const server = local ? gameServer_localserver : gameServer_webserver;
 
-    game_manager.show_message("Connecting to " + server +  " ");
-    game_server.connect(server);
-    game_manager.show_message("DONE\n");
+    game_manager.show_message("Connecting to " + server);
+
+    const timeout = 10000; // milliseconds
+    let p = game_server.connect(server, timeout);
+
+    try {
+        await p;
+        game_manager.show_message(": SUCCESS\n")
+    } catch(err) {
+        game_manager.show_message(`: FAILED\n${err}\n`)
+    }
 }
-
-
 
 plus_button.addEventListener("click", () => game_server.state(number + 1));
 minus_button.addEventListener("click", () => game_server.state(number - 1));

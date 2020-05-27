@@ -3,8 +3,6 @@
 const gameServer_localserver = "http://localhost:5000";
 const gameServer_webserver = "https://glacial-chamber-12465.herokuapp.com/";
 
-
-
 class gameServer {
 
     constructor(gameManager) {
@@ -39,25 +37,38 @@ class gameServer {
         }
     }
 
-    connect(server)
+    connect(server, timeout)
     {
         this.disconnect();
         
-        this.socket = io(server, ()=>console.log("connected"));
+        let socket = io(server);
 
-        this.socket.on('game-move', (move) => 
+        socket.on('game-move', (move) => 
              this.gameManager.receiveMove(move));
 
-        this.socket.on('state-change', (move) => 
+        socket.on('state-change', (move) => 
              this.gameManager.receiveState(move));
 
-        this.socket.on('chat', (message) => 
+        socket.on('chat', (message) => 
              this.gameManager.receiveChat(true,message));
 
-        var res = this.socket.emit('am i connected', (data) => {
-            console.log('The server says', data);
+        return new Promise((resolve, reject) => {
+            socket.emit('am i connected', () => {
+                this.socket = socket;
+                resolve();
+            })
+
+            let timeout_action = () =>
+            {
+                reject(new Error("connect timed out"));
+                if(!this.socket)
+                {
+                    socket.disconnect();
+                }
+            }
+            setTimeout(timeout_action, timeout);
         });
-        console.log("connect() finished", res);
+
     }
 
     disconnect()
