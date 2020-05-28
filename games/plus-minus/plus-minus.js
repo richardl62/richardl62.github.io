@@ -67,22 +67,25 @@ async function connect_to_server(group_id, local)
 {
     const server = local ? gameServer_localserver : gameServer_webserver;
 
-    game_manager.show_message("Connecting to " + server);
-
     const options = {
         server: server,
-        timeout: 10000,  // milliseconds
+        timeout: 2500,  // milliseconds - should probably be bigger
         state: number,
         group_id: group_id,
     }
 
-    let p = game_server.connect(options);
-
+    let id = null;
     try {
+        let p = game_server.connect(options);
         await p;
-        game_manager.show_message(": SUCCESS\n")
+        game_manager.show_message("Connected\n");
+
+        p.then(id => {
+            elems.group_id.value = id;
+            show_join_only_elems(true); // KLUDGE
+        })
     } catch(err) {
-        game_manager.show_message(`: FAILED\n${err}\n`)
+        game_manager.show_message(err + "\n")
     }
 }
 
@@ -98,26 +101,28 @@ elems.chat_send.addEventListener("click", () => {
     elems.chat_text.value = "";
 });
 
-
-elems.existing_group.addEventListener("click", function(event){
+function show_join_only_elems(show)
+{
     for(let elem of classes.join_group_only)
     {
-        elem.style.display = "initial";
+        elem.style.display = show ? "initial" : "none";
     }
+}
+elems.existing_group.addEventListener("click", function(event){
+    show_join_only_elems(true);
 });
 
 elems.new_group.addEventListener("click", function(event){
-    for(let elem of classes.join_group_only)
-    {
-        elem.style.display = "none";
-    }
+    show_join_only_elems(false);
 });
 
 elems.connect.addEventListener("click", function(event){
     event.preventDefault();
 
+  
+    const local_connect = elems.test_mode.checked; 
+
     let group_id;
-    console.log(elems.existing_group.checked)
     if(elems.existing_group.checked)
     {
         group_id = elems.group_id.value.trim();
@@ -127,7 +132,6 @@ elems.connect.addEventListener("click", function(event){
         }
     }
 
-    // Use local connect in test mode
-    const local_connect = elems.test_mode.checked; 
     connect_to_server(group_id, local_connect);
+
   });

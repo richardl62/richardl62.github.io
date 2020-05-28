@@ -53,22 +53,19 @@ class gameServer {
              this.gameManager.receiveChat(true,message));
 
         return new Promise((resolve, reject) => {
-            socket.emit('am i connected', () => {
+            socket.emit('join-group', options, (data) => {
                 this.socket = socket;
-                resolve();
+                resolve(data);
             })
 
             let timeout_action = () =>
             {
-                reject(new Error("connect timed out"));
-                if(!this.socket)
-                {
-                    socket.disconnect();
-                }
-            }
+                socket.disconnect();
+                reject(new Error("Connection timed out"));
+	        }
+
             setTimeout(timeout_action, options.timeout);
         });
-
     }
 
     disconnect()
@@ -78,5 +75,10 @@ class gameServer {
             this.socket.disconnect();
             this.socket = null;
         }
+    }
+
+    connected()
+    {
+        return Boolean(this.socket);
     }
 }
