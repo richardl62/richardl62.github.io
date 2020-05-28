@@ -37,11 +37,11 @@ class gameServer {
         }
     }
 
-    connect(server, timeout)
+    connect(options)
     {
         this.disconnect();
         
-        let socket = io(server);
+        let socket = io(options.server);
 
         socket.on('game-move', (move) => 
              this.gameManager.receiveMove(move));
@@ -66,7 +66,7 @@ class gameServer {
                     socket.disconnect();
                 }
             }
-            setTimeout(timeout_action, timeout);
+            setTimeout(timeout_action, options.timeout);
         });
 
     }
