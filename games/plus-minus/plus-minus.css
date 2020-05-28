@@ -1,6 +1,10 @@
+* {
+    box-sizing:border-box;
+}
 body {
-    display: inline-flex;
+    display: flex;
     flex-direction: column;
+    max-width: 25em;
 }
 
 /*
@@ -8,7 +12,7 @@ body {
  */
 
 #number-and-buttons {
-    display: inline-flex;
+    display: flex;
     flex-direction:column;
     align-items: center;
 }
@@ -27,24 +31,28 @@ body {
  * Messages and chat
  */
 
+#messages {
+    font-family:Arial, Helvetica, sans-serif;
+}
  
 #chat {
     display: flex;
     margin-top: 0.5em;
-    font-family:helvetica;
+    justify-content: stretch;
 }
 
 #chat-text {
     resize: none;
     font-family:inherit;
     font-size:inherit;
+    width: 100%;
+    border: 0.5px grey solid;
 }
 
-#chat {
-
+#chat-send {
+    font-size: 1.3em;
+    font-family: Arial;
 }
-
-
 
 /*
  * Connection form
@@ -52,13 +60,12 @@ body {
 
 #connect-div {
     display: flex;
-    width: 100%;
     justify-content: space-between;
 }
 
 #group-form-inputs {
-    display: inline-grid;
-    grid-template-columns: auto auto;
+    display: grid;
+    grid-template-columns: max-content 1fr;
     grid-column-gap: 0.3rem;
 
 }
@@ -68,8 +75,5 @@ body {
 }
 
 
-#name {
-    width: 8em;
-}
 
 
