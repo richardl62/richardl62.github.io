@@ -38,7 +38,7 @@ class gameManager {
     receiveMove(move)
     {
         number = move;
-        number_div.innerText = "" + number;
+        elems.number_div.innerText = "" + number;
     }
 
     show_message(message)
@@ -69,7 +69,7 @@ async function connect_to_server(group_id, local)
 
     const options = {
         server: server,
-        timeout: 2500,  // milliseconds - should probably be bigger
+        timeout: 10000,  // milliseconds
         state: number,
         group_id: group_id,
     }

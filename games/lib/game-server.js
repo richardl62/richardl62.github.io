@@ -54,15 +54,24 @@ class gameServer {
 
         return new Promise((resolve, reject) => {
             socket.emit('join-group', options, (data) => {
-                this.socket = socket;
-                resolve(data);
+                // Testing socket is a half-hearted attempt to prevent a data
+                // race with the timeout action.
+                if (socket) {
+                    this.socket = socket;
+                    resolve(data);
+                }
             })
 
             let timeout_action = () =>
             {
-                socket.disconnect();
-                reject(new Error("Connection timed out"));
-	        }
+                // Testing this.socket is a attempt to prevent a data race with
+                // the server response.
+                if (!this.socket) {
+                    socket.disconnect();
+                    socket = null;
+                    reject(new Error("Connection timed out"));
+                }
+            }
 
             setTimeout(timeout_action, options.timeout);
         });
