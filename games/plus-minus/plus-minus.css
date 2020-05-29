@@ -41,6 +41,14 @@
     font-family:Arial, Helvetica, sans-serif;
 }
  
+#message-display {
+  width: 100%;
+  word-wrap: break-word; /* Hmm, does not seem to work */
+  height: 4em;
+  border: 1px dotted black;
+  overflow-x: hidden;
+  overflow-y: auto;
+} 
 #chat {
     display: flex;
     margin-top: 0.5em;
@@ -90,6 +98,10 @@
 /*
  * Connection established
  */
+
+#connection-established {
+    display: none;
+}
 
 #group-id-and-link {
     display: flex;

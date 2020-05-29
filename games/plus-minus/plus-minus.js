@@ -5,7 +5,9 @@ const elems = {
     chat_text: getElementById_Checked("chat-text"),
     chat_send: getElementById_Checked("chat-send"),
     connect: getElementById_Checked("connect"),
-    direct_link: getElementById_Checked("direct-link"),
+    connection_setup: getElementById_Checked("connection-setup"),
+    connection_established: getElementById_Checked("connection-established"),
+    disconnect: getElementById_Checked("disconnect"),
     existing_group: getElementById_Checked("existing-group"),
     group_id: getElementById_Checked("group-id"),
     group_id_span: getElementById_Checked("group-id-span"),
@@ -13,6 +15,7 @@ const elems = {
     minus_button: getElementById_Checked("minus-button"),
     new_group: getElementById_Checked("new-group"),
     number_div: getElementById_Checked("number"),
+    participant_link: getElementById_Checked("participant-link"),
     plus_button: getElementById_Checked("plus-button"),
     test_mode: getElementById_Checked("test-mode"),
 }
@@ -47,7 +50,7 @@ function new_player_link()
     assert(group_id);
     url.search = "";
     url.searchParams.set("group_id",group_id);
-    if(test_mode())
+    if(url.searchParams.has("test_mode"))
         url.searchParams.set("test_mode",1);
 
     return url.href;
@@ -69,7 +72,8 @@ class gameManager {
 
     message(message)
     {
-        elems.message_display.innerText += message;  
+        elems.message_display.innerText += message; 
+        elems.message_display.scrollTop = elems.message_display.scrollHeight; 
     }
 
     receiveChat(sender, message)
@@ -89,7 +93,6 @@ var group_id;
 var number = 0;
 var game_manager = new gameManager;
 var game_server = new gameServer(game_manager);
-startup();
 
 async function connect_to_server(group_id, local)
 {
@@ -111,6 +114,8 @@ async function connect_to_server(group_id, local)
         p.then(id => {
             set_group_id(id);
             show_join_only_elems(true); // KLUDGE
+            elems.connection_setup.style.display = "none";
+            elems.connection_established.style.display = "initial";
         })
     } catch(err) {
         game_manager.message(err + "\n")
@@ -162,7 +167,7 @@ elems.connect.addEventListener("click", function(event){
     connect_to_server();
   });
 
-elems.direct_link.addEventListener("click", function (event) {
+elems.participant_link.addEventListener("click", function (event) {
 
     navigator.clipboard.writeText(new_player_link()).then(function () {
         game_manager.message('Link copied to clipboard');
@@ -171,3 +176,12 @@ elems.direct_link.addEventListener("click", function (event) {
     });
 });
 
+elems.disconnect.addEventListener("click", function (event) {
+    game_server.disconnect();
+    game_manager.message("disconnected\n");
+    set_group_id(null);
+    elems.connection_setup.style.display = "initial";
+    elems.connection_established.style.display = "none";
+});
+
+startup();
