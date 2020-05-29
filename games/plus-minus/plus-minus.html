@@ -14,10 +14,10 @@
     <script defer src="plus-minus.js"></script>
 </head>
 
-<body>
+<body> <div id="plus-minus-game">
     <div id=number-and-buttons>
         <div id="number">0</div>
-        <div id="plus-minus">
+        <div id="plus-minus-buttons">
             <button type="button" id="plus-button">+</button>
             <button type="button" id="minus-button">-</button>
         </div>
@@ -34,7 +34,7 @@
     </fieldset>
     
     <fieldset id="connection-form">
-        <legend>Connection group</legend>
+        <legend>Connection</legend>
 
         <div id="connect-option">
             <label for="new-group"> New </label>
@@ -52,16 +52,28 @@
         </div>
 
         <div id="connect-div">
-            <input type="submit" id="connect" value="Connect">
-
+            <button type="button" id="connect">Connect</button>
             <div id="test-mode-div">
                 <input type="checkbox" id="test-mode" name="test-mode" value="on">
-                <label for="test-mode">Test mode</label><br>
+                <label for="test-mode">Test mode</label>
             </div>
         </div>
 
     </fieldset>
 
-</body>
+    <fieldset id="connection-established">
+        <legend>Connection</legend>
+
+        <div id="group-id-and-link">
+            <div>Group ID:
+                <span id="group-id-span"></span>
+            </div>
+            <button type="button" id="direct-link">Direct link</button>
+        </div>
+
+        <button type="button" id="disconnect"> Disconnect </button>
+
+    </fieldset>
+</div> </body>
 
 </html>

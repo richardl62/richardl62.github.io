@@ -1,24 +1,16 @@
 'use strict';
-function getElementById_Checked(id)
-{
-    let elem = document.getElementById(id);
-    assert(elem, 'Element "' + id + '" not found');
-    return elem;
-}
 
-function getElementsByClassName_checked(class_name)
-{
-    let elems = document.getElementsByClassName(class_name);
-    assert(elems.length > 0, 'No elements of class "' + class_name + '" found');
-    return elems;
-}
+var group_id;
+var number = 0;
 
 const elems = {
     chat_text: getElementById_Checked("chat-text"),
     chat_send: getElementById_Checked("chat-send"),
     connect: getElementById_Checked("connect"),
+    direct_link: getElementById_Checked("direct-link"),
     existing_group: getElementById_Checked("existing-group"),
     group_id: getElementById_Checked("group-id"),
+    group_id_span: getElementById_Checked("group-id-span"),
     message_display: getElementById_Checked("message-display"),
     minus_button: getElementById_Checked("minus-button"),
     new_group: getElementById_Checked("new-group"),
@@ -31,7 +23,19 @@ const classes = {
     join_group_only: getElementsByClassName_checked("join-group-only"), 
 }
 
-var number = 0;
+function set_group_id(id)
+{
+    group_id = id;
+    elems.group_id_span.innerText = id;
+}
+
+function new_player_link()
+{
+    let url = new URL(window.location.href);
+    url.search = '?group_id='+number;
+
+    return url.href;
+}
 
 class gameManager {
 
@@ -41,7 +45,7 @@ class gameManager {
         elems.number_div.innerText = "" + number;
     }
 
-    show_message(message)
+    message(message)
     {
         elems.message_display.innerText += message;  
     }
@@ -49,7 +53,7 @@ class gameManager {
     receiveChat(sender, message)
     {
         let name = (sender === false) ? "You" : "Not you";
-        this.show_message(name + ": " + message + "\n");
+        this.message(name + ": " + message + "\n");
     }
     
     receiveState(state)
@@ -78,14 +82,14 @@ async function connect_to_server(group_id, local)
     try {
         let p = game_server.connect(options);
         await p;
-        game_manager.show_message("Connected\n");
+        game_manager.message("Connected\n");
 
         p.then(id => {
-            elems.group_id.value = id;
+            set_group_id(id);
             show_join_only_elems(true); // KLUDGE
         })
     } catch(err) {
-        game_manager.show_message(err + "\n")
+        game_manager.message(err + "\n")
     }
 }
 
@@ -119,7 +123,6 @@ elems.new_group.addEventListener("click", function(event){
 elems.connect.addEventListener("click", function(event){
     event.preventDefault();
 
-  
     const local_connect = elems.test_mode.checked; 
 
     let group_id;
@@ -127,11 +130,20 @@ elems.connect.addEventListener("click", function(event){
     {
         group_id = elems.group_id.value.trim();
         if(group_id == "") {
-            game_manager.show_message("Connect failed: Group ID is missing");
+            game_manager.show_message("Group ID is missing");
             return;
         }
     }
 
-    connect_to_server(group_id, local_connect);
-
+    connect_to_server();
   });
+
+elems.direct_link.addEventListener("click", function (event) {
+
+    navigator.clipboard.writeText(new_player_link()).then(function () {
+        game_manager.message('Link copied to clipboard');
+    }, function (err) {
+        game_manager.message(err);
+    });
+});
+

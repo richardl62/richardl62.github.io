@@ -13,6 +13,20 @@ function assert(cond /* + optional arguments*/) {
         }
 }
 
+function getElementById_Checked(id)
+{
+    let elem = document.getElementById(id);
+    assert(elem, 'Element "' + id + '" not found');
+    return elem;
+}
+
+function getElementsByClassName_checked(class_name)
+{
+    let elems = document.getElementsByClassName(class_name);
+    assert(elems.length > 0, 'No elements of class "' + class_name + '" found');
+    return elems;
+}
+
 // My version of Edge does not support [].flat() do provide an alternative
 function flatten(arr) {
     // From https://stackoverflow.com/questions/10865025/merge-flatten-an-array-of-arrays

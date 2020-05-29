@@ -1,11 +1,17 @@
-* {
-    box-sizing:border-box;
-}
-body {
+/*
+ * general
+ */
+
+ #plus-minus-game {
     display: flex;
     flex-direction: column;
     max-width: 25em;
 }
+
+#plus-minus-game * {
+    box-sizing:border-box;
+}
+
 
 /*
  * Number and plus/minus buttons
@@ -22,7 +28,7 @@ body {
     font-weight: bold;
 }
 
-#plus-minus button {
+#plus-minus-buttons button {
     font-size:2rem;
     min-width:2rem;
 }
@@ -50,24 +56,27 @@ body {
 }
 
 #chat-send {
-    font-size: 1.3em;
-    font-family: Arial;
+    font-size: 1.4rem;
 }
 
 /*
  * Connection form
  */
+#connect, #disconnect {
+    font-size: 1em;
+}
+
 
 #connect-div {
     display: flex;
     justify-content: space-between;
+    margin-top: 3px;
 }
 
 #group-form-inputs {
     display: grid;
     grid-template-columns: max-content 1fr;
     grid-column-gap: 0.3rem;
-
 }
 
 #group-form-inputs label {
@@ -76,6 +85,16 @@ body {
 
 .join-group-only {
     display: none; /* default */
+}
+
+/*
+ * Connection established
+ */
+
+#group-id-and-link {
+    display: flex;
+    font-size: 1em;
+    justify-content: space-between;
 }
 
 
