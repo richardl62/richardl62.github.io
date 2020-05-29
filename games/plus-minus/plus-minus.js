@@ -1,7 +1,5 @@
 'use strict';
 
-var group_id;
-var number = 0;
 
 const elems = {
     chat_text: getElementById_Checked("chat-text"),
@@ -23,6 +21,20 @@ const classes = {
     join_group_only: getElementsByClassName_checked("join-group-only"), 
 }
 
+function startup() {
+    const url = new URL(window.location.href); 
+    let group_id = url.searchParams.get("group_id");
+    let test_mode = url.searchParams.has("test_mode");
+    console.log(group_id, test_mode);
+
+    elems.test_mode.checked = test_mode;
+  
+    if(group_id)
+    {
+        connect_to_server(group_id, test_mode);
+    }
+}
+
 function set_group_id(id)
 {
     group_id = id;
@@ -32,10 +44,20 @@ function set_group_id(id)
 function new_player_link()
 {
     let url = new URL(window.location.href);
-    url.search = '?group_id='+number;
+    assert(group_id);
+    url.search = "";
+    url.searchParams.set("group_id",group_id);
+    if(test_mode())
+        url.searchParams.set("test_mode",1);
 
     return url.href;
 }
+
+function test_mode()
+{
+    return elems.test_mode.checked; 
+}
+
 
 class gameManager {
 
@@ -63,9 +85,11 @@ class gameManager {
     }
 }
 
+var group_id;
+var number = 0;
 var game_manager = new gameManager;
 var game_server = new gameServer(game_manager);
-
+startup();
 
 async function connect_to_server(group_id, local)
 {
@@ -123,7 +147,7 @@ elems.new_group.addEventListener("click", function(event){
 elems.connect.addEventListener("click", function(event){
     event.preventDefault();
 
-    const local_connect = elems.test_mode.checked; 
+    const local_connect = test_mode();
 
     let group_id;
     if(elems.existing_group.checked)
