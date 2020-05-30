@@ -8,27 +8,20 @@ const elems = {
     connection_setup: getElementById_Checked("connection-setup"),
     connection_established: getElementById_Checked("connection-established"),
     disconnect: getElementById_Checked("disconnect"),
-    existing_group: getElementById_Checked("existing-group"),
     group_id: getElementById_Checked("group-id"),
     group_id_span: getElementById_Checked("group-id-span"),
     message_display: getElementById_Checked("message-display"),
     minus_button: getElementById_Checked("minus-button"),
-    new_group: getElementById_Checked("new-group"),
     number_div: getElementById_Checked("number"),
     participant_link: getElementById_Checked("participant-link"),
     plus_button: getElementById_Checked("plus-button"),
     test_mode: getElementById_Checked("test-mode"),
 }
 
-const classes = {
-    join_group_only: getElementsByClassName_checked("join-group-only"), 
-}
-
 function startup() {
     const url = new URL(window.location.href); 
     let group_id = url.searchParams.get("group_id");
     let test_mode = url.searchParams.has("test_mode");
-    console.log(group_id, test_mode);
 
     elems.test_mode.checked = test_mode;
   
@@ -107,18 +100,24 @@ async function connect_to_server(group_id, local)
 
     let id = null;
     try {
+        if(local) {
+            game_manager.message("Using local server\n");
+        }
+        game_manager.message("Connecting to server");
+
         let p = game_server.connect(options);
         await p;
-        game_manager.message("Connected\n");
+        game_manager.message(": Success\n");
 
-        p.then(id => {
-            set_group_id(id);
-            show_join_only_elems(true); // KLUDGE
+        p.then(data => {
+            console.log("connect_to_server SUCCESS: data=" + data);
+            set_group_id(data);
             elems.connection_setup.style.display = "none";
             elems.connection_established.style.display = "initial";
         })
     } catch(err) {
-        game_manager.message(err + "\n")
+        console.log("connect_to_server FAILED");
+        game_manager.message(": FAILED\n" + err + "\n")
     }
 }
 
@@ -134,37 +133,9 @@ elems.chat_send.addEventListener("click", () => {
     elems.chat_text.value = "";
 });
 
-function show_join_only_elems(show)
-{
-    for(let elem of classes.join_group_only)
-    {
-        elem.style.display = show ? "initial" : "none";
-    }
-}
-elems.existing_group.addEventListener("click", function(event){
-    show_join_only_elems(true);
-});
-
-elems.new_group.addEventListener("click", function(event){
-    show_join_only_elems(false);
-});
-
 elems.connect.addEventListener("click", function(event){
     event.preventDefault();
-
-    const local_connect = test_mode();
-
-    let group_id;
-    if(elems.existing_group.checked)
-    {
-        group_id = elems.group_id.value.trim();
-        if(group_id == "") {
-            game_manager.show_message("Group ID is missing");
-            return;
-        }
-    }
-
-    connect_to_server();
+    connect_to_server(elems.group_id.value.trim(), test_mode());
   });
 
 elems.participant_link.addEventListener("click", function (event) {
@@ -178,7 +149,7 @@ elems.participant_link.addEventListener("click", function (event) {
 
 elems.disconnect.addEventListener("click", function (event) {
     game_server.disconnect();
-    game_manager.message("disconnected\n");
+    game_manager.message("Disconnected\n");
     set_group_id(null);
     elems.connection_setup.style.display = "initial";
     elems.connection_established.style.display = "none";

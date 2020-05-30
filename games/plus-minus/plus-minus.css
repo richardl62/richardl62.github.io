@@ -91,10 +91,6 @@
     justify-self: end;  
 }
 
-.join-group-only {
-    display: none; /* default */
-}
-
 /*
  * Connection established
  */

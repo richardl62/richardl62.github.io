@@ -39,6 +39,7 @@ class gameServer {
 
     connect(options)
     {
+
         this.disconnect();
         
         let socket = io(options.server);
@@ -52,29 +53,22 @@ class gameServer {
         socket.on('chat', (message) => 
              this.gameManager.receiveChat(true,message));
 
-        return new Promise((resolve, reject) => {
-            socket.emit('join-group', options, (data) => {
-                // Testing socket is a half-hearted attempt to prevent a data
-                // race with the timeout action.
-                if (socket) {
-                    this.socket = socket;
-                    resolve(data);
-                }
-            })
-
-            let timeout_action = () =>
-            {
-                // Testing this.socket is a attempt to prevent a data race with
-                // the server response.
-                if (!this.socket) {
-                    socket.disconnect();
-                    socket = null;
-                    reject(new Error("Connection timed out"));
-                }
-            }
-
-            setTimeout(timeout_action, options.timeout);
+        console.log("About to join group");
+        let p = new promiseWithTimeout(options.timeout, (resolve, reject) => {
+            const channel = options.group_id ? 'join-group' : 'create-group';
+            socket.emit(channel, options, (data) => resolve(data));
         });
+        return p.then(
+            data => {
+                this.socket = socket;
+                return data;
+                },
+            err => {
+                socket.disconnect();
+
+                throw err; // Repropogate the error
+                }
+            );
     }
 
     disconnect()

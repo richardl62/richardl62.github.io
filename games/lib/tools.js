@@ -13,6 +13,21 @@ function assert(cond /* + optional arguments*/) {
         }
 }
 
+// Return a new Promise that will be rejected after the given timeout
+function promiseWithTimeout(timeout_ms, resolve_or_reject) {
+    // Based on 
+    // https://stackoverflow.com/questions/32461271/nodejs-timeout-a-promise-if-failed-to-complete-in-time
+    return new Promise(function(resolve, reject) {
+        // Set up the real work
+        resolve_or_reject(resolve, reject);
+
+        // Set up the timeout
+        setTimeout(function() {
+            reject(Error('Promise timed out after ' + timeout_ms + ' ms'));
+        }, timeout_ms);
+    });
+}
+    
 function getElementById_Checked(id)
 {
     let elem = document.getElementById(id);

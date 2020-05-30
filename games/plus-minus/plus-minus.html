@@ -35,19 +35,12 @@
     <fieldset id="connection-setup">
         <legend>Connection</legend>
 
-        <div id="connect-option">
-            <label for="new-group"> New </label>
-            <input type="radio" id="new-group" name="connection" checked>
-            <label for="existing-group"> Existing </label>
-            <input type="radio" id="existing-group" name="connection">
-        </div>
-
         <div id="group-form-inputs">
             <label for="name">Name (optional)</label>
-            <input type="text" name="name" id="name" placeholder="Your name">
-            <label for="group-id" class="join-group-only">ID</label>
-            <input type="text" name="group-id" id="group-id" 
-                class="join-group-only" placeholder="Group id">
+            <input type="text" id="name" placeholder="Your name">
+            <label for="group-id">Group ID</label>
+            <input type="text" id="group-id" 
+                placeholder="Enter to join existing group">
         </div>
 
         <div id="connect-div">
