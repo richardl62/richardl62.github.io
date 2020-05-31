@@ -10,12 +10,14 @@ class gameServer {
         this.socket = null;
     }
 
-    state(the_state) {
-        this.gameManager.receiveState(the_state);
+    stateChange(state) {
+        assert(typeof state == "object");
+
+        this.gameManager.receiveStateChange(state);
         
         if(this.socket)
         {
-            this.socket.emit('state-change sent', the_state);
+            this.socket.emit('state-change sent', state);
         }
     }
 
@@ -39,7 +41,6 @@ class gameServer {
 
     connect(options)
     {
-
         this.disconnect();
         
         let socket = io(options.server);
@@ -48,17 +49,26 @@ class gameServer {
              this.gameManager.receiveMove(move));
 
         socket.on('state-change', (move) => 
-             this.gameManager.receiveState(move));
+             this.gameManager.receiveStateChange(move));
 
         socket.on('chat', (message) => 
              this.gameManager.receiveChat(true,message));
 
+        const create_group = !group_id;
+        if(create_group) {
+            assert(typeof options.group_id == "number");
+        } else {
+            assert(typeof options.state == "object");
+        }
+            
         let p = new promiseWithTimeout(options.timeout, (resolve, reject) => {
-            const channel = options.group_id ? 'join-group' : 'create-group';
-            socket.emit(channel, options, (data) => {
-                console.log("Channel " + channel + " returned " + data);
-                resolve(data)
-            });
+            if(create_group) {
+                socket.emit('create-group', options.state, 
+                    group_id => resolve(group_id))
+            } else {
+                socket.emit('join-group', options.group_id, 
+                    game_state => resolve(game_state))
+            }
         });
 
         return p.then(data => {

@@ -21,13 +21,14 @@ const elems = {
 
 function startup() {
     const url = new URL(window.location.href); 
-    let group_id = url.searchParams.get("group_id");
+    let group_id = parseInt(url.searchParams.get("group_id"));
     let test_mode = url.searchParams.has("test_mode");
 
     elems.test_mode.checked = test_mode;
   
     if(group_id)
     {
+        set_group_id(group_id);
         connect_to_server(group_id, test_mode);
     }
 }
@@ -57,11 +58,20 @@ function test_mode()
 
 
 class gameManager {
+    constructor()
+    {
+        this.state = make_state(0);
+        this.receiveStateChange(make_state(0))
+    }
+
+    number()
+    {
+        return this.state.number;
+    }
 
     receiveMove(move)
     {
-        number = move;
-        elems.number_div.innerText = "" + number;
+        assert(false, "Not ready to recieve moves");
     }
 
     message(message)
@@ -76,28 +86,38 @@ class gameManager {
         this.message(name + ": " + message + "\n");
     }
     
-    receiveState(state)
+    receiveStateChange(state)
     {
-        // For this dumb 'game' a move is that same as a state.
-        this.receiveMove(state);
+        Object.assign(this.state, state);
+
+        elems.number_div.innerText = "" + this.number();
     }
 }
 
 var group_id;
-var number = 0;
 var game_manager = new gameManager;
 var game_server = new gameServer(game_manager);
+
+function make_state(num)
+{
+    assert(typeof num == "number")
+    return {number: num};
+}
 
 async function connect_to_server(group_id, local)
 {
     const server = local ? gameServer_localserver : gameServer_webserver;
+    const make_new_group = !group_id;
 
+    assert(!make_new_group || typeof group_id == "number", "Group ID must be a number");
     const options = {
         server: server,
         timeout: server_connection_timeout,
-        state: number,
+        state: make_state(game_manager.number()),
         group_id: group_id,
     }
+
+
 
     let id = null;
     try {
@@ -112,7 +132,11 @@ async function connect_to_server(group_id, local)
 
         p.then(data => {
             console.log("connect_to_server SUCCESS: data=" + data);
-            set_group_id(data);
+            if(make_new_group)
+                set_group_id(data);
+            else
+                game_manager.receiveStateChange(data);
+                
             elems.connection_setup.style.display = "none";
             elems.connection_established.style.display = "initial";
         })
@@ -120,15 +144,18 @@ async function connect_to_server(group_id, local)
         console.log("connect_to_server failed:", err);
 
         if (err instanceof PromiseTimeout) {
-            game_manager.message(": Timed out");
+            game_manager.message(": Timed out\n");
         } else {
             game_manager.message(`: ${err.name}\n${err.message}\n`)
         }
     }
 }
 
-elems.plus_button.addEventListener("click", () => game_server.state(number + 1));
-elems.minus_button.addEventListener("click", () => game_server.state(number - 1));
+elems.plus_button.addEventListener("click", () => 
+    game_server.stateChange(make_state(game_manager.number() + 1)));
+
+elems.minus_button.addEventListener("click", () => 
+    game_server.stateChange(make_state(game_manager.number() + 1)));
 
 elems.chat_send.addEventListener("click", () => {
     let message = elems.chat_text.value.trim();
@@ -141,7 +168,7 @@ elems.chat_send.addEventListener("click", () => {
 
 elems.connect.addEventListener("click", function(event){
     event.preventDefault();
-    connect_to_server(elems.group_id.value.trim(), test_mode());
+    connect_to_server(parseInt(elems.group_id.value), test_mode());
   });
 
 elems.participant_link.addEventListener("click", function (event) {

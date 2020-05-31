@@ -356,4 +356,10 @@ function get_integers_test(str)
 // get_integers_test("00");
 // get_integers_test("ab");
 // get_integers_test("-00+2 != +333");
-// get_integers_test("+2 - 233 != -01234 ");
+// get_integ
+
+
+// let a = {1:11, 2:22}
+// Object.assign(a, null);
+// Object.assign(a, {2:222, 3:33});
+// console.log(a);
