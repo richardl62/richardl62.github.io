@@ -13,6 +13,11 @@ function assert(cond /* + optional arguments*/) {
         }
 }
 
+class PromiseTimeout extends Error {
+    constructor(message) {
+        super(message);
+    }
+}
 // Return a new Promise that will be rejected after the given timeout
 function promiseWithTimeout(timeout_ms, resolve_or_reject) {
     // Based on 
@@ -23,7 +28,7 @@ function promiseWithTimeout(timeout_ms, resolve_or_reject) {
 
         // Set up the timeout
         setTimeout(function() {
-            reject(Error('Promise timed out after ' + timeout_ms + ' ms'));
+            reject(new PromiseTimeout('Time out after ' + timeout_ms + ' ms'));
         }, timeout_ms);
     });
 }

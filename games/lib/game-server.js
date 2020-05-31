@@ -53,22 +53,27 @@ class gameServer {
         socket.on('chat', (message) => 
              this.gameManager.receiveChat(true,message));
 
-        console.log("About to join group");
         let p = new promiseWithTimeout(options.timeout, (resolve, reject) => {
             const channel = options.group_id ? 'join-group' : 'create-group';
-            socket.emit(channel, options, (data) => resolve(data));
+            socket.emit(channel, options, (data) => {
+                console.log("Channel " + channel + " returned " + data);
+                resolve(data)
+            });
         });
-        return p.then(
-            data => {
-                this.socket = socket;
-                return data;
-                },
-            err => {
-                socket.disconnect();
 
-                throw err; // Repropogate the error
-                }
-            );
+        return p.then(data => {
+
+            // The server reports an error by returning an Error object
+            if (data.server_error) {
+                throw Error("Server reported: " + data.server_error); // Repropogate the error
+            }
+            
+            this.socket = socket;
+            return data;
+        }).catch(err => {
+            socket.disconnect();
+            throw err; // Repropogate the error
+        });
     }
 
     disconnect()

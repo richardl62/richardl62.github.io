@@ -1,5 +1,6 @@
 'use strict';
 
+const server_connection_timeout = 4000; // milliseconds
 
 const elems = {
     chat_text: getElementById_Checked("chat-text"),
@@ -43,7 +44,7 @@ function new_player_link()
     assert(group_id);
     url.search = "";
     url.searchParams.set("group_id",group_id);
-    if(url.searchParams.has("test_mode"))
+    if(test_mode())
         url.searchParams.set("test_mode",1);
 
     return url.href;
@@ -93,7 +94,7 @@ async function connect_to_server(group_id, local)
 
     const options = {
         server: server,
-        timeout: 10000,  // milliseconds
+        timeout: server_connection_timeout,
         state: number,
         group_id: group_id,
     }
@@ -116,8 +117,13 @@ async function connect_to_server(group_id, local)
             elems.connection_established.style.display = "initial";
         })
     } catch(err) {
-        console.log("connect_to_server FAILED");
-        game_manager.message(": FAILED\n" + err + "\n")
+        console.log("connect_to_server failed:", err);
+
+        if (err instanceof PromiseTimeout) {
+            game_manager.message(": Timed out");
+        } else {
+            game_manager.message(`: ${err.name}\n${err.message}\n`)
+        }
     }
 }
 
@@ -141,7 +147,7 @@ elems.connect.addEventListener("click", function(event){
 elems.participant_link.addEventListener("click", function (event) {
 
     navigator.clipboard.writeText(new_player_link()).then(function () {
-        game_manager.message('Link copied to clipboard');
+        game_manager.message('Link copied to clipboard\n');
     }, function (err) {
         game_manager.message(err);
     });
