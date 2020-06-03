@@ -61,7 +61,7 @@ class gameManager {
     constructor()
     {
         this.state = make_state(0);
-        this.receiveStateChange(make_state(0))
+        this.receiveState(make_state(0))
     }
 
     number()
@@ -86,7 +86,7 @@ class gameManager {
         this.message(name + ": " + message + "\n");
     }
     
-    receiveStateChange(state)
+    receiveState(state)
     {
         Object.assign(this.state, state);
 
@@ -131,11 +131,11 @@ async function connect_to_server(group_id, local)
         game_manager.message(": Success\n");
 
         p.then(data => {
-            console.log("connect_to_server SUCCESS: data=" + data);
+            console.log("connected to server: data=" + data);
             if(make_new_group)
                 set_group_id(data);
             else
-                game_manager.receiveStateChange(data);
+                game_manager.receiveState(data);
                 
             elems.connection_setup.style.display = "none";
             elems.connection_established.style.display = "initial";
@@ -155,7 +155,7 @@ elems.plus_button.addEventListener("click", () =>
     game_server.stateChange(make_state(game_manager.number() + 1)));
 
 elems.minus_button.addEventListener("click", () => 
-    game_server.stateChange(make_state(game_manager.number() + 1)));
+    game_server.stateChange(make_state(game_manager.number() - 1)));
 
 elems.chat_send.addEventListener("click", () => {
     let message = elems.chat_text.value.trim();

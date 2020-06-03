@@ -13,7 +13,7 @@ class gameServer {
     stateChange(state) {
         assert(typeof state == "object");
 
-        this.gameManager.receiveStateChange(state);
+        this.gameManager.receiveState(state);
         
         if(this.socket)
         {
@@ -49,25 +49,22 @@ class gameServer {
              this.gameManager.receiveMove(move));
 
         socket.on('state-change', (move) => 
-             this.gameManager.receiveStateChange(move));
+             this.gameManager.receiveState(move));
 
         socket.on('chat', (message) => 
              this.gameManager.receiveChat(true,message));
 
-        const create_group = !group_id;
-        if(create_group) {
-            assert(typeof options.group_id == "number");
-        } else {
-            assert(typeof options.state == "object");
-        }
+
             
         let p = new promiseWithTimeout(options.timeout, (resolve, reject) => {
-            if(create_group) {
+            if(options.group_id) {
+                assert(typeof options.group_id == "number");
+                socket.emit('join-group', options.group_id, 
+                    game_state => resolve(game_state))     
+            } else {
+                assert(typeof options.state == "object");
                 socket.emit('create-group', options.state, 
                     group_id => resolve(group_id))
-            } else {
-                socket.emit('join-group', options.group_id, 
-                    game_state => resolve(game_state))
             }
         });
 
