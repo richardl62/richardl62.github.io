@@ -71,7 +71,8 @@ class gameManager {
 
     receiveMove(move)
     {
-        assert(false, "Not ready to recieve moves");
+        assert(Object.keys(move).length, move.chat, "'move' should be chat");
+        this.showChat(true /*kludge*/, move.chat);
     }
 
     message(message)
@@ -79,18 +80,18 @@ class gameManager {
         elems.message_display.innerText += message; 
         elems.message_display.scrollTop = elems.message_display.scrollHeight; 
     }
-
-    receiveChat(sender, message)
-    {
-        let name = (sender === false) ? "You" : "Not you";
-        this.message(name + ": " + message + "\n");
-    }
     
     receiveState(state)
     {
         Object.assign(this.state, state);
 
         elems.number_div.innerText = "" + this.number();
+    }
+
+    showChat(sender, message)
+    {
+        let name = (sender === false) ? "You" : "Not you";
+        this.message(name + ": " + message + "\n");
     }
 }
 
@@ -130,7 +131,8 @@ async function connect_to_server(group_id, local)
         await p;
         game_manager.message(": Success\n");
 
-        p.then(data => {
+        p.then((socket_id, data) => {
+            console.log("socket id: " + socket_id);
             console.log("connected to server: data=" + data);
             if(make_new_group)
                 set_group_id(data);
@@ -161,7 +163,7 @@ elems.chat_send.addEventListener("click", () => {
     let message = elems.chat_text.value.trim();
     if(message != "")
     {
-        game_server.chat_message(message);
+        game_server.move({chat: message});
     }
     elems.chat_text.value = "";
 });

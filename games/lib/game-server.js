@@ -11,31 +11,24 @@ class gameServer {
     }
 
     stateChange(state) {
-        assert(typeof state == "object");
+
 
         this.gameManager.receiveState(state);
         
         if(this.socket)
         {
-            this.socket.emit('state-change sent', state);
+            this.socket.emit('state-change', state);
         }
     }
 
     move(the_move) {
+        assert(typeof the_move == "object");
+
         this.gameManager.receiveMove(the_move);
         
         if(this.socket)
         {
-            this.socket.emit('game-move sent', the_move);
-        }
-    }
-
-    chat_message(message) {
-        this.gameManager.receiveChat(false, message);
-
-        if(this.socket)
-        {
-            this.socket.emit('chat sent', message);
+            this.socket.emit('game-move', the_move);
         }
     }
 
@@ -45,26 +38,25 @@ class gameServer {
         
         let socket = io(options.server);
 
-        socket.on('game-move', (move) => 
-             this.gameManager.receiveMove(move));
+        socket.on('game-move', (socket_id, move) => 
+             this.gameManager.receiveMove(socket_id, move));
 
-        socket.on('state-change', (move) => 
-             this.gameManager.receiveState(move));
-
-        socket.on('chat', (message) => 
-             this.gameManager.receiveChat(true,message));
-
-
-            
+        socket.on('state-change', (socket_id, move) => 
+             this.gameManager.receiveState(socket_id, move));
+    
         let p = new promiseWithTimeout(options.timeout, (resolve, reject) => {
             if(options.group_id) {
                 assert(typeof options.group_id == "number");
-                socket.emit('join-group', options.group_id, 
-                    game_state => resolve(game_state))     
+                socket.emit('join-group',options.group_id, 
+                    (socket_id, game_state) => resolve(socket_id, game_state))     
             } else {
                 assert(typeof options.state == "object");
                 socket.emit('create-group', options.state, 
-                    group_id => resolve(group_id))
+                    (socket_id, game_state) => {
+                        console.log("socket id: " + socket_id,
+                            "group id: " + group_id);
+                        resolve(socket_id, group_id)
+                    })
             }
         });
 
