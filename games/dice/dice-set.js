@@ -171,7 +171,7 @@ class diceSet {
             this.dice_set[i].click(die => die.hold(!die.hold()));
         }
 
-        this.roll_all(false /* no spin */)
+        this.initialise_all();
     }
 
     roll_all(spin /* default is true*/)
@@ -179,7 +179,11 @@ class diceSet {
         this.dice_set.forEach(die => {die.roll(spin); die.hold(false);});
     }
 
-    
+    initialise_all()
+    {
+        this.dice_set.forEach(die => die.number(1));
+    }
+
     roll_unheld() 
     {
         var held = [];

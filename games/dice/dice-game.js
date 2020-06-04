@@ -17,16 +17,15 @@ function changeNumOfPlayers()
 }
 
 
-$("#restart").click(() => score_pads.resetScores());
+$("#restart").click(() => {
+    dice_set.initialise_all();
+    score_pads.resetScores()
+});
 
 //score_pads.n_players(4);
 
 $("#roll-all").click(() => dice_set.roll_all());
 $("#roll-unheld").click(() => dice_set.roll_unheld());
-
-
-
-
 
 var options_shown;
 function show_options(show)
