@@ -10,7 +10,8 @@
     <script src="../lib/jquery-3.5.0.min.js"></script>
     <script src="../lib/socket.io.dev.js"></script>
     <script src="../lib/tools.js"></script>
-    <script src="../lib/game-server.js"></script>
+    <script src="../lib/game-socket.js"></script>
+    <script defer src="game-manager.js"></script>
     <script defer src="plus-minus.js"></script>
 </head>
 
@@ -39,7 +40,7 @@
             <label for="name">Name (optional)</label>
             <input type="text" id="name" placeholder="Your name">
             <label for="group-id">Group ID</label>
-            <input type="number" id="group-id" 
+            <input type="number" id="group-id-input" 
                 placeholder="Enter to join existing group">
         </div>
 
@@ -58,7 +59,7 @@
 
         <div id="group-id-and-link">
             <div>Group ID:
-                <span id="group-id-span"></span>
+                <span id="group-id-display"></span>
             </div>
             <button type="button" id="participant-link">Participant Link</button>
         </div>
