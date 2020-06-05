@@ -6,44 +6,33 @@ const gm_elems = {
 class gameManager {
     constructor() {
         this.state = make_state(0);
-        this.receiveState(this.state);
+        this.receiveState(null, this.state);
     }
     /*
      * Function required by gameSocket
      */
-    action(player_id, transcient, state) {
-        if(transcient) {
-            this.receiveTransient(player_id, transcient);
-        }
-
-        if(state) {
-            this.receiveState(state);
-        }
+    playerJoined(player_id) {
+        this.showMessage(`Player ${player_id} joined the group\n`);
     }
-
-    joinedGroup(player_id) {
-        this.message(`Player ${player_id} joined the group\n`);
-    }
-    leftGroup(player_id) {
-        this.message(`Player ${player_id} left the group\n`);
+    playerLeft(player_id) {
+        this.showMessage(`Player ${player_id} left the group\n`);
     }
     
+    receiveTranscient(player_id, data) {
+        assert(Object.keys(data).length == 1 && data.chat, "chat expected");
+        let name = player_id ? player_id : "You";
+        this.showMessage(`${name}: ${data.chat}\n`);
+    }
+
+    receiveState(player_id, state) {
+        Object.assign(this.state, state);
+        gm_elems.number.innerText = state.number.toString();
+    }
     /*
      * Support function
      */
     number() {
         return this.state.number;
-    }
-
-    receiveTransient(player_id, transcient) {
-        assert(Object.keys(transcient).length == 1 && transcient.chat, "chat expected");
-        let name = player_id ? player_id : "You";
-        this.showMessage(`${name}: ${transcient.chat}\n`);
-    }
-
-    receiveState(state) {
-        Object.assign(this.state, state);
-        gm_elems.number.innerText = this.number().toString();
     }
 
     showMessage(message) {

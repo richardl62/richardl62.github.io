@@ -1,6 +1,6 @@
 'use strict';
 
-const server_connection_timeout = 4000; // milliseconds
+const server_connection_timeout = 10000; // milliseconds
 
 const elems = {
     chat_text: getElementById_Checked("chat-text"),
@@ -19,33 +19,30 @@ const elems = {
 }
 
 function startup() {
-    const url = new URL(window.location.href); 
+    const url = new URL(window.location.href);
     let gid = parseInt(url.searchParams.get("group_id"));
     let test_mode = url.searchParams.has("test_mode");
 
     elems.test_mode.checked = test_mode;
-  
-    if(gid)
-    {
+
+    if (gid) {
         connect_to_server(gid, test_mode);
     }
 }
 
-function new_player_link()
-{
+function new_player_link() {
     let url = new URL(window.location.href);
     assert(group_id());
     url.search = "";
-    url.searchParams.set("group_id",group_id());
-    if(test_mode())
-        url.searchParams.set("test_mode",1);
+    url.searchParams.set("group_id", group_id());
+    if (test_mode())
+        url.searchParams.set("test_mode", 1);
 
     return url.href;
 }
 
-function test_mode()
-{
-    return elems.test_mode.checked; 
+function test_mode() {
+    return elems.test_mode.checked;
 }
 
 function group_id() {
@@ -53,7 +50,7 @@ function group_id() {
 }
 
 function set_group_id(gid) {
-    if(gid) {
+    if (gid) {
         assert(typeof gid == "number");
         elems.group_id_display.innerText = gid.toString();
         elems.group_id_input.value = gid.toString();
@@ -66,14 +63,12 @@ function set_group_id(gid) {
 var game_manager = new gameManager;
 var game_socket = new gameSocket(game_manager);
 
-function make_state(num)
-{
+function make_state(num) {
     assert(typeof num == "number")
-    return {number: num};
+    return { number: num };
 }
 
-async function connect_to_server(in_group_id /*can be null*/, local)
-{
+async function connect_to_server(in_group_id /*can be null*/, local) {
     const server = local ? gameServer_localserver : gameServer_webserver;
 
     const options = {
@@ -81,7 +76,7 @@ async function connect_to_server(in_group_id /*can be null*/, local)
         timeout: server_connection_timeout,
     }
 
-    if(in_group_id) {
+    if (in_group_id) {
         //Don't send state when connecting to an existing group.
         options.group_id = in_group_id;
     } else {
@@ -90,7 +85,7 @@ async function connect_to_server(in_group_id /*can be null*/, local)
 
     let id = null;
     try {
-        if(local) {
+        if (local) {
             game_manager.showMessage("Using local server\n");
         }
         game_manager.showMessage("Connecting to server");
@@ -99,48 +94,48 @@ async function connect_to_server(in_group_id /*can be null*/, local)
         await p;
         game_manager.showMessage(": Success\n");
 
-        p.then(server_response => {            
+        p.then(server_response => {
             assert(server_response.player_id);
             assert(server_response.group_id);
             assert(server_response.group_state);
-            console.log("Connected: ", server_response)
+            //console.log("Connected: ", server_response)
             set_group_id(server_response.group_id);
 
-            game_manager.receiveState(server_response.group_state);
-            
+            game_manager.receiveState(null, server_response.group_state);
+
             elems.connection_setup.style.display = "none";
             elems.connection_established.style.display = "initial";
         })
-    } catch(err) {
-        console.log("connect_to_server failed:", err);
+    } catch (err) {
+        //console.log("connect_to_server failed:", err);
 
         if (err instanceof PromiseTimeout) {
             game_manager.showMessage(": Timed out\n");
         } else {
+            console.log(err);
             game_manager.showMessage(`: ${err.name}\n${err.message}\n`)
         }
     }
 }
 
-elems.plus_button.addEventListener("click", () => 
-    game_socket.action(null, make_state(game_manager.number() + 1)));
+elems.plus_button.addEventListener("click", () =>
+    game_socket.sendState(make_state(game_manager.number() + 1)));
 
-elems.minus_button.addEventListener("click", () => 
-    game_socket.action(null, make_state(game_manager.number() - 1)));
+elems.minus_button.addEventListener("click", () =>
+    game_socket.sendState(make_state(game_manager.number() - 1)));
 
 elems.chat_send.addEventListener("click", () => {
     let message = elems.chat_text.value.trim();
-    if(message != "")
-    {
-        game_socket.action({chat: message}, null);
+    if (message != "") {
+        game_socket.sendTranscient({ chat: message });
     }
     elems.chat_text.value = "";
 });
 
-elems.connect.addEventListener("click", function(event){
+elems.connect.addEventListener("click", function (event) {
     event.preventDefault();
     connect_to_server(group_id(), test_mode());
-  });
+});
 
 elems.participant_link.addEventListener("click", function (event) {
 
