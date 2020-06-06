@@ -4,10 +4,7 @@ const gm_elems = {
 }
 
 class gameManager {
-    constructor() {
-        this.state = make_state(0);
-        this.receiveState(null, this.state);
-    }
+    constructor() {}
     /*
      * Function required by gameSocket
      */
@@ -20,20 +17,24 @@ class gameManager {
     
     receiveTranscient(player_id, data) {
         assert(Object.keys(data).length == 1 && data.chat, "chat expected");
-        let name = player_id ? player_id : "You";
+        let name = "You";
+        if(player_id) {
+            name = game_socket.getPlayerName(player_id);
+        }
         this.showMessage(`${name}: ${data.chat}\n`);
     }
 
     receiveState(player_id, state) {
-        Object.assign(this.state, state);
-        gm_elems.number.innerText = state.number.toString();
+        if(state.number) {
+            gm_elems.number.innerText = state.number.toString();
+        }
     }
     /*
      * Support function
      */
-    number() {
-        return this.state.number;
-    }
+    // number() {
+    //     return this.m_state.number;
+    // }
 
     showMessage(message) {
         gm_elems.message_display.innerText += message;

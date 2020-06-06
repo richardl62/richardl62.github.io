@@ -13,6 +13,7 @@ const elems = {
     group_id_input: getElementById_Checked("group-id-input"),
     group_id_display: getElementById_Checked("group-id-display"),
     minus_button: getElementById_Checked("minus-button"),
+    name: getElementById_Checked("name"),
     participant_link: getElementById_Checked("participant-link"),
     plus_button: getElementById_Checked("plus-button"),
     test_mode: getElementById_Checked("test-mode"),
@@ -24,7 +25,7 @@ function startup() {
     let test_mode = url.searchParams.has("test_mode");
 
     elems.test_mode.checked = test_mode;
-
+    game_socket.sendState(number_state(0));
     if (gid) {
         connect_to_server(gid, test_mode);
     }
@@ -63,9 +64,15 @@ function set_group_id(gid) {
 var game_manager = new gameManager;
 var game_socket = new gameSocket(game_manager);
 
-function make_state(num) {
+function number_state(num) {
     assert(typeof num == "number")
     return { number: num };
+}
+
+function get_number() {
+    let num = game_socket.state().number;
+    assert(typeof num == "number")
+    return num;
 }
 
 async function connect_to_server(in_group_id /*can be null*/, local) {
@@ -80,7 +87,8 @@ async function connect_to_server(in_group_id /*can be null*/, local) {
         //Don't send state when connecting to an existing group.
         options.group_id = in_group_id;
     } else {
-        options.state = make_state(game_manager.number());
+        // Send local state that has accumlated so far.
+        options.state = game_socket.state();
     }
 
     let id = null;
@@ -98,10 +106,13 @@ async function connect_to_server(in_group_id /*can be null*/, local) {
             assert(server_response.player_id);
             assert(server_response.group_id);
             assert(server_response.group_state);
-            //console.log("Connected: ", server_response)
+  
             set_group_id(server_response.group_id);
 
             game_manager.receiveState(null, server_response.group_state);
+
+            let default_name = game_socket.getPlayerName(server_response.player_id);
+            elems.name.placeholder = default_name;
 
             elems.connection_setup.style.display = "none";
             elems.connection_established.style.display = "initial";
@@ -119,10 +130,10 @@ async function connect_to_server(in_group_id /*can be null*/, local) {
 }
 
 elems.plus_button.addEventListener("click", () =>
-    game_socket.sendState(make_state(game_manager.number() + 1)));
+    game_socket.sendState(number_state(get_number() + 1)));
 
 elems.minus_button.addEventListener("click", () =>
-    game_socket.sendState(make_state(game_manager.number() - 1)));
+    game_socket.sendState(number_state(get_number() - 1)));
 
 elems.chat_send.addEventListener("click", () => {
     let message = elems.chat_text.value.trim();
@@ -146,6 +157,13 @@ elems.participant_link.addEventListener("click", function (event) {
     });
 });
 
+elems.name.addEventListener("change", function (event) {
+    let player_id = game_socket.playerId();
+    let name = this.value;
+    //console.log("name change", player_id, name);
+    game_socket.setPlayerName(player_id, name);
+});
+
 elems.disconnect.addEventListener("click", function (event) {
     game_socket.disconnect();
     game_manager.showMessage("Disconnected\n");
@@ -155,3 +173,4 @@ elems.disconnect.addEventListener("click", function (event) {
 });
 
 startup();
+
