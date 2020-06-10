@@ -1,0 +1,47 @@
+
+#form-div {
+    display: inline-flex;
+}
+
+#game-type {
+    display: inline-flex;
+    flex-direction:column;
+    align-items: flex-end;
+}
+
+#form-right {
+    display: inline-flex;
+    flex-direction:column;
+}
+
+.option-line {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#options input {
+    margin-left: 4px;
+} 
+
+
+#form-right {
+    display: inline-flex;
+    flex-direction:column;
+}
+
+#play-mode {
+    display: flex;
+    justify-content:space-between;
+}
+
+#test-options {
+    display: flex;
+}
+
+#test-options input {
+    margin-right: 20px;
+}
+
+#play {
+    font-size: larger;
+}

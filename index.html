@@ -1,32 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Richards Play Pen</title>
-    <style>
-        body {
-            font-size:large;
-        }
-
-        h2 {
-            font-size: 1.3em;
-        }
-    </style>
+    <title>Document</title>
 </head>
+
 <body>
-    <p><a href="games/cant-stop/cant-stop.html">Can't Stop</a></p>
-    
-    <p><a href="games/dice/dice-game.html">Dice game</a></p>
-
-    <p><a href="games/boardgame/boardgame.html?g=dropdown">Drop Down (e.g. Connect 4)</a></p>
-
-    <p><a href="games/boardgame/boardgame.html?g=othello">Othello</a></p>
-
-    <h2>Test/Beta</h2>
-
-    <p><a href="games/plus-minus/plus-minus.html">plus minus</a></p>
 
 </body>
+
+</html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games</title>
+    <link rel="stylesheet">
+    <script defer src="index.js"></script>
+</head>
+
+<body>
+    <h2> Games </h2>
+
+    <!-- Form action is set in Javascript -->
+    <form id="form" method="GET"> <div id="form-div">
+        <div id="main-form">
+            <div id="game-type">
+                <div>
+                    <label>Can't stop</label>
+                    <input type="radio" name="game" value="cant-stop" checked>
+                </div>
+
+                <div>
+                    <label>Dice</label>
+                    <input type="radio" name="game" value="dice">
+                </div>
+
+                <div>
+                    <label>Drop down</label>
+                    <input type="radio" name="game" value="dropdown">
+                </div>
+
+                <div>
+                    <label>Othello</label>
+                    <input type="radio" name="game" value="othello">
+                </div>
+
+                <div>
+                    <label>Plus/Minus (test)</label>
+                    <input type="radio" name="game" value="plus-minus">
+                </div>
+            </div>
+
+            <div id="form-right">
+                <fieldset id="options">
+                    <legend>Options (Under development)</legend>
+
+                    <div class="option-line">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" placeholder="Optional">
+                    </div>
+
+                    <div class="option-line">
+                        <label for="game-id">Game ID</label>
+                        <input type="text" id="game-id" name="game-id" placeholder="Game to join">
+                    </div>
+
+                    <div id="play-mode">
+                        <div>
+                            <label>Local</label>
+                            <input type="radio" name="play-mode" value="local" checked> 
+                        </div>
+
+                        <div>
+                            <label>Start</label>
+                            <input type="radio" name="play-mode" value="start">
+
+                            <label>Join</label>
+                            <input type="radio" name="play-mode" value="join">
+                        </div>
+                    </div>
+
+                </fieldset>
+
+                <button type="submit" id="play">Play</button>
+            </div>
+            <fieldset>
+                <legend>Test</legend>
+                <div id="test-options">
+                    <label>Local server
+                        <input type="checkbox" id="local-server" name="local-server" >
+                    </label>
+                
+                    <label>logging
+                        <input id="logging" type="checkbox" id="logging" name="logging">
+                    </label>
+                </div>
+            </fieldset>
+        </div>
+    </div> </from>
+</body>
+
 </html>
