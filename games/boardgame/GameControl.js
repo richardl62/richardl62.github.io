@@ -31,7 +31,7 @@ class GameControl {
 
     reset()
     {
-        // Default ot the first state name
+        // Default to the first state name
         if(this.initial_state_name === undefined) {
             this.initial_state_name = this.m_game_type.state_names()[0];
         }
