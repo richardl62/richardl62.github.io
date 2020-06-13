@@ -1,7 +1,7 @@
 "use strict";
 
 class GameControl {
-    constructor()
+    constructor(urlParams)
     {
         this.board = new BasicGameBoard($("#board"));
         this.game_history = new GameHistory(this.board);
@@ -15,7 +15,6 @@ class GameControl {
         this.current_player = undefined; // set in reset()
         this.n_players = 2;
 
-        this.the_move_callback = function(){}
         this.in_customise_mode = false;
         
         this.board.clickBoardSquare(square =>
@@ -26,7 +25,35 @@ class GameControl {
                 this.game_move(square);
             });
         
+        this.process_URL_parameters(urlParams);
+
         this.reset();
+
+        this.page_display = new PageDisplay(this);
+    }
+
+    process_URL_parameters(urlParams)
+    {
+        // To do - test and fix
+
+        // const game = urlParams.get("game");
+        // const option = urlParams.get("o");
+        // const board = urlParams.get("b");
+    
+        // if(game)
+        // {
+        //     this.game_name(game);
+        // }
+        
+        // if(option)
+        // {
+        //     this.game_option(option);
+        // }
+    
+        // if(board)
+        // {
+        //     this.status(convert_board_status_from_url(board));
+        // }
     }
 
     reset()
@@ -49,34 +76,36 @@ class GameControl {
         this.current_player = 1;
         this.game_history.clear();
         this.game_history.record(this.current_player);
+
+        if(this.page_display) // allow for call in constructor
+            this.page_display.update();
     }
 
-    // Callback to be run after a  move.  This is intended to allow
-    // the display to be updated.
-    move_callback(callback)
-    {
-        if(callback !== undefined)
-            this.the_move_callback = callback;
-
-        return this.the_move_callback;
-    }
-
-    game_type(name)
+    game_name(name)
     {
         if(name !== undefined)
         {
             this.m_game_name = name;
             this.m_game_type = get_game_type(name);
             this.initial_state_name = undefined;
+
+            // If the game has changed, there will be a new set of options
+            // to display.
+            this.page_display.set_game_options();
+
             this.reset();
         }
         return this.the_game_name;
     }
 
-    game_option_name(name)
+    game_option(name)
     {
-        this.initial_state_name = name;
-        this.reset();
+        if(name !== undefined)
+        {
+            this.initial_state_name = name;
+            this.reset();
+        }
+        return this.initial_state_name;
     }
     
     num_players(num)
@@ -92,6 +121,7 @@ class GameControl {
     next_player()
     {
         this.current_player = next_player(this.current_player, this.n_players);
+        this.page_display.update();
     }
 
     game_names() {return game_names();}
@@ -101,18 +131,21 @@ class GameControl {
     {
         this.game_history.restart();
         this.current_player = this.game_history.user_data();
+        this.page_display.update();
     }
 
     redo()
     {
         this.game_history.redo();
         this.current_player = this.game_history.user_data();
+        this.page_display.update();
     }
 
     undo()
     {
         this.game_history.undo();
         this.current_player = this.game_history.user_data();
+        this.page_display.update();
     }
 
     undo_available()
@@ -138,8 +171,7 @@ class GameControl {
             this.next_player();
             this.game_history.record(this.current_player);
         }
-
-        this.the_move_callback();
+        this.page_display.update();
     }
 
 
@@ -148,11 +180,15 @@ class GameControl {
         if(on_off !== undefined)
         {
             this.in_customise_mode = on_off;
+
+            // Check if we are leaving custom mode
             if(!this.in_customise_mode)
             {
                 this.game_history.clear();
                 this.game_history.record(1);
+                this.page_display.select_custom_game_option();
             }
+            this.page_display.update();
         }
 
         return this.in_customise_mode;

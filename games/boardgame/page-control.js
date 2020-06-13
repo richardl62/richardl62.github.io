@@ -1,10 +1,5 @@
 "use strict";
 
-function player_color_css(player)
-{
-    return "var(--game-board-player-colours-" + player + ")";
-}
-
 
 const jq = { // Get the jQuery elements that are used in this file.
     clear: $("#clear"),
@@ -39,47 +34,38 @@ for (const [ key, value ] of Object.entries(jq)) {
 
 const game_option_custom_string = "custom";
 
-var game_control = new GameControl();
-var page_display = new PageDisplay(game_control);
-
-game_control.move_callback(function(){
-    page_display.update();
-});
+const urlParams = new URLSearchParams(window.location.search);
+var game_control = new GameControl(urlParams);
 
 jq.game_type.change(function() {
     var name = this.options[this.selectedIndex].value;
-    page_display.game_type(name);
+    game_control.game_name(name);
 });
 
 jq.game_option.change(function() {
     var name = this.options[this.selectedIndex].value;
-    page_display.game_option(name);
+    game_control.game_option(name);
 });
 
 jq.restart.click(() => {
     game_control.restart();
-    page_display.update();
 });
 
 jq.undo.click(() => {
     game_control.undo();
-    page_display.update();
 });
 
 jq.redo.click(() => {
     game_control.redo();
-    page_display.update();
 });
 
 jq.pass.click(function(){
     game_control.next_player();
-    page_display.update();
 });
 
 jq.customise_button.click(() => {
     var custom = !game_control.customise_mode();
     game_control.customise_mode(custom);
-    page_display.update();
 });
 
 jq.clear.click(()=>game_control.clear());
@@ -110,12 +96,18 @@ jq.export.click(()=>{
     new_window.document.write("<p>" + stringified + "</p>");
 });
 
-jq.link.click(()=>{
-    let urlParams = new URLSearchParams();
-    urlParams.set("g", page_display.game_type());
-    urlParams.set("b", page_display.board_status_url());
+jq.link.click(() => {
+    if (true) {
+        alert("Making a game link is not currently working");
+    } else {
+        let urlParams = new URLSearchParams();
+        urlParams.set("g", game_control.game_name());
 
-    window.open(window.location.pathname + "?" + urlParams.toString());
+        const status = game_control.board_status();
+        urlParams.set("b", convert_board_status_for_url(status));
+
+        window.open(window.location.pathname + "?" + urlParams.toString());
+    }
 });
 
 // To do: Consider tidying thia full width code

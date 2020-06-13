@@ -82,29 +82,6 @@
         <script src="games-types.js"></script>
         <script src="page-display.js"></script>
         <script src="page-control.js"></script>
- 
-        <script>
-            const urlParams = new URLSearchParams(window.location.search);
-            const game = urlParams.get("game");
-            const option = urlParams.get("o");
-            const board = urlParams.get("b");
-            
-            if(game)
-            {
-                page_display.game_type(game);
-            }
-
-            if(option)
-            {
-                page_display.game_option(option);
-            }
-
-            if(board)
-            {
-                page_display.board_status_url(board);
-            }
-
-        </script>
     </body>
     
 </html>
