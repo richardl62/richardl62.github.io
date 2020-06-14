@@ -17,14 +17,6 @@ class GameControl {
 
         this.in_customise_mode = false;
         
-        this.board.clickBoardSquare(square =>
-            {
-            if(this.in_customise_mode)
-                square_click_custome_mode(square, this.n_players);
-            else
-                this.game_move(square);
-            });
-        
         this.process_URL_parameters(urlParams);
 
         this.reset();
@@ -163,9 +155,13 @@ class GameControl {
         return this.board.fullWidth(opt);
     }
 
-    game_move(square)  // For internal use
+    square_clicked(row, col)
     {
-        if (this.game_play.move(this.current_player, square)) {
+        let square = this.board.getSquare(row, col);
+
+        if(this.in_customise_mode)
+            square_click_custom_mode(square, this.n_players);
+        else if (this.game_play.move(this.current_player, square)) {
             // Change the player before recoding this position in history
             // as we want the new player to be recorded.
             this.next_player();
@@ -237,7 +233,7 @@ class GameControl {
     }
 }
 
-function square_click_custome_mode(square, n_players)
+function square_click_custom_mode(square, n_players)
 {
     var status = square.status();
 

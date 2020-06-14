@@ -34,8 +34,10 @@ for (const [ key, value ] of Object.entries(jq)) {
 
 const game_option_custom_string = "custom";
 
+var game_control = new NetworkGameControl();
+
 const urlParams = new URLSearchParams(window.location.search);
-var game_control = new GameControl(urlParams);
+game_control.connect(urlParams);
 
 jq.game_type.change(function() {
     var name = this.options[this.selectedIndex].value;
@@ -141,7 +143,6 @@ function convert_board_status_for_url(board_status) {
     // Remove the final "-"
     return str.slice(0, -1);
 }  
-
 
 function convert_row_from_url(row)
 {

@@ -2,6 +2,7 @@
 
 const gameServer_localserver = "http://localhost:5000";
 const gameServer_webserver = "https://glacial-chamber-12465.herokuapp.com/";
+const default_connection_timeout = 10000; //ms
 
 function throw_server_error(data) {
     if (data.server_error) {
@@ -51,13 +52,37 @@ class gameSocket {
      * right word).
      */
     connect(options) {
+        function get_option(name, default_val) {
+            let res;
+            if(options instanceof URLSearchParams)
+            {
+                res = options.get(name);
+            } else {
+                res = options.get(name);
+            }
+
+            if(!res)
+                res = default_val;
+
+            console.log(`${name}: ${res}\n`);
+            
+            return res;
+        }
+        const local_server = get_option('local-server');
+        const timeout = get_option('timeout', default_connection_timeout);
+        const state = get_option('state');
+        const group_id = get_option('group_id');
+
+
         this.disconnect();
 
-        let socket = io(options.server);
+        let socket = io(local_server ?
+            gameServer_localserver : gameServer_webserver 
+            );
 
-        let p = new promiseWithTimeout(options.timeout, (resolve) => {
-            assert(!options.state || typeof options.state == "object");
-            socket.emit('join-group', options.group_id, options.state,
+        let p = new promiseWithTimeout(timeout, (resolve) => {
+            assert(!state || typeof state == "object");
+            socket.emit('join-group', group_id, state,
                 server_response => resolve(server_response))
         });
 
