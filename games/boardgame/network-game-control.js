@@ -8,15 +8,23 @@ class NetworkGameControl {
             square => this.square_clicked(square));
     }
     
+
     async connect(urlParams) {
+        this.online_status("Connecting ...");
         try {
-            let data = await this.game_socket.connect(urlParams); 
-            console.log("Connected", data);
+            let data = await this.game_socket.connect(urlParams);
+            this.online_status( "Connected: Game ID " +  data.group_id);
         } catch (error) {
             console.log("Connect failed:", error);
-            alert("Connect failed: " + error.message);
+            this.online_status("Connect failed: " + error.message);
         } 
     }
+
+    online_status(...args) {
+        //kludge?
+        this.game_control.page_display.online_status(...args); 
+    }
+
 
     receiveTranscient(player_id, data) {
         if(data.square_clicked) {

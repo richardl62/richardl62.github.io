@@ -28,7 +28,7 @@ function promiseWithTimeout(timeout_ms, resolve_or_reject) {
 
         // Set up the timeout
         setTimeout(function() {
-            reject(new PromiseTimeout('Time out after ' + timeout_ms/1000 + ' seconds'));
+            reject(new PromiseTimeout('Timed out after ' + timeout_ms/1000 + ' seconds'));
         }, timeout_ms);
     });
 }
