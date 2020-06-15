@@ -13,13 +13,16 @@ class NetworkGameControl {
         this.online_status("Connecting ...");
         try {
             let data = await this.game_socket.connect(urlParams);
-            this.game_control.page_display.online_status(data); 
-            console.log("Connected", data);
+            this.online_status( "Connected: Game ID " +  data.group_id);
         } catch (error) {
             console.log("Connect failed:", error);
-            this.game_control.page_display.online_status(null,error); 
-            alert("Connect failed: " + error.message);
+            this.online_status("Connect failed: " + error.message);
         } 
+    }
+
+    online_status(...args) {
+        //kludge?
+        this.game_control.page_display.online_status(...args); 
     }
 
 
