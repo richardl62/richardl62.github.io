@@ -10,7 +10,8 @@ class NetworkGameControl {
     
     async connect(urlParams) {
         try {
-            await this.game_socket.connect(urlParams); 
+            let data = await this.game_socket.connect(urlParams); 
+            console.log("Connected", data);
         } catch (error) {
             console.log("Connect failed:", error);
             alert("Connect failed: " + error.message);

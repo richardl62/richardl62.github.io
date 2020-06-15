@@ -71,8 +71,7 @@ class gameSocket {
         const local_server = get_option('local-server');
         const timeout = get_option('timeout', default_connection_timeout);
         const state = get_option('state');
-        const group_id = get_option('group_id');
-
+        const game_id = parseInt(get_option('game-id'));
 
         this.disconnect();
 
@@ -82,7 +81,7 @@ class gameSocket {
 
         let p = new promiseWithTimeout(timeout, (resolve) => {
             assert(!state || typeof state == "object");
-            socket.emit('join-group', group_id, state,
+            socket.emit('join-group', game_id, state,
                 server_response => resolve(server_response))
         });
 
