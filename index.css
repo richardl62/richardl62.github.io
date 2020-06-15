@@ -14,9 +14,9 @@
     flex-direction:column;
 }
 
-.option-line {
-    display: flex;
-    justify-content: flex-end;
+#online-options {
+    display: grid;
+    grid-template-columns: auto 10em;
 }
 
 #options input {

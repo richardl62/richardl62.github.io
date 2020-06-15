@@ -120,7 +120,7 @@ class SetHidden
     constructor(elem)
     {
         this.elem = $(elem);
-        assert(elem.length == 1, "SetHidden requires exactly 1 element");
+        assert(this.elem.length == 1, "SetHidden requires exactly 1 element");
         this.intial_display_type = this.elem.css("display");
     }
 

@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games</title>
     <link rel="stylesheet" href="index.css">
+    <script defer src="../richardl62.github.io/games/lib/jquery-3.5.0.min.js"></script>
+    <script defer src="../richardl62.github.io/games/lib/tools.js"></script>
     <script defer src="index.js"></script>
 </head>
 
@@ -13,83 +15,84 @@
     <h2> Games </h2>
 
     <!-- Form action is set in Javascript -->
-    <form id="form" method="GET"> 
+    <form id="form" method="GET">
+
+        <!-- Prevent implicit submission of the form (i.e. on enter).  Taken from
+        https://stackoverflow.com/questions/895171/prevent-users-from-submitting-a-form-by-hitting-enter
+        -->
+        <button type="submit" disabled style="display: none" aria-hidden="true"></button>
+
         <div id="form-div">
-        <div id="main-form">
-            <div id="game-type">
-                <div>
-                    <label>Can't stop</label>
-                    <input type="radio" name="game" value="cant-stop" checked>
-                </div>
-
-                <div>
-                    <label>Dice</label>
-                    <input type="radio" name="game" value="dice">
-                </div>
-
-                <div>
-                    <label>Drop down</label>
-                    <input type="radio" name="game" value="dropdown">
-                </div>
-
-                <div>
-                    <label>Othello</label>
-                    <input type="radio" name="game" value="othello">
-                </div>
-
-                <div>
-                    <label>Plus/Minus (test)</label>
-                    <input type="radio" name="game" value="plus-minus">
-                </div>
-            </div>
-
-            <div id="form-right">
-                <fieldset id="options">
-                    <legend>Options (Under development)</legend>
-
-                    <div class="option-line">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name" placeholder="Optional">
+            <div id="main-form">
+                <div id="game-type">
+                    <div>
+                        <label>Can't Stop
+                            <input type="radio" name="game" value="cantstop" checked>
+                        </label>
                     </div>
 
-                    <div class="option-line">
-                        <label for="game-id">Game ID</label>
-                        <input type="text" id="game-id" name="game-id" placeholder="Game to join">
+                    <div>
+                        <label>Dice
+                            <input type="radio" name="game" value="dice">
+                        </label>
                     </div>
 
-                    <div id="play-mode">
-                        <div>
-                            <label>Local</label>
-                            <input type="radio" name="play-mode" value="local" checked> 
+                    <div>
+                        <label>Dropdown
+                            <input type="radio" name="game" value="dropdown">
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>Othello
+                            <input type="radio" name="game" value="othello">
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>Plus/Minus
+                            <input type="radio" name="game" value="plusminus">
+                        </label>
+                    </div>
+                </div>
+
+                <div id="form-right">
+                    <fieldset id="options">
+                        <legend>Online Play (Experimental)</legend>
+
+                        <div id="online-options">
+                            <label for="name">Player Name</label>
+                            <input type="text" id="name" name="name" placeholder="Optional">
+
+                            <label for="game-id">Game ID</label>
+                            <input type="text" id="game-id" name="game-id" placeholder="ID of game to join">
+
+                            <label for="new-game">New Game</label>
+                            <input type="checkbox" id="new-game" name="new-game">
                         </div>
 
-                        <div>
-                            <label>Start</label>
-                            <input type="radio" name="play-mode" value="start">
+                    </fieldset>
 
-                            <label>Join</label>
-                            <input type="radio" name="play-mode" value="join">
-                        </div>
+                    <button type="submit" id="play">Play</button>
+                </div>
+                <fieldset id="test">
+                    <legend>Test/Debug</legend>
+                    <div id="test-options">
+                        <label>Local server
+                            <input type="checkbox" id="local-server" name="local-server">
+                        </label>
+
+                        <label>Logging
+                            <input type="checkbox" id="logging" name="logging">
+                        </label>
+
+                        <label>Open game
+                            <input type="checkbox" id="open-game" name="open-game">
+                        </label>
                     </div>
-
                 </fieldset>
-
-                <button type="submit" id="play">Play</button>
             </div>
-            <fieldset id="test">
-                <legend>Test</legend>
-                <div id="test-options">
-                    <label>Local server
-                        <input type="checkbox" id="local-server" name="local-server" >
-                    </label>
-                
-                    <label>logging
-                        <input type="checkbox" id="logging" name="logging">
-                    </label>
-                </div>
-            </fieldset>
         </div>
-    </div> 
     </form>
 </body>
 
