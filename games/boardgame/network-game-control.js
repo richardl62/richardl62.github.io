@@ -10,13 +10,16 @@ class NetworkGameControl {
     
     async connect(urlParams) {
         try {
-            let data = await this.game_socket.connect(urlParams); 
+            let data = await this.game_socket.connect(urlParams);
+            this.game_control.page_display.online_status(data); 
             console.log("Connected", data);
         } catch (error) {
             console.log("Connect failed:", error);
+            this.game_control.page_display.online_status(null,error); 
             alert("Connect failed: " + error.message);
         } 
     }
+
 
     receiveTranscient(player_id, data) {
         if(data.square_clicked) {

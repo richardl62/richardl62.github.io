@@ -80,4 +80,12 @@ class PageDisplay {
         jq.game_option.html(inner_html_for_select(names));
         jq.game_option.val(game_option_custom_string);
     }
+
+    online_status(data, error) {
+        if(error) {
+            jq.online_status.text("Connection failed: " + error.str);
+        } else {
+            jq.online_status.text("Connected: Game ID: " + data.group_id);
+        }
+    }
 }

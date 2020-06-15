@@ -5,7 +5,7 @@ const play = getElementById_Checked("play");
 
 const games = document.querySelectorAll('input[name="game"]');
 
-const onlineGames = [ "dropdown", "othello" ];
+const onlineGames = [ "dropdown" ];
 
 
 function UpdateGameVisibilty() {

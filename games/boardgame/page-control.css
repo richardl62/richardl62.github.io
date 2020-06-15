@@ -103,3 +103,6 @@ button:disabled {
     text-decoration: underline;
 }
 
+#online-status {
+    font-size: 2rem;
+}

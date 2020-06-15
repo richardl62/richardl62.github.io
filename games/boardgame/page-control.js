@@ -17,6 +17,7 @@ const jq = { // Get the jQuery elements that are used in this file.
     redo: $("#redo"),
     restart: $("#restart"),
     full_width: $("#full-width"),
+    online_status: $("#online-status"),
     scores: $("#scores"),
     status_message: $("#status-message"),
     player1_score: $("#player1-score"),
