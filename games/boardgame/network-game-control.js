@@ -27,14 +27,18 @@ class NetworkGameControl {
 
 
     receiveTranscient(player_id, data) {
-        if(data.square_clicked) {
-            let [row, col] = data.square_clicked;
-            this.game_control.square_clicked(row, col);
-        }
+        alert(`Uxpected transcient data received - ${player_id} - ${data}`)
     }
 
-    receiveState() {
-        alert("unexpected state change");
+    receiveState(player_id, data) {
+        if (player_id) { // Ignore state that was sent locally
+            if (data.board) {
+                this.game_control.board_status(data.board);
+            }
+            if (data.current_player) {
+                this.game_control.current_player(data.current_player);
+            }
+        }
     }
 
     playerJoined() {
@@ -45,21 +49,35 @@ class NetworkGameControl {
         // Do nothing for now
     }
 
-    square_clicked(square) {
-        const row = square.getRow();
-        const col = square.getCol();
-
-        this.game_socket.sendTranscient({
-            square_clicked: [row, col]
+    sendBoardState() {
+        this.game_socket.sendState({
+            board: this.game_control.board_status(),
+            current_player: this.game_control.current_player(),
         });
     }
 
+    square_clicked(square) {
+        this.game_control.square_clicked(square);
+        this.sendBoardState();
+    }
+
+    restart() {
+        this.game_control.restart();
+        this.sendBoardState();
+    }
+    undo() {
+        this.game_control.undo();
+        this.sendBoardState();
+    }
+
+    redo() {
+        this.game_control.redo();
+        this.sendBoardState();
+    }
 
     game_name(name) {this.game_control.game_name(name);}
     game_option(name) {this.game_control.game_option(name);}
-    restart() {this.game_control.restart();}
-    undo() {this.game_control.undo();}
-    redo() {this.game_control.redo();}
+
     next_player() {this.game_control.next_player();}
     customise_mode() {this.game_control.customise_mode();}
     customise_mode(custom) {this.game_control.customise_mode(custom);}

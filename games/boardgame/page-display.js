@@ -50,7 +50,7 @@ class PageDisplay {
         }
         else {
             const status = this.game_control.get_game_status();
-            const player = this.game_control.current_player;
+            const player = this.game_control.current_player();
             if (status === undefined) {
                 jq.status_message.text("Player " + player); // default
                 jq.status_message.css("color", player_color_css(player));
