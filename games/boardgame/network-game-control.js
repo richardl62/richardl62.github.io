@@ -26,17 +26,13 @@ class NetworkGameControl {
     }
 
 
-    receiveTranscient(player_id, data) {
-        alert(`Uxpected transcient data received - ${player_id} - ${data}`)
-    }
-
-    receiveState(player_id, data) {
+    receiveData(player_id, state, info) {
         if (player_id) { // Ignore state that was sent locally
-            if (data.board) {
-                this.game_control.board_status(data.board);
+            if (state.board) {
+                this.game_control.board_status(state.board);
             }
-            if (data.current_player) {
-                this.game_control.current_player(data.current_player);
+            if (state.current_player) {
+                this.game_control.current_player(state.current_player);
             }
         }
     }
@@ -50,10 +46,12 @@ class NetworkGameControl {
     }
 
     sendBoardState() {
-        this.game_socket.sendState({
+        const state = {
             board: this.game_control.board_status(),
             current_player: this.game_control.current_player(),
-        });
+        };
+
+        this.game_socket.sendData(state, null/*info*/);
     }
 
     square_clicked(square) {

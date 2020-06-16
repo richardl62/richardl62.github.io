@@ -15,20 +15,21 @@ class gameManager {
         this.showMessage(`Player ${player_id} left the group\n`);
     }
     
-    receiveTranscient(player_id, data) {
-        assert(Object.keys(data).length == 1 && data.chat, "chat expected");
-        let name = "You";
-        if(player_id) {
-            name = game_socket.getPlayerName(player_id);
+    receiveData(player_id, state, info) {
+        if (info) {
+            assert(Object.keys(data).length == 1 && data.chat, "chat expected");
+            let name = "You";
+            if (player_id) {
+                name = game_socket.getPlayerName(player_id);
+            }
+            this.showMessage(`${name}: ${data.chat}\n`);
         }
-        this.showMessage(`${name}: ${data.chat}\n`);
-    }
 
-    receiveState(player_id, state) {
-        if(state.number) {
-            gm_elems.number.innerText = state.number.toString();
+        if(state) {
+            if(state.number) {
+                gm_elems.number.innerText = state.number.toString();
+            }
         }
-    }
     /*
      * Support function
      */

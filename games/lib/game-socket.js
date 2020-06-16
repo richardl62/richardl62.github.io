@@ -5,7 +5,7 @@ const gameServer_webserver = "https://glacial-chamber-12465.herokuapp.com/";
 const default_connection_timeout = 10000; //ms
 
 function throw_server_error(data) {
-    if (data.server_error) {
+    if (data && data.server_error) {
         throw Error(ata.server_error)
     }
 }
@@ -20,8 +20,7 @@ class gameSocket {
         leftGroup(player_id);  // Another player left the group
     */
     constructor(gameManager) {
-        assert(typeof gameManager.receiveState == "function");
-        assert(typeof gameManager.receiveTranscient == "function");
+        assert(typeof gameManager.receiveData == "function");
         assert(typeof gameManager.playerJoined == "function");
         assert(typeof gameManager.playerLeft == "function");
 
@@ -64,7 +63,7 @@ class gameSocket {
             if(!res)
                 res = default_val;
 
-            console.log(`${name}: ${res}\n`);
+            //console.log(`${name}: ${res}\n`);
             
             return res;
         }
@@ -108,26 +107,17 @@ class gameSocket {
     }
 
     setListeners() {
-        this.m_socket.on('state', data => {
-            throw_server_error(data);
+        this.m_socket.on('data', data => {
+            throw_server_error(data.state);
+            throw_server_error(data.info);
 
             let player_id = data.player_id;
-            let state = data.state;
-            assert(player_id && state);
+            assert(player_id)
+            
+            this.mergeState(data.state);
 
-            this.mergeState(state);
-            this.m_gameManager.receiveState(player_id, state);
-        })
-
-
-        this.m_socket.on('transcient', data => {
-            throw_server_error(data);
-
-            let player_id = data.player_id;
-            let transcient = data.transcient;
-            assert(player_id && transcient);
-
-            this.m_gameManager.receiveTranscient(player_id, transcient);
+            this.m_gameManager.receiveData(data.player_id, data.state,
+                data.info);
         })
 
         this.m_socket.on('player joined', data => {
@@ -147,20 +137,12 @@ class gameSocket {
         });
     }
 
-    sendState(state) {
+    sendData(state, info) {
         this.mergeState(state);
-        this.m_gameManager.receiveState(null, state);
+        this.m_gameManager.receiveData(null, state, info);
 
         if (this.m_socket) {
-            this.m_socket.emit('state', state);
-        }
-    }
-
-    sendTranscient(data) {
-        this.m_gameManager.receiveTranscient(null, data);
-
-        if (this.m_socket) {
-            this.m_socket.emit('transcient', data);
+            this.m_socket.emit('data', state, info);
         }
     }
 
@@ -199,7 +181,7 @@ class gameSocket {
         let state = new Object;
         state[this.nametag(player_id)] = name;
 
-        this.sendState(state);
+        this.sendData(state);
     }
 
     getPlayerName(player_id) {

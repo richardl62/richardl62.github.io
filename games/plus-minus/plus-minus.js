@@ -25,7 +25,7 @@ function startup() {
     let test_mode = url.searchParams.has("test_mode");
 
     elems.test_mode.checked = test_mode;
-    game_socket.sendState(number_state(0));
+    game_socket.sendData(number_state(0));
     if (gid) {
         connect_to_server(gid, test_mode);
     }
@@ -130,15 +130,15 @@ async function connect_to_server(in_group_id /*can be null*/, local) {
 }
 
 elems.plus_button.addEventListener("click", () =>
-    game_socket.sendState(number_state(get_number() + 1)));
+    game_socket.sendData(number_state(get_number() + 1)));
 
 elems.minus_button.addEventListener("click", () =>
-    game_socket.sendState(number_state(get_number() - 1)));
+    game_socket.sendData(number_state(get_number() - 1)));
 
 elems.chat_send.addEventListener("click", () => {
     let message = elems.chat_text.value.trim();
     if (message != "") {
-        game_socket.sendTranscient({ chat: message });
+        game_socket.sendData(null, { chat: message });
     }
     elems.chat_text.value = "";
 });
