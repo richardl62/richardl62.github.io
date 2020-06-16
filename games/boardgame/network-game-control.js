@@ -17,6 +17,10 @@ class NetworkGameControl {
             try {
                 let data = await this.game_socket.connect(urlParams);
                 this.online_status("Connected: Game ID " + data.group_id);
+
+                console.log(data.group_state);
+                assert(data.group_state);
+                this.setBoard(data.group_state);
             } catch (error) {
                 console.log("Connect failed:", error);
                 this.online_status("Connect failed: " + error.message);
@@ -35,11 +39,8 @@ class NetworkGameControl {
 
     receiveData(player_id, state, info) {
         if (player_id) { // Ignore state that was sent locally
-            if (state.board) {
-                this.game_control.board_status(state.board);
-            }
-            if (state.current_player) {
-                this.game_control.current_player(state.current_player);
+            if(state) {
+                this.setBoard(state);
             }
         }
     }
@@ -59,6 +60,15 @@ class NetworkGameControl {
         };
 
         this.game_socket.sendData(state, null/*info*/);
+    }
+
+    setBoard(state) {
+        if (state.board) {
+            this.game_control.board_status(state.board);
+        }
+        if (state.current_player) {
+            this.game_control.current_player(state.current_player);
+        }
     }
 
     square_clicked(square) {
