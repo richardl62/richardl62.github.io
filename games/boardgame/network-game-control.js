@@ -90,10 +90,14 @@ class NetworkGameControl {
         this.sendBoardState();
     }
 
+    next_player() {
+        this.game_control.next_player();
+        this.sendBoardState();
+    }
+
     game_name(name) {this.game_control.game_name(name);}
     game_option(name) {this.game_control.game_option(name);}
 
-    next_player() {this.game_control.next_player();}
     customise_mode() {this.game_control.customise_mode();}
     customise_mode(custom) {this.game_control.customise_mode(custom);}
     clear() {this.game_control.clear();}
