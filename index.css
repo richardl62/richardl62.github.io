@@ -17,10 +17,16 @@
 #online-options {
     display: grid;
     grid-template-columns: auto 10em;
+    justify-items: start;
+    align-items: center;
 }
 
+#options label {
+    margin-right: 4px;
+} 
+
 #options input {
-    margin-left: 4px;
+    margin: 0;
 } 
 
 
