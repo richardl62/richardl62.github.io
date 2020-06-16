@@ -51,6 +51,8 @@ class gameSocket {
      * right word).
      */
     connect(options) {
+        this.disconnect();
+
         function get_option(name, default_val) {
             let res;
             if(options instanceof URLSearchParams)
@@ -63,7 +65,7 @@ class gameSocket {
             if(!res)
                 res = default_val;
 
-            //console.log(`${name}: ${res}\n`);
+            console.log(`${name}: ${res}\n`);
             
             return res;
         }

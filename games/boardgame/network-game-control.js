@@ -10,14 +10,21 @@ class NetworkGameControl {
     
 
     async connect(urlParams) {
-        this.online_status("Connecting ...");
-        try {
-            let data = await this.game_socket.connect(urlParams);
-            this.online_status( "Connected: Game ID " +  data.group_id);
-        } catch (error) {
-            console.log("Connect failed:", error);
-            this.online_status("Connect failed: " + error.message);
-        } 
+        const new_game = urlParams.get("new-game");
+        const game_id = urlParams.get('game-id');
+        if (new_game || game_id) {
+            this.online_status("Connecting ...");
+            try {
+                let data = await this.game_socket.connect(urlParams);
+                this.online_status("Connected: Game ID " + data.group_id);
+            } catch (error) {
+                console.log("Connect failed:", error);
+                this.online_status("Connect failed: " + error.message);
+            }
+        } else {
+            console.log("Offline play");
+            this.online_status("Offline");
+        }
     }
 
     online_status(...args) {
