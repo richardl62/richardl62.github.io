@@ -37,8 +37,7 @@ const game_option_custom_string = "custom";
 
 var game_control = new NetworkGameControl();
 
-const urlParams = new URLSearchParams(window.location.search);
-game_control.connect(urlParams);
+game_control.connect(new URL(window.location));
 
 jq.game_type.change(function() {
     var name = this.options[this.selectedIndex].value;

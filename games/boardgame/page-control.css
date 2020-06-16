@@ -106,3 +106,8 @@ button:disabled {
 #online-status {
     font-size: 2rem;
 }
+
+#online-status > div {
+    display: inline-block;
+    margin-right: 0.5em;
+}

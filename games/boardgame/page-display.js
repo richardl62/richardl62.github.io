@@ -81,7 +81,7 @@ class PageDisplay {
         jq.game_option.val(game_option_custom_string);
     }
 
-    online_status(message) {
-        jq.online_status.text(message);
+    online_status(html) {
+        jq.online_status.html(html);
     }
 }

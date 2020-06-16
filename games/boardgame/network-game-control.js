@@ -1,4 +1,14 @@
 'use strict';
+function make_div(str) {
+    return "<div>" + str + "</div>";
+}
+
+function make_link(href, text) {
+    if(!text) {
+        text = href;
+    }
+    return `<a href="${href}">${text}</a>`;
+}
 
 class NetworkGameControl {
     constructor() {
@@ -6,34 +16,58 @@ class NetworkGameControl {
         this.game_socket = new gameSocket(this);
         this.game_control.board.clickBoardSquare(
             square => this.square_clicked(square));
+        
+        // Members used in online play - set in connect
+        this.group_id = null;
+        this.url = null;
     }
     
+    async connect(url) {
+        assert(url instanceof URL);
+        this.url = url;
 
-    async connect(urlParams) {
+        const urlParams = new URLSearchParams(url.search);
         const new_game = urlParams.get("new-game");
         const game_id = urlParams.get('game-id');
         if (new_game || game_id) {
-            this.online_status("Connecting ...");
+            this.online_status(make_div("Connecting ..."));
             try {
                 let data = await this.game_socket.connect(urlParams);
-                this.online_status("Connected: Game ID " + data.group_id);
+                this.group_id = data.group_id;
+
+                this.online_status(make_div("Game ID: " + data.group_id) +
+                make_link(this.participantLink(), "Participant link"));
 
                 console.log(data.group_state);
                 assert(data.group_state);
                 this.setBoard(data.group_state);
             } catch (error) {
                 console.log("Connect failed:", error);
-                this.online_status("Connect failed: " + error.message);
+                this.online_status(make_div("Connect failed: " + error.message));
             }
         } else {
             console.log("Offline play");
-            this.online_status("Offline");
+            this.online_status(make_div("Offline"));
         }
     }
 
-    online_status(...args) {
+    online_status(html) {
         //kludge?
-        this.game_control.page_display.online_status(...args); 
+        this.game_control.page_display.online_status(html); 
+    }
+
+    // return href which can be used to join this game, or null in original has
+    // not been supplied
+    participantLink() {
+        let new_url = this.url;
+
+        let searchParams = new_url.searchParams;
+        searchParams.set("game-id", this.group_id);
+        searchParams.delete("new-game");
+
+        new_url.search = searchParams.toString();
+
+        return new_url.href;
     }
 
 
