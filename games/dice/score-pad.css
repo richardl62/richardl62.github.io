@@ -34,6 +34,10 @@
     font-weight: bold;
 }
 
+.highlighted-name {
+    text-decoration: underline;
+}
+
 .enter-score{
     border-top: 1px solid black;
     border-bottom: 1px solid black;

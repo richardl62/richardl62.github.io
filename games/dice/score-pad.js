@@ -37,9 +37,13 @@ class scorePad {
             this.value = "";
         });
 
+        this.enter_score_callback = null;
         this.resetScores();
     }
 
+    highlight_name(on_off){
+        return this.player_name.toggleClass("highlighted-name", on_off);
+    }
     // The input text is typically a number, but can be text like e.g. '-' or 'pass' 
     // or '1235 bah!'
     enter_score_text(input_text)
@@ -59,6 +63,11 @@ class scorePad {
 
             this.current_score.append(div_with_title_and_text(input_text));
             this.total_score_elem.append(div_with_title_and_text(this.total_score));
+
+            if(this.enter_score_callback)
+            {
+                this.enter_score_callback(this);
+            }
         }
     }
 
@@ -102,12 +111,31 @@ class scorePads {
             $(this.input_elem).append(node);
             this.score_pads[i] = new scorePad(node); 
             this.score_pads[i].defaultPlayerName("Player " + (i+1)); 
+            this.score_pads[i].enter_score_callback = (sp) => this.score_entered(sp);
+            this.score_pads[i].player_no = i;
         }
+
+        this.resetScores();
     }
 
+    score_entered(input_sp) {
+        for(let sp of this.score_pads) {
+            sp.highlight_name(false);
+        }
+
+        const next_player = (input_sp.player_no+1) % this.score_pads.length;
+        assert(!isNaN(next_player));
+
+        this.score_pads[next_player].highlight_name(true);
+    }
+    
     resetScores()
     {
-        this.score_pads.forEach(elem => elem.resetScores());
+        this.score_pads.forEach(elem => {
+            elem.resetScores()
+            elem.highlight_name(false);
+        });
+        this.score_pads[0].highlight_name(true);
     }
 }
 
