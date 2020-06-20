@@ -9,8 +9,8 @@ function div_with_title_and_text(text) {
 }
 
 const score_pad_html = `
-<input type="text" class="player-name" placeholder="Player name">
-<input type="text" class="enter-score" placeholder="Enter score">
+<input type="text" class="player-name">
+<input type="text" class="enter-score">
 <div class="scores">
     <div class="current-score"></div>
     <div class="total-score"></div>
@@ -19,7 +19,7 @@ const score_pad_html = `
 
 class scorePad {
 
-    constructor(elem)
+    constructor(elem, player_no)
     {
         this.user_elem = $(elem);
 
@@ -30,6 +30,18 @@ class scorePad {
         this.enter_score = this.user_elem.children(".enter-score");
         this.current_score = this.user_elem.find(".current-score");
         this.total_score_elem = this.user_elem.find(".total-score");
+        this.enter_score_callback = null;
+        this.player_no = player_no;
+        this.resetScores();
+        
+        if (player_no) {
+            this.player_name.val("Player " + player_no);
+            this.player_name.click(function(event) {
+                let jq_this = $(this);
+                jq_this.val("");
+                jq_this.unbind(event);
+            });
+        }
 
         var pad = this;
         this.enter_score.change(function() {
@@ -37,11 +49,14 @@ class scorePad {
             this.value = "";
         });
 
-        this.enter_score_callback = null;
-        this.resetScores();
+
     }
 
-    highlight_name(on_off){
+    score_expected(on_off){
+        if(on_off !== undefined) {
+            this.enter_score.attr("placeholder",
+                on_off ? "* Enter score *" : "Enter score");
+        }
         return this.player_name.toggleClass("highlighted-name", on_off);
     }
     // The input text is typically a number, but can be text like e.g. '-' or 'pass' 
@@ -78,10 +93,6 @@ class scorePad {
         this.current_score.html("<div class='score-column-header'>Score</div>"); 
         this.total_score_elem.html("<div class='score-column-header'>Total</div>"); 
     }
-
-    defaultPlayerName(name) {
-        this.player_name.attr("placeholder", name);
-    }
 }
 
 class scorePads {
@@ -109,10 +120,8 @@ class scorePads {
         {
             var node = $("<div></div>");
             $(this.input_elem).append(node);
-            this.score_pads[i] = new scorePad(node); 
-            this.score_pads[i].defaultPlayerName("Player " + (i+1)); 
+            this.score_pads[i] = new scorePad(node, i+1); 
             this.score_pads[i].enter_score_callback = (sp) => this.score_entered(sp);
-            this.score_pads[i].player_no = i;
         }
 
         this.resetScores();
@@ -120,22 +129,23 @@ class scorePads {
 
     score_entered(input_sp) {
         for(let sp of this.score_pads) {
-            sp.highlight_name(false);
+            sp.score_expected(false);
         }
 
-        const next_player = (input_sp.player_no+1) % this.score_pads.length;
+        // Note: player_no values start at 1.
+        const next_player = input_sp.player_no % this.score_pads.length;
         assert(!isNaN(next_player));
 
-        this.score_pads[next_player].highlight_name(true);
+        this.score_pads[next_player].score_expected(true);
     }
     
     resetScores()
     {
         this.score_pads.forEach(elem => {
             elem.resetScores()
-            elem.highlight_name(false);
+            elem.score_expected(false);
         });
-        this.score_pads[0].highlight_name(true);
+        this.score_pads[0].score_expected(true);
     }
 }
 
