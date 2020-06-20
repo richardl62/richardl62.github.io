@@ -22,6 +22,11 @@ $("#restart").click(() => {
     score_pads.resetScores()
 });
 
+$("#shuffle-players").click(() => {
+    score_pads.shuffle_player_names();
+});
+
+
 //score_pads.n_players(4);
 
 $("#roll-all").click(() => dice_set.roll_all());

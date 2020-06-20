@@ -351,6 +351,14 @@ function get_integers_test(str)
     console.log('"'+str+'"', split_at_integers(str)); 
 }
 
+function shuffleArray(array) {
+    // From https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
 // get_integers_test("");
 // get_integers_test("1 + 1");
 // get_integers_test("00");

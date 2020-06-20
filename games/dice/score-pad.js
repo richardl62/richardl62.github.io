@@ -26,7 +26,7 @@ class scorePad {
         this.user_elem.html(score_pad_html);
         this.user_elem.addClass("score-pad");
 
-        this.player_name = this.user_elem.children(".player-name");
+        this.player_name_elem = this.user_elem.children(".player-name");
         this.enter_score = this.user_elem.children(".enter-score");
         this.current_score = this.user_elem.find(".current-score");
         this.total_score_elem = this.user_elem.find(".total-score");
@@ -35,8 +35,8 @@ class scorePad {
         this.resetScores();
         
         if (player_no) {
-            this.player_name.val("Player " + player_no);
-            this.player_name.click(function(event) {
+            this.player_name_elem.val("Player " + player_no);
+            this.player_name_elem.click(function(event) {
                 let jq_this = $(this);
                 jq_this.val("");
                 jq_this.unbind(event);
@@ -48,16 +48,18 @@ class scorePad {
             pad.enter_score_text(this.value);
             this.value = "";
         });
-
-
     }
 
+    player_name(...Args) {
+        return this.player_name_elem.val(...Args);
+    }
+    
     score_expected(on_off){
         if(on_off !== undefined) {
             this.enter_score.attr("placeholder",
                 on_off ? "* Enter score *" : "Enter score");
         }
-        return this.player_name.toggleClass("highlighted-name", on_off);
+        return this.player_name_elem.toggleClass("highlighted-name", on_off);
     }
     // The input text is typically a number, but can be text like e.g. '-' or 'pass' 
     // or '1235 bah!'
@@ -146,6 +148,30 @@ class scorePads {
             elem.score_expected(false);
         });
         this.score_pads[0].score_expected(true);
+    }
+
+    shuffle_player_names()
+    {
+        // Show dummy name values for a short time before showing the shuffled
+        // names. This is intended to make it clear that the shuffle has
+        // happened in cases where the order does not change
+        const delay = 500; //ms
+
+        const n_players = this.score_pads.length;
+        let names = new Array(n_players);
+
+        for(let i = 0; i < n_players; ++i) {
+            names[i] = this.score_pads[i].player_name();
+            this.score_pads[i].player_name("-");
+        }
+
+        setTimeout(() => {
+            shuffleArray(names);
+            for (let i = 0; i < n_players; ++i) {
+                this.score_pads[i].player_name(names[i]);
+            }
+        }, delay);
+
     }
 }
 
