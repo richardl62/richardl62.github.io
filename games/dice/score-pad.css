@@ -34,8 +34,8 @@
     font-weight: bold;
 }
 
-.highlighted-name {
-    text-decoration: underline;
+.score-expected {
+    border-color: red;
 }
 
 .enter-score{

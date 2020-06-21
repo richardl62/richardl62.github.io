@@ -10,7 +10,7 @@ function div_with_title_and_text(text) {
 
 const score_pad_html = `
 <input type="text" class="player-name">
-<input type="text" class="enter-score">
+<input type="text" class="enter-score" placeholder="Enter score">
 <div class="scores">
     <div class="current-score"></div>
     <div class="total-score"></div>
@@ -55,11 +55,11 @@ class scorePad {
     }
     
     score_expected(on_off){
-        if(on_off !== undefined) {
-            this.enter_score.attr("placeholder",
-                on_off ? "* Enter score *" : "Enter score");
-        }
-        return this.player_name_elem.toggleClass("highlighted-name", on_off);
+        // if(on_off !== undefined) {
+        //     this.enter_score.attr("placeholder",
+        //         on_off ? "* Enter score *" : "Enter score");
+        // }
+        return this.user_elem.toggleClass("score-expected", on_off);
     }
     // The input text is typically a number, but can be text like e.g. '-' or 'pass' 
     // or '1235 bah!'
@@ -104,8 +104,8 @@ class scorePads {
         this.input_elem = elem;
         $(this.input_elem).addClass("score-pads");
 
-
         this.score_pads = [];
+        this.score_entered_callback = () => {};
     }
 
     n_players(n_players)
@@ -139,6 +139,7 @@ class scorePads {
         assert(!isNaN(next_player));
 
         this.score_pads[next_player].score_expected(true);
+        this.score_entered_callback(this.score_pads[next_player].name());
     }
     
     resetScores()
