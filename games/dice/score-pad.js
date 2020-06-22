@@ -172,7 +172,7 @@ class scorePads {
 
         for(let i = 0; i < n_players; ++i) {
             names[i] = this.score_pads[i].player_name();
-            this.score_pads[i].player_name("-");
+            this.score_pads[i].player_name(" ");
         }
 
         setTimeout(() => {
