@@ -19,48 +19,65 @@ const score_pad_html = `
 
 class scorePad {
 
-    constructor(elem, player_no)
+    constructor(elem, player_no, callbacks)
     {
-        this.user_elem = $(elem);
+        this.player_no = player_no;
 
+        if (callbacks) {
+            assert(typeof callbacks.score_entered == "function");
+            assert(typeof callbacks.score_selected == "function");
+            this.callbacks = callbacks;
+        }
+
+        this.user_elem = $(elem);
         this.user_elem.html(score_pad_html);
         this.user_elem.addClass("score-pad");
 
         this.player_name_elem = this.user_elem.children(".player-name");
-        this.enter_score = this.user_elem.children(".enter-score");
-        this.current_score = this.user_elem.find(".current-score");
+        this.enter_score_elem = this.user_elem.children(".enter-score");
+        this.current_score_elem = this.user_elem.find(".current-score");
         this.total_score_elem = this.user_elem.find(".total-score");
-        this.enter_score_callback = null;
-        this.player_no = player_no;
+
         this.resetScores();
         
-        if (player_no) {
-            this.player_name_elem.val("Player " + player_no);
-            this.player_name_elem.click(function(event) {
-                let jq_this = $(this);
-                jq_this.val("");
-                jq_this.unbind(event);
-            });
+ 
+        if (player_no !== undefined) {
+            const default_name = "Player " + (player_no + 1);
+            this.player_name_elem.attr("placeholder", default_name);
+
+            // Simulate placeholder, but use a value for ease of formatting
+            // this.player_name_elem.val(default_name);
+            // this.player_name_elem.click(function(event) {
+            //     let jq_this = $(this);
+            //     jq_this.val("");
+            //     jq_this.unbind(event);
+            // });
         }
 
         var pad = this;
-        this.enter_score.change(function() {
+        this.enter_score_elem.change(function() {
             pad.enter_score_text(this.value);
             this.value = "";
+            if(pad.callbacks) {
+                pad.callbacks.score_entered(pad.player_no);
+            }
+        });
+
+        this.enter_score_elem.click(function() {
+            if(pad.callbacks) {
+                pad.callbacks.score_selected(pad.player_no);
+            }
         });
     }
 
     player_name(...Args) {
         return this.player_name_elem.val(...Args);
     }
-    
+
     score_expected(on_off){
-        // if(on_off !== undefined) {
-        //     this.enter_score.attr("placeholder",
-        //         on_off ? "* Enter score *" : "Enter score");
-        // }
         return this.user_elem.toggleClass("score-expected", on_off);
     }
+
     // The input text is typically a number, but can be text like e.g. '-' or 'pass' 
     // or '1235 bah!'
     enter_score_text(input_text)
@@ -78,13 +95,8 @@ class scorePad {
                 this.total_score += number;
             }
 
-            this.current_score.append(div_with_title_and_text(input_text));
+            this.current_score_elem.append(div_with_title_and_text(input_text));
             this.total_score_elem.append(div_with_title_and_text(this.total_score));
-
-            if(this.enter_score_callback)
-            {
-                this.enter_score_callback(this);
-            }
         }
     }
 
@@ -92,7 +104,7 @@ class scorePad {
     {
         this.total_score = 0;
 
-        this.current_score.html("<div class='score-column-header'>Score</div>"); 
+        this.current_score_elem.html("<div class='score-column-header'>Score</div>"); 
         this.total_score_elem.html("<div class='score-column-header'>Total</div>"); 
     }
 }
@@ -105,50 +117,47 @@ class scorePads {
         $(this.input_elem).addClass("score-pads");
 
         this.score_pads = [];
-        this.score_entered_callback = () => {};
+        this.callbacks = null;
     }
 
     n_players(n_players)
     {
         if(n_players === undefined)
         {
-            return this.score_pads.length();
+            return this.score_pads.length;
         }
 
         this.score_pads.forEach(pad => pad.user_elem.remove());
 
         this.score_pads = new Array(n_players);
-        for(var i = 0; i < n_players; i++)
+        for(var player_no = 0; player_no < n_players; player_no++)
         {
             var node = $("<div></div>");
             $(this.input_elem).append(node);
-            this.score_pads[i] = new scorePad(node, i+1); 
-            this.score_pads[i].enter_score_callback = (sp) => this.score_entered(sp);
+            this.score_pads[player_no] = new scorePad(node, player_no, this.callbacks);
         }
 
         this.resetScores();
     }
 
-    score_entered(input_sp) {
-        for(let sp of this.score_pads) {
-            sp.score_expected(false);
-        }
-
-        // Note: player_no values start at 1.
-        const next_player = input_sp.player_no % this.score_pads.length;
-        assert(!isNaN(next_player));
-
-        this.score_pads[next_player].score_expected(true);
-        this.score_entered_callback(this.score_pads[next_player].name());
-    }
-    
     resetScores()
     {
         this.score_pads.forEach(elem => {
             elem.resetScores()
-            elem.score_expected(false);
         });
-        this.score_pads[0].score_expected(true);
+    }
+
+    score_expected(player_no) {
+        this.score_pads.forEach(sp => {
+            sp.score_expected(false);
+        });
+
+        this.score_pads[player_no].score_expected(true);
+    }
+
+    set_score_callback(cb) {
+        assert(this.score_pads.length == 0);
+        this.callbacks = cb;
     }
 
     shuffle_player_names()
@@ -172,8 +181,9 @@ class scorePads {
                 this.score_pads[i].player_name(names[i]);
             }
         }, delay);
-
     }
+
+
 }
 
 
