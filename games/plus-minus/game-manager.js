@@ -30,6 +30,8 @@ class gameManager {
                 gm_elems.number.innerText = state.number.toString();
             }
         }
+    }
+
     /*
      * Support function
      */

@@ -1,0 +1,41 @@
+#form-div {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    /* grid-template-rows: auto; */
+    grid-template-areas:
+        "game-type  online-game"
+        "game-type  play-offline"
+        "open-games open-games"
+        "test       test";
+
+    gap: 3px 5px;
+}
+
+#game-type {
+    display: inline-flex;
+    flex-direction:column;
+    align-items: flex-end;
+
+    grid-area: game-type;
+}
+
+#online-game {
+    grid-area: online-game;
+}
+
+#play-offline {
+    grid-area: play-offline;
+}
+
+#open-games-fieldset {
+    display:flex;
+    flex-direction:column;
+    grid-area: open-games;
+}
+
+#show-open-games {
+    margin-left:auto;
+}
+#test {
+    grid-area: test;
+}
