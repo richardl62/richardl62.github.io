@@ -1,20 +1,99 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <meta http-equiv="refresh" content="5; url='games/index.html'" />
-    <style>
-        p {
-            font-size: large;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games</title>
+    <link rel="stylesheet" href="index.css">
+    <script defer src="../richardl62.github.io/games/lib/jquery-3.5.0.min.js"></script>
+    <script defer src="../richardl62.github.io/games/lib/tools.js"></script>
+    <script defer src="index.js"></script>
 </head>
 
 <body>
-    <h2>Page moved</h2>
-    <p>You should be automatically redirected after 5 seconds.</p>
-    <p>If not <a href="games/index.html">here</a>.</p>
-    </p>
+    <h2> Games </h2>
+
+    <!-- Form action is set in Javascript -->
+    <form id="form" method="GET">
+
+        <!-- Prevent implicit submission of the form (i.e. on enter).  Taken from
+        https://stackoverflow.com/questions/895171/prevent-users-from-submitting-a-form-by-hitting-enter
+        -->
+        <button type="submit" disabled style="display: none" aria-hidden="true"></button>
+
+        <div id="form-div">
+            <div id="main-form">
+                <div id="game-type">
+                    <div>
+                        <label>Can't Stop
+                            <input type="radio" name="game" value="cantstop" checked>
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>Dice
+                            <input type="radio" name="game" value="dice">
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>Dropdown
+                            <input type="radio" name="game" value="dropdown">
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>Othello
+                            <input type="radio" name="game" value="othello">
+                        </label>
+                    </div>
+
+                    <div>
+                        <label>Plus/Minus
+                            <input type="radio" name="game" value="plusminus">
+                        </label>
+                    </div>
+                </div>
+
+                <div id="form-right">
+                    <fieldset id="options">
+                        <legend>Online Play (Experimental)</legend>
+
+                        <div id="online-options">
+                            <!-- <label for="name">Player Name</label>
+                            <input type="text" id="name" name="name" placeholder="Optional"> -->
+
+                            <label for="game-id">Game ID</label>
+                            <input type="text" id="game-id" name="game-id" placeholder="ID of game to join">
+
+                            <label for="new-game">New Game</label>
+                            <input type="checkbox" id="new-game" name="new-game">
+                        </div>
+
+                    </fieldset>
+
+                    <button type="submit" id="play">Play</button>
+                </div>
+                <fieldset id="test">
+                    <legend>Test/Debug</legend>
+                    <div id="test-options">
+                        <label>Local server
+                            <input type="checkbox" id="local-server" name="local-server">
+                        </label>
+
+                        <label>Logging
+                            <input type="checkbox" id="logging" name="logging">
+                        </label>
+
+                        <label>Open game
+                            <input type="checkbox" id="open-game" name="open-game">
+                        </label>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </form>
 </body>
 
 </html>

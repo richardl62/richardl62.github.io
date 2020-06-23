@@ -28,13 +28,13 @@ function UpdateGameVisibilty() {
 play.addEventListener("click", (e) => {
     const game = document.querySelector('input[name="game"]:checked').value;
     if(game == "dropdown" || game == "othello") {
-        form.action = "boardgame/boardgame.html" 
+        form.action = "games/boardgame/boardgame.html" 
     } else if (game == "dice") {
-        form.action = "dice/dice-game.html"
+        form.action = "games/dice/dice-game.html"
     } else if (game == "cantstop") {
-        form.action = "cant-stop/cant-stop.html"
+        form.action = "games/cant-stop/cant-stop.html"
     } else if (game == "plusminus") {
-        form.action = "plus-minus/plus-minus.html"
+        form.action = "games/plus-minus/plus-minus.html"
     } else {
         alert(`game "${game}" is not recognised`);
         e.preventDefault();
