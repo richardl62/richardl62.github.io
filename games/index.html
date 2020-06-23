@@ -14,86 +14,68 @@
 <body>
     <h2> Games </h2>
 
-    <!-- Form action is set in Javascript -->
-    <form id="form" method="GET">
+    <div id="form-div">
+        <div id="game-type">
+            <div>
+                <label>Can't Stop
+                    <input type="radio" name="game" value="cantstop" checked>
+                </label>
+            </div>
 
-        <!-- Prevent implicit submission of the form (i.e. on enter).  Taken from
-        https://stackoverflow.com/questions/895171/prevent-users-from-submitting-a-form-by-hitting-enter
-        -->
-        <button type="submit" disabled style="display: none" aria-hidden="true"></button>
+            <div>
+                <label>Dice
+                    <input type="radio" name="game" value="dice">
+                </label>
+            </div>
 
-        <div id="form-div">
-            <div id="main-form">
-                <div id="game-type">
-                    <div>
-                        <label>Can't Stop
-                            <input type="radio" name="game" value="cantstop" checked>
-                        </label>
-                    </div>
+            <div>
+                <label>Dropdown
+                    <input type="radio" name="game" value="dropdown">
+                </label>
+            </div>
 
-                    <div>
-                        <label>Dice
-                            <input type="radio" name="game" value="dice">
-                        </label>
-                    </div>
+            <div>
+                <label>Othello
+                    <input type="radio" name="game" value="othello">
+                </label>
+            </div>
 
-                    <div>
-                        <label>Dropdown
-                            <input type="radio" name="game" value="dropdown">
-                        </label>
-                    </div>
-
-                    <div>
-                        <label>Othello
-                            <input type="radio" name="game" value="othello">
-                        </label>
-                    </div>
-
-                    <div>
-                        <label>Plus/Minus
-                            <input type="radio" name="game" value="plusminus">
-                        </label>
-                    </div>
-                </div>
-
-                <div id="form-right">
-                    <fieldset id="options">
-                        <legend>Online Play (Experimental)</legend>
-
-                        <div id="online-options">
-                            <!-- <label for="name">Player Name</label>
-                            <input type="text" id="name" name="name" placeholder="Optional"> -->
-
-                            <label for="game-id">Game ID</label>
-                            <input type="text" id="game-id" name="game-id" placeholder="ID of game to join">
-
-                            <label for="new-game">New Game</label>
-                            <input type="checkbox" id="new-game" name="new-game">
-                        </div>
-
-                    </fieldset>
-
-                    <button type="submit" id="play">Play</button>
-                </div>
-                <fieldset id="test">
-                    <legend>Test/Debug</legend>
-                    <div id="test-options">
-                        <label>Local server
-                            <input type="checkbox" id="local-server" name="local-server">
-                        </label>
-
-                        <label>Logging
-                            <input type="checkbox" id="logging" name="logging">
-                        </label>
-
-                        <label>Open game
-                            <input type="checkbox" id="open-game" name="open-game">
-                        </label>
-                    </div>
-                </fieldset>
+            <div>
+                <label>Plus/Minus
+                    <input type="radio" name="game" value="plusminus">
+                </label>
             </div>
         </div>
-    </form>
+
+        <fieldset id="online-game">
+            <legend>Start Online Game</legend>
+
+            <label for="game-id">Game ID</label>
+            <input type="text" id="game-id" name="game-id" placeholder="Enter ID">
+
+            <button type="button" id="start">Start</button>
+        </fieldset>
+
+        <button type="button" id="play-offline">Play offline</button>
+
+        <fieldset id="open-games">
+            <legend>Online Games</legend>
+            <button type="button" id="show-open-games">Show</button>
+        </fieldset>
+
+        <fieldset id="test">
+            <legend>Test/Debug</legend>
+            <div id="test-options">
+                <label>Local server
+                    <input type="checkbox" id="local-server" name="local-server">
+                </label>
+
+                <label>Logging
+                    <input type="checkbox" id="logging" name="logging">
+                </label>
+            </div>
+        </fieldset>
+    </div>
 </body>
 
 </html>

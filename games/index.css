@@ -1,53 +1,42 @@
 
 #form-div {
-    display: inline-flex;
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    /* grid-template-rows: auto; */
+    grid-template-areas:
+        "game-type  online-game"
+        "game-type  play-offline"
+        "open-games open-games"
+        "test       test";
+
+    gap: 3px 5px;
 }
 
 #game-type {
     display: inline-flex;
     flex-direction:column;
     align-items: flex-end;
+
+    grid-area: game-type;
 }
 
-#form-right {
-    display: inline-flex;
+#online-game {
+    grid-area: online-game;
+}
+
+#play-offline {
+    grid-area: play-offline;
+}
+
+#open-games {
+    display:flex;
     flex-direction:column;
+    grid-area: open-games;
 }
 
-#online-options {
-    display: grid;
-    grid-template-columns: auto 10em;
-    justify-items: start;
-    align-items: center;
+#show-open-games {
+    margin-left:auto;
 }
-
-#options label {
-    margin-right: 4px;
-} 
-
-#options input {
-    margin: 0;
-} 
-
-
-#form-right {
-    display: inline-flex;
-    flex-direction:column;
-}
-
-#play-mode {
-    display: flex;
-    justify-content:space-between;
-}
-
-#test-options {
-    display: flex;
-}
-
-#test-options input {
-    margin-right: 20px;
-}
-
-#play {
-    font-size: larger;
+#test {
+    grid-area: test;
 }
