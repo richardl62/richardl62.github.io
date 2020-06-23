@@ -6,17 +6,20 @@
     justify-items: left;
 }
 
+.score-pads .score-pad {
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
 .score-pad {
     width: 10em;
     display: inline-flex;
     flex-direction: column;
-    border: 5px solid rgba(139, 0, 0, .5); /* based on darkred */
+    border: 5px solid darkred;
     font-family: 'Courier New', Courier, monospace;
     font-weight: bolder;
     font-size: large;
     background-color: lemonchiffon;
-
-    margin: 5px;
 }
 
 
@@ -32,11 +35,7 @@
 }
 
 .score-expected {
-    border-color: rgba(139, 0, 0); /* darkred */
-    
-    /* Kludge: hard coded widths */
-    margin: 4px;
-    border-width: 6px;
+    border-color: red;
 }
 
 .enter-score{
