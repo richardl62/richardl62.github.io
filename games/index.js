@@ -1,60 +1,59 @@
-
+// const form = getElementById_Checked("form");
 const game_id  = getElementById_Checked("game-id");
-const play_offline = getElementById_Checked("play-offline");
-const start = getElementById_Checked("start");
+const new_game  = getElementById_Checked("new-game");
+const play = getElementById_Checked("play");
+
+const games = document.querySelectorAll('input[name="game"]');
+
+const onlineGames = [ "dropdown" ];
 
 
-// const games = document.querySelectorAll('input[name="game"]');
+function UpdateGameVisibilty() {
+    const online_only = new_game.checked || game_id.value != "";
 
-// const onlineGames = [ "dropdown" ];
+    let default_checked = false;
+    for (let game of games) {
+        const show = !online_only || onlineGames.includes(game.value);
+        game.parentElement.style.display = show ? "initial" : "none";
 
+        if(show && !default_checked)
+        {
+            game.checked = true;
+            default_checked = true;
+        }
 
-// function UpdateGameVisibilty() {
-//     const online_only = new_game.checked || game_id.value != "";
+    }
+}
 
-//     let default_checked = false;
-//     for (let game of games) {
-//         const show = !online_only || onlineGames.includes(game.value);
-//         game.parentElement.style.display = show ? "initial" : "none";
+play.addEventListener("click", (e) => {
+    const game = document.querySelector('input[name="game"]:checked').value;
+    if(game == "dropdown" || game == "othello") {
+        form.action = "boardgame/boardgame.html" 
+    } else if (game == "dice") {
+        form.action = "dice/dice-game.html"
+    } else if (game == "cantstop") {
+        form.action = "cant-stop/cant-stop.html"
+    } else if (game == "plusminus") {
+        form.action = "plus-minus/plus-minus.html"
+    } else {
+        alert(`game "${game}" is not recognised`);
+        e.preventDefault();
+    }
+});
 
-//         if(show && !default_checked)
-//         {
-//             game.checked = true;
-//             default_checked = true;
-//         }
+game_id.onchange = function(event) {
+    console.log("game_id", game_id.value);
+    if(game_id.value) {
+        new_game.checked = false;
+    }
+    UpdateGameVisibilty();
+};
 
-//     }
-// }
+new_game.onchange = function(event) {
+    if(new_game.checked) {
+        game_id.value = "";
+    }
 
-// play.addEventListener("click", (e) => {
-//     const game = document.querySelector('input[name="game"]:checked').value;
-//     if(game == "dropdown" || game == "othello") {
-//         form.action = "games/boardgame/boardgame.html" 
-//     } else if (game == "dice") {
-//         form.action = "games/dice/dice-game.html"
-//     } else if (game == "cantstop") {
-//         form.action = "games/cant-stop/cant-stop.html"
-//     } else if (game == "plusminus") {
-//         form.action = "games/plus-minus/plus-minus.html"
-//     } else {
-//         alert(`game "${game}" is not recognised`);
-//         e.preventDefault();
-//     }
-// });
-
-// game_id.onchange = function(event) {
-//     console.log("game_id", game_id.value);
-//     if(game_id.value) {
-//         new_game.checked = false;
-//     }
-//     UpdateGameVisibilty();
-// };
-
-// new_game.onchange = function(event) {
-//     if(new_game.checked) {
-//         game_id.value = "";
-//     }
-
-//     UpdateGameVisibilty();
-// };
+    UpdateGameVisibilty();
+};
 
