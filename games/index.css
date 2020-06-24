@@ -26,16 +26,39 @@
 #play-offline {
     grid-area: play-offline;
 }
-
 #open-games-fieldset {
-    display:flex;
-    flex-direction:column;
     grid-area: open-games;
 }
 
-#show-open-games {
-    margin-left:auto;
+#open-games-div {
+    display:flex;
+    justify-content: space-between;
 }
+
+#open-games-controls {
+    display: grid;
+    grid-template-columns: auto;
+    row-gap: 4px;
+}
+
+.open-games-list {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 4px;
+    row-gap: 4px;
+}
+
+.open-games-error div:first-child {
+    font-weight: bold;
+}
+
+.open-games-error {
+    display:grid;
+    grid-template-columns: auto;
+    row-gap: 4px;
+}
+
 #test {
     grid-area: test;
 }
+

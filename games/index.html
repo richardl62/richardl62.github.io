@@ -60,8 +60,13 @@
 
         <fieldset id="open-games-fieldset">
             <legend>Online Games</legend>
-            <button type="button" id="show-open-games">Show</button>
-            <div id="open-games-list"></div>
+            <div id=open-games-div>
+                <div id="open-games-info"></div>
+                <div id="open-games-controls">
+                    <button type="button" id="refresh-open-games">Refresh</button>
+                    <button type="button" id="clear-open-games">Clear</button>
+                </div>
+            </div>
         </fieldset>
 
         <fieldset id="test">
@@ -71,8 +76,8 @@
                     <input type="checkbox" id="local-server" name="local-server">
                 </label>
 
-                <label>Logging
-                    <input type="checkbox" id="logging" name="logging">
+                <label>Debug options
+                    <input type="checkbox" id="debug-options">
                 </label>
             </div>
         </fieldset>
