@@ -1,8 +1,52 @@
 'use strict';
 
 const gameServer_localserver = "http://localhost:5000";
-const gameServer_webserver = "https://glacial-chamber-12465.herokuapp.com/";
+const gameServer_webserver = "https://glacial-chamber-12465.herokuapp.com";
 const default_connection_timeout = 10000; //ms
+
+function get_game_server(local) {
+    return local ? gameServer_localserver : gameServer_webserver;
+}
+
+function game_server_fetch(method, path, local, data) {
+    assert(typeof path == "string");
+    assert(typeof local == "boolean");
+    if(method === undefined) {
+        method = 'GET';
+    }
+    assert(method == 'GET' || method == 'post');
+  
+    const fetch_options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    };
+
+    const url = get_game_server(local) + '/' + path;
+  
+    return fetch(url, fetch_options)
+        .then(response => {
+            if(response.status != 200) {
+                let error_message = "Connection to server failed";
+                if(response.statusText) {
+                    error_message = `Server response "${response.statusText}"`
+                } 
+
+                throw new Error(error_message);
+            }
+
+            response.json()
+        })
+        .catch(err => {
+            console.log("Fetch failed:",err);
+            throw err; // repropogate
+        });
+
+  }
+
+
 
 function throw_server_error(data) {
     if (data && data.server_error) {
@@ -76,9 +120,7 @@ class gameSocket {
 
         this.disconnect();
 
-        let socket = io(local_server ?
-            gameServer_localserver : gameServer_webserver 
-            );
+        let socket = io(get_game_server(local_server));
 
         let p = new promiseWithTimeout(timeout, (resolve) => {
             assert(!state || typeof state == "object");

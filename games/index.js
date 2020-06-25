@@ -6,15 +6,13 @@ const play_offline_elem = getElementById_Checked("play-offline");
 const start_elem = getElementById_Checked("start");
 const refresh_open_games_elem = getElementById_Checked("refresh-open-games");
 const clear_open_games_elem = getElementById_Checked("clear-open-games");
-const open_games_info = getElementById_Checked("open-games-info");
+const open_games_info = getElementById_Checked("open-games-info"); 
 
-function get_server() {
-  if(local_server_elem.checked)
-    return "http://localhost:5000/";
-  else
-    return "http://madeup.com/";
-}
 const online_games = [ "dropdown" ];
+    
+function local_server() {
+   return local_server_elem.checked;
+}
 
 // function showOnlyOnlineGames(online_only) {
  
@@ -79,7 +77,7 @@ function game_display_name(game) {
 
 class OnlineGameInfo {
   constructor() {
-    this.no_games();
+    this.reset();
   }
 
   reset(class_name) {
@@ -88,18 +86,15 @@ class OnlineGameInfo {
   }
 
 
-  no_games() {
-    this.reset('open-games-no-games');
-    open_games_info.innerHTML = "<div>No games found</div>";
+  message(text) {
+    this.reset('open-games-message');
+    $(open_games_info).text(text);
   }
 
   error(...lines) {
     this.reset('open-games-error');
 
     for (let line of lines) {
-      if(line instanceof Error) {
-        console.log("OnlineGameInfo::error", line);
-      }
       open_games_info.innerHTML += `<div>${line}</div>\n`;
     }
   }
@@ -123,17 +118,20 @@ let oneline_game_info = new OnlineGameInfo;
 
 
 function show_all_open_games() {
-  fetch(get_server() + 'open-games')
-    .then(function (response) {
-      return response.json()
-    })
+  oneline_game_info.message("Working ...");
+  game_server_fetch('GET', 'open-games', local_server())
     .then(function (data) {
-        oneline_game_info.reset();
+      if (!data) {
+        oneline_game_info.message("No games found");
+      } else {
         for (let [id, game] of data) {
           oneline_game_info.add_first_game(id, game);
         }
+      }
     })
-    .catch(err => oneline_game_info.error("Can't retrieve open games", err));
+    .catch(err => {
+      oneline_game_info.error("Can't retrieve open games", err);
+    })
 }
 
 function start_game(id, game_type) {
@@ -141,17 +139,8 @@ function start_game(id, game_type) {
     id: id,
     game: game_type, 
   };
-
-  const fetch_options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  };
-
-  fetch(get_server() + 'start-game', fetch_options)
-    .then(response => response.json())
+ 
+  game_server_fetch('POST', 'start-game', local_server(), data)
     .then(data => {
       oneline_game_info.add_first_game(id, game_type);
     })
@@ -178,7 +167,7 @@ refresh_open_games_elem.addEventListener("click", (e) => {
 })
 
 clear_open_games_elem.addEventListener("click", (e) => {
-  fetch(get_server() + 'clear')
+  fetch(get_server() + '/clear')
     .then(response => {
       console.log("response", response)
       return response.text();
@@ -199,10 +188,12 @@ play_offline_elem.addEventListener("click", (e) => {
     window.location.href  = game_href(id, game);
 });
 
-local_server_elem.addEventListener("change", (e) => {
-  show_all_open_games();
-});
-//show_all_open_games();
+// local_server_elem.addEventListener("change", (e) => {
+//   show_all_open_games();
+// });
+local_server_elem.checked = true;
+show_all_open_games();
+
 
 
 
