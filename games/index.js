@@ -1,4 +1,7 @@
 'use strict'
+
+const debug_only_elems = document.querySelectorAll('.debug-only');
+const debug_options_elem  = getElementById_Checked("debug-options");
 const game_name_elems = document.querySelectorAll('input[name="game"]');
 const game_id_elem  = getElementById_Checked("game-id");
 const local_server_elem  = getElementById_Checked("local-server");
@@ -8,28 +11,37 @@ const refresh_open_games_elem = getElementById_Checked("refresh-open-games");
 const clear_open_games_elem = getElementById_Checked("clear-open-games");
 const open_games_info = getElementById_Checked("open-games-info"); 
 
-const online_games = [ "dropdown" ];
+const online_games = [ "dropdown", "othello" ];
     
 function local_server() {
    return local_server_elem.checked;
 }
 
-// function showOnlyOnlineGames(online_only) {
- 
-//     let default_checked = false;
-//     for (let game of show_latest_online_game) {
-//         const show = !online_only || onlineGames.includes(game.value);
-//         game.parentElement.style.display = show ? "initial" : "none";
+function first_online_game() {
+  for (let game of game_name_elems) {
+    if (online_games.includes(game.value)) {
+      return game;
+    }
+  }
+  assert(false)
+}
 
-//         if(show && !default_checked)
-//         {
-//             game.checked = true;
-//             default_checked = true;
-//         }
-
-//     }
-// }
-
+function show_online_games_only() {
+  for (let game of game_name_elems) {
+    if (!online_games.includes(game.value)) {
+      game.parentElement.style.display = "none";
+      if (game.selected) {
+        first_online_game().selected = true;
+      }
+    }
+  }
+}
+function show_debug_only_elems(show) {
+  const vis = show ? "initial" : "hidden";
+  for (let elem of debug_only_elems) {
+    elem.style.visibility = vis;
+  }
+}
 // id is optional. If not wanted can be suppied as null
 function game_href(id, game) {
   assert(game);
@@ -188,11 +200,22 @@ play_offline_elem.addEventListener("click", (e) => {
     window.location.href  = game_href(id, game);
 });
 
-// local_server_elem.addEventListener("change", (e) => {
-//   show_all_open_games();
-// });
-local_server_elem.checked = true;
-show_all_open_games();
+local_server_elem.addEventListener("change", (e) => {
+  oneline_game_info.reset();
+});
+
+game_id_elem.addEventListener("click", (e) => {
+  show_online_games_only();
+});
+
+debug_options_elem.addEventListener("change", function(e) {
+  show_debug_only_elems(this.checked);
+});
+
+//show_debug_only_elems(true);
+
+//local_server_elem.checked = true;
+//show_all_open_games();
 
 
 
