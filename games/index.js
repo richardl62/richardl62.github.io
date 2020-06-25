@@ -8,7 +8,7 @@ const local_server_elem  = getElementById_Checked("local-server");
 const play_offline_elem = getElementById_Checked("play-offline");
 const start_elem = getElementById_Checked("start");
 const refresh_open_games_elem = getElementById_Checked("refresh-open-games");
-const clear_open_games_elem = getElementById_Checked("clear-open-games");
+const clear_games_elem = getElementById_Checked("clear-games");
 const open_games_info = getElementById_Checked("open-games-info"); 
 
 const online_games = [ "dropdown", "othello" ];
@@ -17,28 +17,9 @@ function local_server() {
    return local_server_elem.checked;
 }
 
-function first_online_game() {
-  for (let game of game_name_elems) {
-    if (online_games.includes(game.value)) {
-      return game;
-    }
-  }
-  assert(false)
-}
-
-function show_online_games_only() {
-  for (let game of game_name_elems) {
-    if (!online_games.includes(game.value)) {
-      game.parentElement.style.display = "none";
-      if (game.selected) {
-        first_online_game().selected = true;
-      }
-    }
-  }
-}
 function show_debug_only_elems(show) {
   const vis = show ? "initial" : "hidden";
-  for (let elem of debug_only_elems) {
+  for(let elem of debug_only_elems) {
     elem.style.visibility = vis;
   }
 }
@@ -131,14 +112,17 @@ let oneline_game_info = new OnlineGameInfo;
 
 function show_all_open_games() {
   oneline_game_info.message("Working ...");
-  game_server_fetch('GET', 'open-games', local_server())
+  game_server_fetch('open-games', local_server())
     .then(function (data) {
-      if (!data) {
+      
+      let game_found = false;
+      for (let [id, game] of data) {
+        oneline_game_info.add_first_game(id, game);
+        game_found = true;
+      }
+
+      if (!game_found) {
         oneline_game_info.message("No games found");
-      } else {
-        for (let [id, game] of data) {
-          oneline_game_info.add_first_game(id, game);
-        }
       }
     })
     .catch(err => {
@@ -147,20 +131,37 @@ function show_all_open_games() {
 }
 
 function start_game(id, game_type) {
-  const data = { 
-    id: id,
+
+  if(!online_games.includes(game_type)) {
+    const display_name = game_display_name(game_type);
+    oneline_game_info.message(`Sorry: ${display_name} is not available online`);
+    return;
+  }
+
+  let sent_data = { 
     game: game_type, 
   };
+  if(id) {
+    sent_data['id'] = id;
+  }
  
-  game_server_fetch('POST', 'start-game', local_server(), data)
-    .then(data => {
-      oneline_game_info.add_first_game(id, game_type);
+  game_server_fetch('start-game', local_server(), sent_data)
+    .then(received_data => {
+      oneline_game_info.add_first_game(received_data.id, game_type);
     })
-    .catch((error) => {
-      console.error('Error:', error.message);
+    .catch(err => {
+      oneline_game_info.error("Cannot start game", err);
     });
 }
 
+function clear_all_games() {
+  game_server_fetch('clear', local_server())
+  .then(data => {
+    oneline_game_info.reset();
+  })
+  .catch((error) => {
+  });
+}
 
 function selected_game() {
   for(let elem of game_name_elems) {
@@ -171,27 +172,16 @@ function selected_game() {
 }
 
 start_elem.addEventListener("click", (e) => {
-  start_game(game_id_elem.value, selected_game());
+  start_game(game_id_elem.value.trim(), selected_game());
+  game_id_elem.value = ""
 })
 
 refresh_open_games_elem.addEventListener("click", (e) => {
   show_all_open_games();
 })
 
-clear_open_games_elem.addEventListener("click", (e) => {
-  fetch(get_server() + '/clear')
-    .then(response => {
-      console.log("response", response)
-      return response.text();
-    })
-    .then(data => {
-      console.log("data", data)
-      show_all_open_games()
-    })
-    .catch(err => {
-      console.log("err", err)
-      oneline_game_info.error("Problem clearing open games", err);
-    })
+clear_games_elem.addEventListener("click", (e) => {
+  clear_all_games();
 })
 
 play_offline_elem.addEventListener("click", (e) => {
@@ -214,7 +204,7 @@ debug_options_elem.addEventListener("change", function(e) {
 
 //show_debug_only_elems(true);
 
-//local_server_elem.checked = true;
+local_server_elem.checked = true;
 //show_all_open_games();
 
 
