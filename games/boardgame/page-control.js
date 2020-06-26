@@ -36,8 +36,7 @@ for (const [ key, value ] of Object.entries(jq)) {
 const game_option_custom_string = "custom";
 
 var game_control = new NetworkGameControl();
-
-game_control.connect(new URL(window.location));
+game_control.connect(window.location.search);
 
 jq.game_type.change(function() {
     var name = this.options[this.selectedIndex].value;

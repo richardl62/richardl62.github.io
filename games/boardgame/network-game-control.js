@@ -1,14 +1,4 @@
 'use strict';
-function make_div(str) {
-    return "<div>" + str + "</div>";
-}
-
-function make_link(href, text) {
-    if(!text) {
-        text = href;
-    }
-    return `<a href="${href}">${text}</a>`;
-}
 
 class NetworkGameControl {
     constructor() {
@@ -19,57 +9,45 @@ class NetworkGameControl {
         
         // Members used in online play - set in connect
         this.group_id = null;
-        this.url = null;
+
+        // Used until connect() is called.
+        this.online_status("Offline");
     }
     
     async connect(url) {
-        assert(url instanceof URL);
-        this.url = url;
-
-        const urlParams = new URLSearchParams(url.search);
-        const new_game = urlParams.get("new-game");
-        const game_id = urlParams.get('game-id');
-        if (new_game || game_id) {
-            this.online_status(make_div("Connecting ..."));
+        const urlParams = new URLSearchParams(url);
+        if (urlParams.has('id')) {
+            this.online_status("Connecting ...");
             try {
-                let data = await this.game_socket.connect(urlParams);
-                this.group_id = data.group_id;
+                const local = urlParams.get("local");
+                const id = urlParams.get("id");
+                const url = get_game_server(local);
+                this.game_socket.connect(url);
 
-                this.online_status(make_div("Game ID: " + data.group_id) +
-                make_link(this.participantLink(), "Participant link"));
+                let data = await this.game_socket.joinGame(id);
 
-                console.log(data.group_state);
-                assert(data.group_state);
-                this.setBoard(data.group_state);
+                assert(data.state);
+                assert(data.game_id);
+                this.online_status("Online: Game ID " + data.game_id);
+
+                // TO DO: Standardise on game_id
+                this.group_id = data.game_id;
+
+                console.log(data.state);
+
+                this.setBoard(data.state);
             } catch (error) {
                 console.log("Connect failed:", error);
-                this.online_status(make_div("Connect failed: " + error.message));
+                this.online_status("Connect failed: " + error)
             }
-        } else {
-            console.log("Offline play");
-            this.online_status(make_div("Offline"));
         }
     }
 
-    online_status(html) {
+    online_status(message) {
         //kludge?
-        this.game_control.page_display.online_status(html); 
+        this.game_control.page_display.online_status(
+            `<div>${message}</div>`); 
     }
-
-    // return href which can be used to join this game, or null in original has
-    // not been supplied
-    participantLink() {
-        let new_url = this.url;
-
-        let searchParams = new_url.searchParams;
-        searchParams.set("game-id", this.group_id);
-        searchParams.delete("new-game");
-
-        new_url.search = searchParams.toString();
-
-        return new_url.href;
-    }
-
 
     receiveData(player_id, state, info) {
         if (player_id) { // Ignore state that was sent locally

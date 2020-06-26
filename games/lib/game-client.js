@@ -8,7 +8,8 @@ function get_game_server(local) {
     return local ? gameServer_localserver : gameServer_webserver;
 }
 
-// KLUDGE? Always use POST requests, and always send/receive data as JSON.
+// Send/fetch data to/from the server.
+// KLUDGE? Always uses a POST request.
 function game_server_fetch(path, local, data) {
     assert(typeof path == "string");
     assert(typeof local == "boolean");
@@ -38,7 +39,7 @@ function game_server_fetch(path, local, data) {
         .then(data => {
             // data.error is set if there is a 'legitimate' error,
             // i.e. a user error rather than a code error.
-            if(data.error) {
+            if (data.error) {
                 throw new Error(data.error);
             }
             return data;
@@ -82,8 +83,7 @@ class gameSocket {
      *     timeout: <timeout in millseconds>
      *
      *     //  Optional
-     *     group_id: <number>
-     *     state: <object with state to be recorded with group>
+     *     group_id: <strimg>
      * }
      *
      * Return a promise which when/if resolved has {
@@ -95,62 +95,16 @@ class gameSocket {
      * If the promise is rejected an error object is returned (if that is the
      * right word).
      */
-    connect(options) {
+    connect(url) {
         this.disconnect();
+        
+        this.m_socket = io(url);
 
-        function get_option(name, default_val) {
-            let res;
-            if (options instanceof URLSearchParams) {
-                res = options.get(name);
-            } else {
-                res = options.get(name);
-            }
-
-            if (!res)
-                res = default_val;
-
-            console.log(`${name}: ${res}\n`);
-
-            return res;
-        }
-        const local_server = get_option('local-server');
-        const timeout = get_option('timeout', default_connection_timeout);
-        const state = get_option('state');
-        const game_id = parseInt(get_option('game-id'));
-
-        this.disconnect();
-
-        let socket = io(get_game_server(local_server));
-
-        let p = new promiseWithTimeout(timeout, (resolve) => {
-            assert(!state || typeof state == "object");
-            socket.emit('join-group', game_id, state,
-                server_response => resolve(server_response))
-        });
-
-        return p.then(data => {
-            // Propogate any error returned by the server.
-            if (data.server_error) {
-                throw Error("Server reported: " + data.server_error);
-            }
-            assert(data.player_id);
-            assert(data.group_state);
-
-            this.mergeState(data.group_state);
-
-            this.m_socket = socket;
-            this.setListeners();
-
-            this.m_player_id = data.player_id;
-
-            return data;
-        }).catch(err => {
-            socket.disconnect();
-            throw err; // Repropogate the error
-        });
+        this.setGameListeners();
     }
 
-    setListeners() {
+    // Set listener used for game play, rather than timeout, errors etc.
+    setGameListeners() {
         this.m_socket.on('data', data => {
             throw_server_error(data.state);
             throw_server_error(data.info);
@@ -178,6 +132,51 @@ class gameSocket {
             let player_id = data.player_id;
             assert(player_id);
             this.m_gameManager.playerLeft(player_id);
+        });
+    }
+
+    joinGame(id) {
+        assert(this.m_socket);
+        let socket = this.m_socket;
+   
+        const timeout = default_connection_timeout; // For Now
+
+        let p = new promiseWithTimeout(timeout, (client_resolve, client_reject) => {
+            socket.on('connect', server_response => {
+                console.log("socket connected");
+
+                socket.emit('join-game', id,
+                    server_response => {
+                        console.log("join-game server response:", server_response);
+                        if (server_response.server_error) {
+                            client_reject(server_response.server_error)
+                        } else {
+                            client_resolve(server_response);
+                        }
+                    });
+            })
+        });
+
+        return p.then(data => {
+            // Propogate any error returned by the server.
+            if (data.server_error) {
+                console.log("Error from ", server, data.server_error)
+                throw Error("Server reported: " + data.server_error);
+            }
+            assert(data.player_id);
+            assert(data.state);
+
+            this.mergeState(data.state);
+
+            this.m_socket = socket;
+            this.setGameListeners();
+
+            this.m_player_id = data.player_id;
+
+            return data;
+        }).catch(err => {
+            socket.disconnect();
+            throw err; // Repropogate the error
         });
     }
 

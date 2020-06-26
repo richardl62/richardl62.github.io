@@ -46,6 +46,11 @@ function game_href(id, game) {
     search_params.set("id", id);
   }
 
+  //KLUDGE?
+  if(local_server()) {
+    search_params.set("local", 1);
+  }
+
   href += "?" + search_params.toString();
 
   return href;
@@ -92,7 +97,7 @@ class OnlineGameInfo {
     }
   }
 
-  add_first_game(id, game) {
+  add_first_game(id, game, local) {
     if(open_games_info.className != 'open-games-list') {
       this.reset('open-games-list');
     }
@@ -117,7 +122,7 @@ function show_all_open_games() {
       
       let game_found = false;
       for (let [id, game] of data) {
-        oneline_game_info.add_first_game(id, game);
+        oneline_game_info.add_first_game(id, game, local_server());
         game_found = true;
       }
 
@@ -192,10 +197,6 @@ play_offline_elem.addEventListener("click", (e) => {
 
 local_server_elem.addEventListener("change", (e) => {
   oneline_game_info.reset();
-});
-
-game_id_elem.addEventListener("click", (e) => {
-  show_online_games_only();
 });
 
 debug_options_elem.addEventListener("change", function(e) {
