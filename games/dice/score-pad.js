@@ -8,9 +8,10 @@ function div_with_title_and_text(text) {
 
 }
 
+const default_score_playholder = "Enter score";
 const score_pad_html = `
 <input type="text" class="player-name">
-<input type="text" class="enter-score" placeholder="Enter score">
+<input type="text" class="enter-score" placeholder="${default_score_playholder}">
 <div class="scores">
     <div class="current-score"></div>
     <div class="total-score"></div>
@@ -74,8 +75,12 @@ class scorePad {
         return this.player_name_elem.val(...Args);
     }
 
-    score_expected(on_off){
+    score_expected(on_off) {
         return this.user_elem.toggleClass("score-expected", on_off);
+    }
+
+    score_placeholder(message){
+        return this.enter_score_elem.attr("placeholder", message);
     }
 
     // The input text is typically a number, but can be text like e.g. '-' or 'pass' 
@@ -147,12 +152,26 @@ class scorePads {
         });
     }
 
-    score_expected(player_no) {
-        this.score_pads.forEach(sp => {
-            sp.score_expected(false);
+    score_pad_action(player, action) {
+        if(player == "all") {
+            this.score_pads.forEach(action);
+        }
+        else {
+            assert(typeof player == "number");
+            action(this.score_pads[player]);
+        }
+    }
+    
+    score_expected(player_no, on_off) {
+        this.score_pad_action(player_no, sp => {
+            sp.score_expected(on_off)
         });
+    }
 
-        this.score_pads[player_no].score_expected(true);
+    score_placeholder(player_no, message) {
+        this.score_pad_action(player_no, sp => {
+            sp.score_placeholder(message)
+        });
     }
 
     set_score_callback(cb) {

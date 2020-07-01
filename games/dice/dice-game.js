@@ -1,40 +1,72 @@
 "use strict";
 
-var dice_set = new diceSet(document.querySelector("#dice")); 
-var score_pads = new scorePads(document.querySelector("#score-pads")); 
+var dice_set = new diceSet(document.querySelector("#dice"));
+var score_pads = new scorePads(document.querySelector("#score-pads"));
 
-class scoreCallback {
-    score_selected(player_no) {
-        console.log("Score selected for player", player_no);
-        assert(!isNaN(player_no));
-        score_pads.score_expected(player_no);
+class currentPlayerControl {
+    //KLUDGE: Mix of callbacks and 'ordinary' functions
+
+    constructor() {
+        this.current_player = null;
+
+        Object.seal(this);
     }
 
+    set_current_player(player_no) {
+        assert(typeof player_no == "number");
+
+        this.current_player = player_no;
+
+        console.log("current player: ", player_no);
+
+        score_pads.score_expected("all", false);
+        score_pads.score_placeholder("all", default_score_playholder);
+
+        score_pads.score_expected(player_no, true);
+        score_pads.score_placeholder(player_no, "Roll dice");
+    }
+
+    // Callback - but also used below (kludge?)
+    score_selected(player_no) {
+        if (this.current_player !== player_no) {
+            this.set_current_player(player_no);
+        }
+    }
+
+    // Callback
     score_entered(player_no) {
         const num_players = score_pads.n_players();
-        this.score_selected((player_no+1)%num_players);
+
+        // Re-use the callback above (kludge?)
+        this.set_current_player((player_no + 1) % num_players);
+    }
+
+    // Used below
+    dice_rolled() {
+        assert(this.current_player !== null);
+
+        score_pads.score_placeholder(this.current_player, "Enter score");
     }
 }
 
-score_pads.set_score_callback(new scoreCallback);
+let current_player_control = new currentPlayerControl;
+score_pads.set_score_callback(current_player_control);
 
-function setNumOfDice()
-{
+function setNumOfDice() {
     var num_dice = $("#num-dice").val();
     dice_set.n_dice(num_dice);
 }
 
-function setNumOfPlayers()
-{
+function setNumOfPlayers() {
     var num_players = $("#num-players").val();
     score_pads.n_players(num_players);
-    score_pads.score_expected(0);      
+    current_player_control.set_current_player(0);
 }
 
 $("#restart").click(() => {
     dice_set.initialise_all();
     score_pads.resetScores()
-    score_pads.score_expected(0);   
+    current_player_control.set_current_player(0);
 });
 
 $("#shuffle-players").click(() => {
@@ -44,12 +76,18 @@ $("#shuffle-players").click(() => {
 
 //score_pads.n_players(4);
 
-$("#roll-all").click(() => dice_set.roll_all());
-$("#roll-unheld").click(() => dice_set.roll_unheld());
+$("#roll-all").click(() => {
+    dice_set.roll_all();
+    current_player_control.dice_rolled();
+});
+
+$("#roll-unheld").click(() => {
+    dice_set.roll_unheld();
+    current_player_control.dice_rolled();
+});
 
 var options_shown;
-function show_options(show)
-{
+function show_options(show) {
     options_shown = show;
     $("#options-button").toggleClass("pressed-button", show);
     $("#options-menu").toggle(show);
@@ -58,7 +96,7 @@ function show_options(show)
 $("#options-button").click(() => show_options(!options_shown));
 
 $("#num-dice").change(setNumOfDice);
-$("#num-players").change(setNumOfPlayers); 
+$("#num-players").change(setNumOfPlayers);
 
 show_options(false);
 
