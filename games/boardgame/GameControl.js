@@ -235,3 +235,44 @@ function square_click_custom_mode(square, n_players) {
 function setup_board(game, board) {
     console.log(game, board);
 }
+
+function convert_board_status_for_url(board_status) {
+    let str = "";
+    board_status.forEach(row => {
+        // console.log(row);
+        row.forEach(sq =>{
+            assert(sq == null || (sq >= 0 && sq <= 9));
+           str += sq === null ? "." : sq; 
+        })
+        str += "-";
+    });
+
+    // Remove the final "-"
+    return str.slice(0, -1);
+}  
+
+function convert_row_from_url(row)
+{
+    let result = [];
+    row.split('').forEach(c => {
+        if(c == ".")
+            result.push(null);
+        else
+        {
+            const sq = parseInt(c);
+            assert(!isNaN(sq), "bad character: " + c);
+            result.push(sq);
+        }
+    });
+    return result;
+}
+
+function convert_board_status_from_url(str)
+{
+    let result = [];
+    str.split("-").forEach(row => {
+        result.push(convert_row_from_url(row));
+    });
+ 
+    return result;
+}
