@@ -39,7 +39,7 @@
     border-width: 6px;
 }
 
-.enter-score{
+.enter-score, .partial-score {
     border-top: 1px solid black;
     border-bottom: 1px solid black;
     font-family: inherit;
