@@ -77,15 +77,6 @@ button:disabled {
     width: 2em;
 }
 
-#experimental {
-    font-weight: bold;
-    color: red;
-}
-
-#experimental button {
-   color: blue;
-}
-
 #game-control {
     margin-top: auto;
 }
