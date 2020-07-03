@@ -37,7 +37,9 @@ class PageDisplay {
         jq.customise_button.toggleClass("button-pressed", custom);
         // Kludge: Hard code that custom menu has type flex.
         jq.customise_menu.css('display', custom ? "flex" : 'none');
+        jq.experimental.css('display', custom ? "flex" : 'none');
  
+
         /*
          * update the display of scores etc.
          */
