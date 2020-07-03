@@ -35,7 +35,7 @@ for (const [ key, value ] of Object.entries(jq)) {
 
 const game_option_custom_string = "custom";
 
-var game_control = new NetworkGameControl();
+var game_control = new OnlineGameControl();
 game_control.connect(window.location.search);
 
 jq.game_type.change(function() {

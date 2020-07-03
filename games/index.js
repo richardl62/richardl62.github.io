@@ -29,7 +29,7 @@ function game_href(id, game) {
   
   let href;
   if (game == "dropdown" || game == "othello") {
-    href = "boardgame/boardgame.html"
+    href = "gridgames/gridgames.html"
   } else if (game == "dice") {
     href = "dice/dice-game.html"
   } else if (game == "cantstop") {

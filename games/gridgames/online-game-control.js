@@ -1,6 +1,6 @@
 'use strict';
 
-class NetworkGameControl {
+class OnlineGameControl {
     constructor() {
         this.game_control = new GameControl();
         this.game_socket = new gameSocket(this);
