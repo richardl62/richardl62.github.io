@@ -26,10 +26,9 @@ class GameServerConnection {
     onMessage(callback) { }
 }
 
-// A GameMove records (as name-value pairs) three sorts of data:
-// State:   Accumulated in the game client and the server.
-// History: A subset of state that is affected by undo. 
-// Action:  Not accumulated outside of this class.
+// A GameMove records (as name-value pairs) two sorts of data:
+// State:   Accumulated in the game controllr and the server.
+// Action:  Not accumulated (except locally in this class).
 //
 // When a move that contains history is passed to GameClient.move()
 // a new undo/redo point is created.
@@ -37,10 +36,6 @@ class GameMove {
     constructor() {
         Object.seal(this);
     }
-
-    // See header comment.
-    addHistory(obj) { }
-
     // See header comment.
     addState(obj) { }
 
@@ -59,31 +54,33 @@ class GameMove {
 }
 
 `
-Wrapper around a connection to a server with facilities to support game play. 
-(The idea is that individual games interact with this class won't need to know
-about the connection.)
-
-Also provide  utility functions for:
-- Undo (see note below)
+GameSupport provides facilities to support to web based board games.
+In summary, it provides support:
+- Support for online play
+- Undo/Redo (see note below) 
 - A record of accumlated state.
+
 
 Undo: Only moves made on the current client can be undone. After an undo
       is received from the server, only moves it made prior to that can be
       undone. 
+
+To do: Add more notes
 `
-class NewGameController {
+class GameSupport {
 
     constructor() {
         this._serverConnection = new GameServerConnection;
-        this._onMove = null;
-
+        this._onHitosryChange = null;
+        this._historyFilter = null;
+        
         Object.seal(this);
     }
 
-    // Attempt to connect to the local or networked server.
+    // Attempt to connect the server at the given url.
     // Return a promise that is forefilled when/if the connection is 
     // established.
-    connect(local) { assert(false); }
+    connect(url) { }
 
     // Send a move to the server, if connected.
     // Also trigger the onMove() callback if set
@@ -92,25 +89,28 @@ class NewGameController {
     // Return the accumulated state
     get state() { assert(false);}
 
-    // Report whether there is a recorded move availabe to undo.
+
+    // Control which, if any, parts of the accumuated state are recorded
+    // in history. The legitimate values are:
+    // null:  No history is recorded (the default)
+    // true:  All of the state is recorded.
+    // Array: The names of the history elements to be recorded
+    set historyFilter(filter) {}
+
+    // Report whether there is a history change availabe to undo/redo.
     get undoAvailable() { return false;}
+    get redoAvailable() { return false;}
 
-    // Undo the last recorded move. Do nothing if recorded move 
-    // available.
+    // Undo/redo a history change. Do nothing if there is no suitable
+    // history change available.
     undo() { assert(false);}
+    redo() { assert(false);}
 
-    // Set a callback to be triggered when a move is made, or set to 
-    // null to disable callbacks. A callback is called like
+    // Set a callback that is triggered by an undo/redo. It is called as
+    //   callback(state)
     //
-    //      callback(gameMove);
-    // 
-    // See also onUndo.
-    set onMove(callback) { _this.onMove = callback;}
-
-    // Similar to onMove, but triggered by an undo. The GameMove records
-    // the accumulated history at immedidately after the undo (so it could include
-    // data that has not been changed. )
-    set onUndo(callback) {_this.onUndo = callback; }
+    // Where 'state' is the accumulated state after the undo/redo.
+    set onHitosryChange(callback) {_this.onHitosryChange = callback; }
 
     // Recieve messages from the server. (See GameServerConnection.onMessage)
     set onServerMessage(callback) {
