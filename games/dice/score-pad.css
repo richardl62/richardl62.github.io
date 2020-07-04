@@ -23,6 +23,9 @@
 .score-pad > * {
     border: 0px; /* Some boarders are re-added below */
 }
+.score-pad > *:not(:first-child)  {
+    border-top: 1px solid black; 
+}
 
 .player-name {
     background-color: inherit;
@@ -39,13 +42,25 @@
     border-width: 6px;
 }
 
-.enter-score, .partial-score {
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+.partial-score-div {
+    /* display: flex; */
+    border: green 4px solid;
+}
+
+.enter-score, .enter-partial-score {
+/*     border-top: 1px solid black; */
+
     font-family: inherit;
     font-weight: inherit;
     font-size: inherit;
+    
+    -webkit-appearance: none; 
+    margin: 0; 
 }
+
+/* .enter-score {
+    border-bottom: 1px solid black;
+} */
 
 .current-score {
     border: none;

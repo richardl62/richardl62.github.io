@@ -33,9 +33,12 @@ function extract_number_from_string(str) {
 
 const default_score_playholder = "Enter score";
 const score_pad_html = `
-<input type="text" class="player-name">
-<input type="text" class="partial-score">
+<input type="text" class="player-name" placeholder="Partial score">
+
+<input type="text" class="enter-partial-score">
 <input type="text" class="enter-score" placeholder="${default_score_playholder}">
+<input type="button" class="enable-partial" value="Enable partial">
+<input type="button" class="score-done" value="Done">
 <div class="scores">
     <div class="current-score"></div>
     <div class="total-score"></div>
@@ -58,11 +61,20 @@ class scorePad {
         this.user_elem.html(score_pad_html);
         this.user_elem.addClass("score-pad");
 
-        this.player_name_elem = this.user_elem.children(".player-name");
-        this.partial_score_elem = this.user_elem.children(".partial-score");
-        this.enter_score_elem = this.user_elem.children(".enter-score");
-        this.current_score_elem = this.user_elem.find(".current-score");
-        this.total_score_elem = this.user_elem.find(".total-score");
+        const find_elem = selector => {
+            let found = this.user_elem.find(selector);
+            if(found.length != 1)
+                console.log(`${selector} matches ${found.length} elements`, found);
+            return found;
+        }
+
+        this.player_name_elem = find_elem(".player-name");
+        this.enter_partial_score_elem = find_elem(".enter-partial-score");
+        this.enter_score_elem = find_elem(".enter-score");
+        this.score_done_button = find_elem(".score-done");
+        this.enable_partial_button = find_elem(".enable-partial");
+        this.current_score_elem = find_elem(".current-score");
+        this.total_score_elem = find_elem(".total-score");
         this.acculumated_partial_score = 0;
         this.resetScores();
         
@@ -71,27 +83,32 @@ class scorePad {
         if (player_no !== undefined) {
             const default_name = "Player " + (player_no + 1);
             this.player_name_elem.attr("placeholder", default_name);
-
-            // Simulate placeholder, but use a value for ease of formatting
-            // this.player_name_elem.val(default_name);
-            // this.player_name_elem.click(function(event) {
-            //     let jq_this = $(this);
-            //     jq_this.val("");
-            //     jq_this.unbind(event);
-            // });
         }
+    
+        // Eek. There are 3 different triggers for entering the score.
+        const enter_score = () => {
+            this.enter_score_text(this.enter_score_elem.val());
+            this.enter_score_elem.val("")
+        };
 
-        var pad = this;
-        this.enter_score_elem.change(function() {
-            pad.enter_score_text(this.value);
-            this.value = "";
-        });
+        this.enter_score_elem.change(() => enter_score());
+        this.score_done_button.click(()=>enter_score());
 
         this.enter_score_elem.keypress(function (event) {
             if (event.key == 'Enter') {
-                pad.enter_score_text(this.value);
-                this.value = "";
+                enter_score();
             }
+        });
+
+        var pad = this;
+        this.enter_partial_score_elem.change(function() {
+            let num = parseInt(this.value);
+            if(isNaN(num)) {
+                alert("Partial scores must be numbers");
+            } else {
+                pad.enter_partial_score(num);
+            }
+            this.value = "";
         });
 
         this.enter_score_elem.click(function() {
@@ -100,12 +117,8 @@ class scorePad {
             }
         });
 
-        this.partial_score_elem.change(function() {
-            let number = extract_number_from_string(this.value);
-            if(typeof number == "number") {
-                pad.enter_partial_score(number);
-                this.value = null;
-            }
+        this.enable_partial_button.click(function() {
+            pad.enter_score_elem.val(123);
         });
     }
 
@@ -122,8 +135,9 @@ class scorePad {
     }
 
     allow_partial_scores(allow, placeholder) {
-        this.partial_score_elem.css("display", allow ? "initial" : "none");
-        this.partial_score_elem.attr("placeholder", placeholder);
+        this.enter_partial_score_elem.css("display", allow ? "initial" : "none");
+        this.score_done_button.css("display", allow ? "initial" : "none");
+        this.enter_partial_score_elem.attr("placeholder", placeholder);
     }
 
     // The input text is typically a number, but can be text like e.g. '-' or 'pass' 

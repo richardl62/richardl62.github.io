@@ -1,5 +1,5 @@
 "use strict";
-
+$("#num-players").val(2);
 var dice_set = new diceSet(document.querySelector("#dice"));
 var score_pads = new scorePads(document.querySelector("#score-pads"));
 
@@ -17,15 +17,15 @@ class currentPlayerControl {
 
         this.current_player = player_no;
 
-        console.log("current player: ", player_no);
+        //console.log("current player: ", player_no);
 
         score_pads.score_expected("all", false);
         score_pads.score_placeholder("all", default_score_playholder);
         score_pads.allow_partial_scores("all", false);
 
         score_pads.score_expected(player_no, true);
-        score_pads.allow_partial_scores(player_no, true, "");
-        score_pads.score_placeholder(player_no, "Roll dice");
+        score_pads.allow_partial_scores(player_no, true, "Partial Score");
+        //score_pads.score_placeholder(player_no, "Roll dice");
     }
 
     // Callback - but also used below (kludge?)
@@ -75,9 +75,6 @@ $("#restart").click(() => {
 $("#shuffle-players").click(() => {
     score_pads.shuffle_player_names();
 });
-
-
-//score_pads.n_players(4);
 
 $("#roll-all").click(() => {
     dice_set.roll_all();
