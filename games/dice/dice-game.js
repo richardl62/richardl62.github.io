@@ -20,12 +20,9 @@ class currentPlayerControl {
         //console.log("current player: ", player_no);
 
         score_pads.score_expected("all", false);
-        score_pads.score_placeholder("all", default_score_playholder);
         score_pads.allow_partial_scores("all", false);
 
         score_pads.score_expected(player_no, true);
-        score_pads.allow_partial_scores(player_no, true, "Partial Score");
-        //score_pads.score_placeholder(player_no, "Roll dice");
     }
 
     // Callback - but also used below (kludge?)
@@ -47,8 +44,7 @@ class currentPlayerControl {
     dice_rolled() {
         assert(this.current_player !== null);
 
-        score_pads.allow_partial_scores(this.current_player, true, "Partial Score");
-        score_pads.score_placeholder(this.current_player, "Total score");
+        score_pads.allow_partial_scores(this.current_player, true);
     }
 }
 

@@ -359,6 +359,43 @@ function shuffleArray(array) {
     }
 }
 
+// As parseInt, but return NaN if there are any unexpected characaters, so, 
+// Examples: 
+//  "12 cats" -> NaN
+//  "1.1" -> NaN
+//  "+1.0" -> 1
+
+function strictParseInt(str) {
+    const n = parseInt(str);
+    if(n != str) {
+        return NaN;
+    }
+    return n;
+}
+
+// Look for a number in the input string.  Return one of
+// - null if no number is found
+// - A number if exactly one number is found. The value is returned parsed, 
+//   i.e. as a number rather than a string.
+// - An Error if more than one number is found
+function findAndParseInt(str) {
+    // Look for a numbers in the input string.
+    let match = str.match(/-?\d+/g);
+    if (match && match.length > 1) {
+        return new Error('More than one number found in "'
+            + str + '"');
+    }
+
+    if (match) {
+        let number = parseInt(match);
+        assert(!isNaN(number));
+
+        return number;
+    }
+
+    return null;
+}
+
 // get_integers_test("");
 // get_integers_test("1 + 1");
 // get_integers_test("00");

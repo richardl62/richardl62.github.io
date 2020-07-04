@@ -42,6 +42,11 @@
     border-width: 6px;
 }
 
+.score-done {
+    background-color:darkblue; 
+    color: white;
+}
+
 .partial-score-div {
     /* display: flex; */
     border: green 4px solid;

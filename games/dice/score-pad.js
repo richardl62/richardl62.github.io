@@ -8,37 +8,16 @@ function div_with_title_and_text(text) {
 
 }
 
-// Extract an number from the input string.  Return on of
-// - null if no number is found
-// - The number if exactly one number is found
-// - An Error if more than one number is found
-function extract_number_from_string(str) {
-    // Look for a numbers in the input string.
-    let match = str.match(/-?\d+/g);
-    if (match && match.length > 1) {
-        // Kludge: An alert might be always be apporpriate.
-        return new Error('More than one number found in "'
-            + input_text + '"');
-    }
 
-    if (match) {
-        let number = parseInt(match);
-        assert(!isNaN(number));
+const score_placeholder_default = "Enter score";
+const score_placeholder_with_partials = "Total score";
 
-        return number;
-    }
-
-    return null;
-}
-
-const default_score_playholder = "Enter score";
 const score_pad_html = `
-<input type="text" class="player-name" placeholder="Partial score">
+<input type="text" class="player-name">
 
-<input type="text" class="enter-partial-score">
-<input type="text" class="enter-score" placeholder="${default_score_playholder}">
-<input type="button" class="enable-partial" value="Enable partial">
-<input type="button" class="score-done" value="Done">
+<input type="text" class="enter-partial-score" placeholder="Partial score">
+<input type="text" class="enter-score" placeholder="${score_placeholder_default}">
+<input type="button" class="score-done" value="Enter score">
 <div class="scores">
     <div class="current-score"></div>
     <div class="total-score"></div>
@@ -72,7 +51,6 @@ class scorePad {
         this.enter_partial_score_elem = find_elem(".enter-partial-score");
         this.enter_score_elem = find_elem(".enter-score");
         this.score_done_button = find_elem(".score-done");
-        this.enable_partial_button = find_elem(".enable-partial");
         this.current_score_elem = find_elem(".current-score");
         this.total_score_elem = find_elem(".total-score");
         this.acculumated_partial_score = 0;
@@ -102,7 +80,7 @@ class scorePad {
 
         var pad = this;
         this.enter_partial_score_elem.change(function() {
-            let num = parseInt(this.value);
+            let num = strictParseInt(this.value);
             if(isNaN(num)) {
                 alert("Partial scores must be numbers");
             } else {
@@ -116,10 +94,6 @@ class scorePad {
                 pad.callbacks.score_selected(pad.player_no);
             }
         });
-
-        this.enable_partial_button.click(function() {
-            pad.enter_score_elem.val(123);
-        });
     }
 
     player_name(...Args) {
@@ -130,14 +104,13 @@ class scorePad {
         return this.user_elem.toggleClass("score-expected", on_off);
     }
 
-    score_placeholder(message){
-        return this.enter_score_elem.attr("placeholder", message);
-    }
-
-    allow_partial_scores(allow, placeholder) {
+    allow_partial_scores(allow) {
         this.enter_partial_score_elem.css("display", allow ? "initial" : "none");
         this.score_done_button.css("display", allow ? "initial" : "none");
-        this.enter_partial_score_elem.attr("placeholder", placeholder);
+
+        this.enter_score_elem.attr("placeholder", allow ? 
+            score_placeholder_with_partials : score_placeholder_default
+        );
     }
 
     // The input text is typically a number, but can be text like e.g. '-' or 'pass' 
@@ -148,7 +121,7 @@ class scorePad {
             return;
         }
 
-        let number = extract_number_from_string(input_text);
+        let number = findAndParseInt(input_text);
         if (number instanceof Error) {
             alert(number.message);
         } else {
@@ -244,14 +217,9 @@ class scorePads {
         });
     }
 
-    score_placeholder(player_no, message) {
+    allow_partial_scores(player_no, allow) {
         this.score_pad_action(player_no, sp => {
-            sp.score_placeholder(message);
-        });
-    }
-    allow_partial_scores(player_no, allow, placeholder) {
-        this.score_pad_action(player_no, sp => {
-            sp.allow_partial_scores(allow, placeholder);
+            sp.allow_partial_scores(allow);
         });
     }
 
