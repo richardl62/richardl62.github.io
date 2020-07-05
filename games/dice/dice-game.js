@@ -1,5 +1,5 @@
 "use strict";
-$("#num-players").val(2);
+
 var dice_set = new diceSet(document.querySelector("#dice"));
 var score_pads = new scorePads(document.querySelector("#score-pads"));
 
