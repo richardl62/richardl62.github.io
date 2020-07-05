@@ -17,7 +17,7 @@ const score_pad_html = `
 
 <input type="text" class="enter-partial-score" placeholder="Partial score">
 <input type="text" class="enter-score" placeholder="${score_placeholder_default}">
-<input type="button" class="score-done" value="Enter score">
+<input type="button" class="score-done" value="Finished">
 <div class="scores">
     <div class="current-score"></div>
     <div class="total-score"></div>
