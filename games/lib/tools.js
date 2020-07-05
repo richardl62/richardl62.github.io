@@ -122,6 +122,7 @@ class SetHidden
         this.elem = $(elem);
         assert(this.elem.length == 1, "SetHidden requires exactly 1 element");
         this.intial_display_type = this.elem.css("display");
+        this._on = false;
     }
 
     on() {
@@ -135,6 +136,10 @@ class SetHidden
 
     hidden(on)
     {
+        if(on === undefined) {
+            return this._on;
+        }
+        this._on = on;
         if(on)
             this.on();
         else

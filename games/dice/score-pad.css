@@ -27,10 +27,6 @@
     border-top: 1px solid black; 
 }
 
-.enter-score {
-   border-bottom: 1px solid black; 
-}
-
 .player-name {
     background-color: inherit;
     font-family: Arial, Helvetica, sans-serif;
@@ -47,16 +43,12 @@
 }
 
 .score-done {
-    background-color:darkblue; 
+    background-color:darkblue;
     color: white;
     border-radius: 10px;
     width: 75%;
-    align-self: center;
-}
-
-.partial-score-div {
-    /* display: flex; */
-    border: green 4px solid;
+    margin: auto; /* center */
+    border: 0;
 }
 
 .enter-score, .enter-partial-score {
