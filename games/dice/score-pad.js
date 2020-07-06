@@ -91,6 +91,7 @@ class scorePad {
         });
 
         this.enter_score_elem.click(function() {
+            this.select(); 
             if(pad.callbacks) {
                 pad.callbacks.score_selected(pad.player_no);
             }
