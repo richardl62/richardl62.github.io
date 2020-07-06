@@ -69,18 +69,13 @@ class scorePad {
             this.player_name_elem.attr("placeholder", default_name);
         }
     
-        // Eek. There are 3 different triggers for entering the score.
-        const enter_score = () => {
-            this.enter_score_text(this.enter_score_elem.val());
-            this.enter_score_elem.val("")
-        };
+        // Eek. There are lots different triggers for entering the score.
+        this.enter_score_elem.change(() => this.enter_score_from_elem());
+        this.score_finished_button.click(()=>this.enter_score_from_elem()());
 
-        this.enter_score_elem.change(() => enter_score());
-        this.score_finished_button.click(()=>enter_score());
-
-        this.enter_score_elem.keypress(function (event) {
+        this.enter_score_elem.keypress(event => {
             if (event.key == 'Enter') {
-                enter_score();
+                this.enter_score_from_elem()
             }
         });
 
@@ -107,6 +102,9 @@ class scorePad {
     }
 
     score_expected(on_off) {
+        if(!on_off) {
+            this.enter_score_from_elem();
+        }
         return this.user_elem.toggleClass("score-expected", on_off);
     }
 
@@ -124,7 +122,10 @@ class scorePad {
 
     // The input text is typically a number, but can be text like e.g. '-' or 'pass' 
     // or '1235 bah!'
-    enter_score_text(input_text) {
+    enter_score_from_elem() {
+        const input_text = this.enter_score_elem.val();
+        this.enter_score_elem.val("");
+
         if (!input_text.trim()) {
             // Ignore string is emtpy other than whitespace.
             return;
@@ -147,14 +148,6 @@ class scorePad {
         }
     }
 
-    enter_score(input_text) {
-        assert(typeof number == "number");
-
-        this.total_score += number;
-        this.current_score_elem.append(div_with_title_and_text(input_text));
-        this.total_score_elem.append(div_with_title_and_text(this.total_score));
-        this.acculumated_partial_score = 0;
-    }
 
     enter_partial_score(number) {
         assert(typeof number == "number");
@@ -166,7 +159,13 @@ class scorePad {
 
     resetScores()
     {
+        
         this.total_score = 0;
+
+        // reseting the enter score elements is defensive.  They should never
+        // be left with a value.
+        this.enter_score_elem.val(""); 
+        this.enter_partial_score_elem.val(""); 
 
         this.current_score_elem.html("<div class='score-column-header'>Score</div>"); 
         this.total_score_elem.html("<div class='score-column-header'>Total</div>"); 
