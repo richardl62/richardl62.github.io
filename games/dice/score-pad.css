@@ -42,12 +42,16 @@
     border-width: 6px;
 }
 
-.score-done {
+.score-finished-div {
+    display:flex;
+    justify-content: center;
+}
+
+.score-finished {
     background-color:darkblue;
     color: white;
     border-radius: 10px;
     width: 75%;
-    margin: auto; /* center */
     border: 0;
 }
 

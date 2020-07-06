@@ -17,8 +17,8 @@ const score_pad_html = `
 
 <input type="text" class="enter-partial-score" placeholder="Partial score">
 <input type="text" class="enter-score" placeholder="${score_placeholder_default}">
-<div class="score-done-div" > <!-- Outer div helps with formatting borders -->
-    <input type="button" class="score-done" value="Finished">
+<div class="score-finished-div" > <!-- Outer div helps with formatting borders -->
+    <input type="button" class="score-finished" value="Finished">
 </div>
 <div class="scores">
     <div class="current-score"></div>
@@ -52,12 +52,12 @@ class scorePad {
         this.player_name_elem = find_elem(".player-name");
         this.enter_partial_score_elem = find_elem(".enter-partial-score");
         this.enter_score_elem = find_elem(".enter-score");
-        this.score_done_button = find_elem(".score-done");
+        this.score_finished_button = find_elem(".score-finished");
         this.current_score_elem = find_elem(".current-score");
         this.total_score_elem = find_elem(".total-score");
         this.acculumated_partial_score = 0;
 
-        this.score_done_div_hidden = new SetHidden(find_elem(".score-done-div"));
+        this.score_finished_div_hidden = new SetHidden(find_elem(".score-finished-div"));
         this.enter_partial_score_hidden = new SetHidden(this.enter_partial_score_elem);
 
         this.resetScores();
@@ -76,7 +76,7 @@ class scorePad {
         };
 
         this.enter_score_elem.change(() => enter_score());
-        this.score_done_button.click(()=>enter_score());
+        this.score_finished_button.click(()=>enter_score());
 
         this.enter_score_elem.keypress(function (event) {
             if (event.key == 'Enter') {
@@ -115,7 +115,7 @@ class scorePad {
 
         // The score done button (and div) is shown only when a partial score
         // is entered.
-        this.score_done_div_hidden.hidden(true);
+        this.score_finished_div_hidden.hidden(true);
 
         this.enter_score_elem.attr("placeholder", allow ? 
             score_placeholder_with_partials : score_placeholder_default
@@ -159,7 +159,7 @@ class scorePad {
     enter_partial_score(number) {
         assert(typeof number == "number");
 
-        this.score_done_div_hidden.off();
+        this.score_finished_div_hidden.off();
         this.acculumated_partial_score += number;
         this.enter_score_elem.val(this.acculumated_partial_score);
     }
