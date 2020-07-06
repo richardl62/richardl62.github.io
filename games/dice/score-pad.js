@@ -71,7 +71,7 @@ class scorePad {
     
         // Eek. There are lots different triggers for entering the score.
         this.enter_score_elem.change(() => this.enter_score_from_elem());
-        this.score_finished_button.click(()=>this.enter_score_from_elem()());
+        this.score_finished_button.click(()=>this.enter_score_from_elem());
 
         this.enter_score_elem.keypress(event => {
             if (event.key == 'Enter') {
@@ -93,7 +93,7 @@ class scorePad {
         this.enter_score_elem.click(function() {
             this.focus();
             this.select();
-            console.log(`enter-score element clicked value: "${this.value}"`) 
+            //console.log(`enter-score element clicked value: "${this.value}"`) 
 
             if(pad.callbacks) {
                 pad.callbacks.score_selected(pad.player_no);
