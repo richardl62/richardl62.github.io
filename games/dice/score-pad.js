@@ -107,16 +107,13 @@ class scorePad {
     score_expected(on_off) {
         if(!on_off) {
             this.enter_score_from_elem();
+            this.score_finished_div_hidden.hidden(true);
         }
         return this.user_elem.toggleClass("score-expected", on_off);
     }
 
     allow_partial_scores(allow) {
         this.enter_partial_score_hidden.hidden(!allow);
-
-        // The score done button (and div) is shown only when a partial score
-        // is entered.
-        this.score_finished_div_hidden.hidden(true);
 
         this.enter_score_elem.attr("placeholder", allow ? 
             score_placeholder_with_partials : score_placeholder_default
