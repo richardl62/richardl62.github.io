@@ -55,7 +55,6 @@ class scorePad {
         this.score_finished_button = find_elem(".score-finished");
         this.current_score_elem = find_elem(".current-score");
         this.total_score_elem = find_elem(".total-score");
-        this.acculumated_partial_score = 0;
 
         this.score_finished_div_hidden = new SetHidden(find_elem(".score-finished-div"));
         this.enter_partial_score_hidden = new SetHidden(this.enter_partial_score_elem);
@@ -135,7 +134,7 @@ class scorePad {
             return;
         }
 
-        let number = findAndParseInt(input_text);
+        const number = findAndParseInt(input_text);
         if (number instanceof Error) {
             alert(number.message);
         } else {
@@ -144,7 +143,6 @@ class scorePad {
             }
             this.current_score_elem.append(div_with_title_and_text(input_text));
             this.total_score_elem.append(div_with_title_and_text(this.total_score));
-            this.acculumated_partial_score = 0;
 
             if (this.callbacks) {
                 this.callbacks.score_entered(this.player_no);
@@ -152,13 +150,23 @@ class scorePad {
         }
     }
 
+    get score_this_turn () {
+        const input_text = this.enter_score_elem.val();
+        const score = findAndParseInt(input_text);
+        return typeof score == "number" ? score : 0;
+    }
 
+    set score_this_turn (score) {
+        this.enter_score_elem.val(score);
+    }
+    
     enter_partial_score(number) {
         assert(typeof number == "number");
 
         this.score_finished_div_hidden.off();
-        this.acculumated_partial_score += number;
-        this.enter_score_elem.val(this.acculumated_partial_score);
+        const total_score = number + this.score_this_turn;
+        
+        this.score_this_turn = total_score;
     }
 
     resetScores()
