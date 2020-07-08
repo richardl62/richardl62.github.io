@@ -30,10 +30,10 @@ function game_href(id, game) {
   let href;
   if (game == "dropdown" || game == "othello") {
     href = "gridgames/gridgames.html"
-  } else if (game == "dice") {
-    href = "dice/dice-game.html"
+  } else if (game == "dicegame") {
+    href = "dicegame/dicegame.html"
   } else if (game == "cantstop") {
-    href = "cant-stop/cant-stop.html"
+    href = "cantstop/cantstop.html"
   } else if (game == "plusminus") {
     game_display_name = "Plus/Minus"
   }
