@@ -1,3 +1,4 @@
+
 #loading, #load-error{
   font-family:helvetica;
   font-size: x-large;
@@ -11,6 +12,45 @@
 #load-error div:first-child {
   color:red;
   font-size: xx-large;
+}
+
+#options-div {
+  display:flex;
+  align-items:center;
+  font-size: x-large;
+  color:darkred;
+}
+
+#options-div input {
+  font-size: inherit;
+}
+
+.option-title{
+    font-weight:bold;
+}
+
+#num-players {
+ margin-left: 0.2em; 
+}
+
+#column-filling {
+  display: flex;
+  flex-direction:column;
+  align-items: flex-end;
+  margin-left: 1em;
+}
+
+#column-filling label {
+  margin-right: 0.5em;
+}
+
+
+.in-out-button {
+  background-color: #e8e8e8;
+  outline: none;
+}
+.in-out-button-pressed {
+  border: inset;
 }
 
 #game {
@@ -28,6 +68,7 @@
 #game * {
     font-family: Arial; /* Let's be boring, or now at least */
 }
+
 
 #below-board {
     display: flex;
@@ -134,14 +175,12 @@
   opacity: 1; /* Firefox */
 }
 
-#setup-options { 
+#setup-options {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
     position: absolute;
     top: 0;
     right: 0;
-
  }
 
 #player-options *, #setup-options * {

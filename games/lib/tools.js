@@ -13,6 +13,14 @@ function assert(cond /* + optional arguments*/) {
         }
 }
 
+function $_checked(name) {
+    const js_elem = $(name);
+    assert(js_elem.length > 0,
+        `"${name}" matched ${js_elem.length} elements`);
+
+    return js_elem;
+}
+
 class PromiseTimeout extends Error {
     constructor(message) {
         super(message);
@@ -89,7 +97,8 @@ function sort_unique(arr,
 //     sort_unique(test_array), 
 //     sort_unique(test_array, (a, b) => b - a)
 //     );
-    
+
+// TO DO: Make analogous to SetHidden
 class SetVisiblity
 {
     constructor(elem)
@@ -125,14 +134,6 @@ class SetHidden
         this._on = false;
     }
 
-    on() {
-        this.elem.css("display", "none");
-    }
-
-    off() {
-        this.elem.css("display", this.intial_display_type);
-
-    }
 
     hidden(on)
     {
@@ -140,10 +141,11 @@ class SetHidden
             return this._on;
         }
         this._on = on;
-        if(on)
-            this.on();
-        else
-            this.off();
+        this.elem.css("display", on ? "none" : this.intial_display_type);
+    }
+
+    toggle() {
+        this.hidden(!this.hidden());
     }
 }
 // Take an array of strings and return the inner html for a select element
