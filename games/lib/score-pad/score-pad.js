@@ -90,10 +90,6 @@ class scorePad {
         });
 
         this.enter_score_elem.click(function() {
-            this.focus();
-            this.select();
-            //console.log(`enter-score element clicked value: "${this.value}"`) 
-
             if(pad.callbacks) {
                 pad.callbacks.score_selected(pad.player_no);
             }
