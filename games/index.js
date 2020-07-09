@@ -23,12 +23,15 @@ function show_debug_only_elems(show) {
     elem.style.visibility = vis;
   }
 }
-// id is optional. If not wanted can be suppied as null
-function game_href(id, game) {
+// KLUDGE?: If id is undefined, this implies that the game is offline.
+function game_href(game, id) {
   assert(game);
-  
-  let href;
+
+  let href; // relative href
+  let search_params = new URLSearchParams;
+
   if (game == "dropdown" || game == "othello") {
+    search_params.set("game", game);
     href = "gridgames/gridgames.html"
   } else if (game == "dicegame") {
     href = "dicegame/dicegame.html"
@@ -37,19 +40,18 @@ function game_href(id, game) {
   } 
   assert(href);
 
-  let search_params = new URLSearchParams;
-  search_params.set("game", game);
-
-  if (id) {
+  if (id !== undefined) {
     search_params.set("id", id);
+
+    //KLUDGE?
+    if(local_server()) {
+      search_params.set("local", 1);
+    }
   }
 
-  //KLUDGE?
-  if(local_server()) {
-    search_params.set("local", 1);
+  if(search_params.toString()) {
+    href += "?" + search_params.toString();
   }
-
-  href += "?" + search_params.toString();
 
   return href;
 }
@@ -98,7 +100,7 @@ class OnlineGameInfo {
       this.reset('open-games-list');
     }
 
-    const href = game_href(id, game);
+    const href = game_href(game, id);
     const display_name = game_display_name(game);
 
     const link = `<a href="${href}">${id}</a>`;
@@ -188,7 +190,7 @@ clear_games_elem.addEventListener("click", (e) => {
 play_offline_elem.addEventListener("click", (e) => {
     const id = null;
     const game = selected_game();
-    window.location.href  = game_href(id, game);
+    window.location.href  = game_href(game);
 });
 
 local_server_elem.addEventListener("change", (e) => {
