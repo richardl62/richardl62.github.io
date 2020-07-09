@@ -16,6 +16,8 @@ class GridgamesControlOnline {
     
     async connect(url) {
         const urlParams = new URLSearchParams(url);
+        this.game_control.process_URL_parameters(urlParams);
+        
         if (urlParams.has('id')) {
             this.online_status("Connecting ...");
             try {

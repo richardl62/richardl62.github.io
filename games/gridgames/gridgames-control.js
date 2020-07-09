@@ -1,7 +1,7 @@
 "use strict";
 
 class GridgamesControl {
-    constructor(urlParams) {
+    constructor() {
         this.board = new BasicGameBoard($("#board"));
         this.game_history = new GameHistory(this.board);
 
@@ -16,34 +16,32 @@ class GridgamesControl {
 
         this.in_customise_mode = false;
 
-        this.process_URL_parameters(urlParams);
-
         this.reset();
 
         this.page_display = new PageDisplay(this);
     }
 
+    // process relevant url Parameters. (This class does not know about online use so
+    // passing in urlParams is perhaps a kludge.)
     process_URL_parameters(urlParams) {
-        // To do - test and fix
+        const game = urlParams.get("game");
+        const option = urlParams.get("game-option");
+        const board = urlParams.get("game-state");
 
-        // const game = urlParams.get("game");
-        // const option = urlParams.get("o");
-        // const board = urlParams.get("b");
+        if(game)
+        {
+            this.game_name(game);
+        }
 
-        // if(game)
-        // {
-        //     this.game_name(game);
-        // }
+        if(option)
+        {
+            this.game_option(option);
+        }
 
-        // if(option)
-        // {
-        //     this.game_option(option);
-        // }
-
-        // if(board)
-        // {
-        //     this.status(convert_board_status_from_url(board));
-        // }
+        if(board)
+        {
+            this.status(convert_board_status_from_url(board));
+        }
     }
 
     reset() {
@@ -74,6 +72,10 @@ class GridgamesControl {
         if (name !== undefined) {
             this.m_game_name = name;
             this.m_game_type = get_game_type(name);
+            if(!this.m_game_type) {
+                throw new Error(`"${name}" is not a recognised game`);
+            }
+
             this.initial_state_name = undefined;
 
             // If the game has changed, there will be a new set of options
