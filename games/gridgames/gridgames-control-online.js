@@ -1,8 +1,8 @@
 'use strict';
 
-class OnlineGameControl {
+class GridgamesControlOnline {
     constructor() {
-        this.game_control = new GameControl();
+        this.game_control = new GridgamesControl();
         this.game_socket = new gameSocket(this);
         this.game_control.board.clickBoardSquare(
             square => this.square_clicked(square));

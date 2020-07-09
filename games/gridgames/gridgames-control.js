@@ -1,6 +1,6 @@
 "use strict";
 
-class GameControl {
+class GridgamesControl {
     constructor(urlParams) {
         this.board = new BasicGameBoard($("#board"));
         this.game_history = new GameHistory(this.board);
