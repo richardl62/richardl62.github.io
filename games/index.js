@@ -34,9 +34,7 @@ function game_href(id, game) {
     href = "dicegame/dicegame.html"
   } else if (game == "cantstop") {
     href = "cantstop/cantstop.html"
-  } else if (game == "plusminus") {
-    game_display_name = "Plus/Minus"
-  }
+  } 
   assert(href);
 
   let search_params = new URLSearchParams;
@@ -63,8 +61,6 @@ function game_display_name(game) {
   
   if (game == "cantstop") {
     display_name = "Can't Stop"
-  } else if (game == "plusminus") {
-    display_name = "Plus/Minus"
   } else {
     // Capitalise the first letter - This is the default
     display_name = game.charAt(0).toUpperCase() + game.slice(1);
