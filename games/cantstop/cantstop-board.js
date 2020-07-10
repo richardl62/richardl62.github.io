@@ -160,12 +160,6 @@ class CantStopBoard {
         for (let c of this.m_columns)
         {
             c.commit(player_number);
-
-
-            if(c.is_full(player_number) && !c.is_owned())
-            {   
-                 c.mark_column_as_owned(player_number);
-            }
         }
     }
 
@@ -178,5 +172,12 @@ class CantStopBoard {
     columns()
     {
         return this.m_columns;
+    }
+
+    allow_manual_filling(allow) {
+        for (let c of this.m_columns)
+        {
+            c.allow_manual_filling(allow);
+        }
     }
 }

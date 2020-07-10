@@ -10,7 +10,7 @@ const precommitted_column_limit = 3;
 
 // Record the status in a board square for a particular player
 class CantStopPlayerSquare {
-    constructor(input_elem, player_number) {
+    constructor(input_elem, player_number, board) {
 
         this.player_elem = $("<div class='cs-player-square'></div>");
         input_elem.append(this.player_elem)
@@ -31,6 +31,7 @@ class CantStopPlayerSquare {
         this.player_number = player_number;
         this.status = sq_empty;
 
+        this.player_elem.click(elem => board.player_square_clicked(this));
     }
 
     remove_added_elements()
@@ -133,6 +134,10 @@ class CantStopColumn {
         this.m_is_owned = false;
 
         this.player_squares = null; // [player-number][square] - set in num_players() 
+
+        this.manual_filling_allowed = false;
+
+        Object.seal(this);
     }
 
     clear_added_elements() {
@@ -172,7 +177,7 @@ class CantStopColumn {
             let ps = new Array();
             if (this.square_elems && player_number >= 1) {
                 for (let elem of this.square_elems) {
-                    ps.push(new CantStopPlayerSquare(elem, player_number));
+                    ps.push(new CantStopPlayerSquare(elem, player_number, this));
                 }
             }
             
@@ -269,6 +274,33 @@ class CantStopColumn {
             if (sq.is_precommit())
                 sq.make_commit();
         }
+    
+        this.process_if_full(player_number);
+    }
+
+    // For use with manual column filling
+    add_committed_square(player_number) {
+        let squares = this.squares(player_number);
+        for (const sq of squares) {
+            if (sq.is_empty()) {
+                sq.make_commit();
+                break;
+            }
+        }
+
+        this.process_if_full(player_number);
+    }
+
+    // For use with manual column filling
+    remove_committed_square(player_number) {
+        let squares = this.squares(player_number);
+        for (let ind = squares.length-1; ind >= 0; --ind) {
+            let sq = squares[ind];
+            if (sq.is_commit()) {
+                sq.clear();
+                break;
+            }
+        }
     }
 
     set_internal_colors(background, border)
@@ -288,22 +320,24 @@ class CantStopColumn {
 
         }
     }
+
     // Record that the colum is 'owned' by the given player
     // and update elements to reflect this.
-    mark_column_as_owned(owning_player_number) {
-
-        for (let psq of this.player_squares) {
-            for (let sq of psq) {
-                sq.make_in_owned_column(owning_player_number);
+    process_if_full(player_number) {
+        if (this.is_full(player_number)) {
+            for (let psq of this.player_squares) {
+                for (let sq of psq) {
+                    sq.make_in_owned_column(player_number);
+                }
             }
+
+            this.clear_added_elements();
+
+            let color = get_default_player_color(player_number);
+            this.set_internal_colors(color, color);
+
+            this.m_is_owned = true;
         }
-
-        this.clear_added_elements();
-
-        let color = get_default_player_color(owning_player_number);
-        this.set_internal_colors(color, color);
-
-        this.m_is_owned = true;
     }
 
     is_owned()
@@ -332,5 +366,19 @@ class CantStopColumn {
     elem()
     {
         return this.m_column_elem;
+    }
+
+    player_square_clicked(square) {
+        if (this.manual_filling_allowed) {
+            if (square.status == sq_empty) {
+                this.add_committed_square(square.player_number);
+            } else if (square.status == sq_committed) {
+                this.remove_committed_square(square.player_number);
+            }
+        }
+    }
+
+    allow_manual_filling(allow) {
+        this.manual_filling_allowed = allow;
     }
 }

@@ -18,16 +18,19 @@
   display:flex;
   align-items:center;
   font-size: x-large;
+  font-weight:bold;
   color:darkred;
+  margin-bottom: 10px;
 }
 
 #options-div input {
   font-size: inherit;
 }
 
-.option-title{
-    font-weight:bold;
+#options-div > *:not(:first-child) {
+  margin-left: 1em;
 }
+
 
 #num-players {
  margin-left: 0.2em; 

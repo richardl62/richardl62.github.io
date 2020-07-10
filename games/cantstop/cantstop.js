@@ -3,7 +3,6 @@
  * Get and sanity-check the jQuery elements that are used in this file.
  */
 const jq = { 
-    automatic_filling: $_checked("#automatic-filling"),
     board: $_checked("#board"),
     bust: $_checked("#bust"),
     leave: $_checked("#leave"),
@@ -37,13 +36,13 @@ const n_dice = 4;
 const last_column = 12;
 
 let option_div_hidden = new SetHidden(jq.options_div);
-option_div_hidden.hidden(true);
+//option_div_hidden.hidden(true);
 
 
-assert(jq.dice.length == n_dice, "4 dice expected");
+assert(jq.dice.length == n_dice);
 
 const max_move_options = 6;
-assert(jq.dice_options.length == max_move_options, "6 move options expect");
+assert(jq.dice_options.length == max_move_options);
 
 let dice_array = make_dice_array();
 
@@ -368,6 +367,10 @@ jq.player_name.change(function(elem){
     player_names[current_player] = new_name;
 });
 
+jq.manual_filling.change(function(elem){
+    game_board.allow_manual_filling($(this).prop('checked'));
+});
+
 function cs_fixed_size_columns(size)
 {
     jq.board.empty();
@@ -380,9 +383,12 @@ function cs_fixed_size_columns(size)
     set_num_players();
 }
 
+
+
 $("#debug").click(function (elem) {
     cs_fixed_size_columns(2);
 });
+
 
 
 
