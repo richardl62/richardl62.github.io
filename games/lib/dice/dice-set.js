@@ -148,9 +148,13 @@ class holdableDice extends dice
 
 class diceSet {
     constructor( 
-        elem /* div or similar to hold the dice */) {
+        elem /* div or similar to hold the dice */,
+        game_support) {
+
+        assert(game_support instanceof GameSupport);
 
         this.user_elem = elem;
+        this.game_support = game_support;
         
         this.dice_set = [];
 
