@@ -13,14 +13,6 @@ function assert(cond /* + optional arguments*/) {
         }
 }
 
-function $_checked(name) {
-    const js_elem = $(name);
-    assert(js_elem.length > 0,
-        `"${name}" matched ${js_elem.length} elements`);
-
-    return js_elem;
-}
-
 class PromiseTimeout extends Error {
     constructor(message) {
         super(message);

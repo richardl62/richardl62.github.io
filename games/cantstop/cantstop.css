@@ -1,7 +1,3 @@
-body {
-  display: inline-flex;
-  flex-direction: column;
-}
 
 #loading, #load-error{
   font-family:helvetica;
@@ -19,22 +15,19 @@ body {
 }
 
 #options-div {
-  align-self: flex-end;
   display:flex;
   align-items:center;
   font-size: x-large;
-  font-weight:bold;
-  margin-bottom: 10px;
+  color:darkred;
 }
 
 #options-div input {
   font-size: inherit;
 }
 
-#options-div > *:not(:first-child) {
-  margin-left: 1em;
+.option-title{
+    font-weight:bold;
 }
-
 
 #num-players {
  margin-left: 0.2em; 
@@ -63,7 +56,8 @@ body {
 #game {
     /* visibility: visible; */
     position: relative; /* to force a positioning context */
-
+    display: inline-flex;
+    flex-direction: column;
     margin: 5px 10px;
     font-size: 30px;
     --player-color: black; /* Changed in JS */

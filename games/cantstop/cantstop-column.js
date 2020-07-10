@@ -10,7 +10,7 @@ const precommitted_column_limit = 3;
 
 // Record the status in a board square for a particular player
 class CantStopPlayerSquare {
-    constructor(input_elem, player_number, board) {
+    constructor(input_elem, player_number) {
 
         this.player_elem = $("<div class='cs-player-square'></div>");
         input_elem.append(this.player_elem)
@@ -31,7 +31,6 @@ class CantStopPlayerSquare {
         this.player_number = player_number;
         this.status = sq_empty;
 
-        this.player_elem.click(elem => board.player_square_clicked(this));
     }
 
     remove_added_elements()
@@ -55,7 +54,7 @@ class CantStopPlayerSquare {
         this.status = sq_empty;
     }
 
-    make_provisional_precommitted() {
+    make_provisional_precommit() {
         this.make_precommit();
         this.precommit_elem.addClass("cs-provisional-precommit");
  
@@ -84,19 +83,15 @@ class CantStopPlayerSquare {
         this.status = sq_in_owned_column;
     }
 
-    is_owned() {
-        return this.status == sq_in_owned_column;
-    }
-
     is_provisional_precommit() {
         return this.status == sq_provisonally_precommitted;
     }
     
-    is_precommitted() {
+    is_precommit() {
         return this.status == sq_precommitted || this.status == sq_provisonally_precommitted;
     }
 
-    is_committed() {
+    is_commit() {
         return this.status == sq_committed;
     }
 
@@ -138,10 +133,6 @@ class CantStopColumn {
         this.m_is_owned = false;
 
         this.player_squares = null; // [player-number][square] - set in num_players() 
-
-        this.manual_filling_allowed = false;
-
-        Object.seal(this);
     }
 
     clear_added_elements() {
@@ -181,7 +172,7 @@ class CantStopColumn {
             let ps = new Array();
             if (this.square_elems && player_number >= 1) {
                 for (let elem of this.square_elems) {
-                    ps.push(new CantStopPlayerSquare(elem, player_number, this));
+                    ps.push(new CantStopPlayerSquare(elem, player_number));
                 }
             }
             
@@ -209,7 +200,7 @@ class CantStopColumn {
 
     has_precommits(player_number) {
         for (const sq of this.squares(player_number)) {
-            if (sq.is_precommitted()) {
+            if (sq.is_precommit()) {
                 return true;
             }
         }
@@ -229,7 +220,7 @@ class CantStopColumn {
     add_provisional_precommit(player_number) {
         for (const sq of this.squares(player_number)) {
             if (sq.is_empty()) {
-                sq.make_provisional_precommitted();
+                sq.make_provisional_precommit();
                 break;
             }
         }
@@ -253,7 +244,7 @@ class CantStopColumn {
     }
     remove_all_precommits(player_number) {
         for (const sq of this.squares(player_number)) {
-            if (sq.is_precommitted()) {
+            if (sq.is_precommit()) {
                 sq.clear();
             }
         }
@@ -264,7 +255,7 @@ class CantStopColumn {
         for (let i = this.squares(player_number).length - 1; i >= 0; --i) {
             let sq = this.squares(player_number)[i];
 
-            if (sq.is_precommitted()) {
+            if (sq.is_precommit()) {
                 result.push(sq);
             }
         }
@@ -275,39 +266,8 @@ class CantStopColumn {
     commit(player_number) {
         let squares = this.squares(player_number);
         for (const sq of squares) {
-            if (sq.is_precommitted())
+            if (sq.is_precommit())
                 sq.make_commit();
-        }
-    
-        this.process_if_full(player_number);
-    }
-
-    // For use with manual column filling.
-    // Commits the first non-committed square.
-    commit_noncommited_square(player_number) {
-        let squares = this.squares(player_number);
-        for (const sq of squares) {
-            assert(!sq.is_owned());
-            if (!sq.is_committed()) {
-                sq.make_commit();
-                break;
-            }
-        }
-
-        this.process_if_full(player_number);
-    }
-
-    // For use with manual column filling
-    // Clears the final non-empty square
-    clear_nonempty_square(player_number) {
-        let squares = this.squares(player_number);
-        for (let ind = squares.length-1; ind >= 0; --ind) {
-            let sq = squares[ind];
-            assert(!sq.is_owned());
-            if (!sq.is_empty()) {
-                sq.clear();
-                break;
-            }
         }
     }
 
@@ -328,24 +288,22 @@ class CantStopColumn {
 
         }
     }
-
     // Record that the colum is 'owned' by the given player
     // and update elements to reflect this.
-    process_if_full(player_number) {
-        if (this.is_full(player_number)) {
-            for (let psq of this.player_squares) {
-                for (let sq of psq) {
-                    sq.make_in_owned_column(player_number);
-                }
+    mark_column_as_owned(owning_player_number) {
+
+        for (let psq of this.player_squares) {
+            for (let sq of psq) {
+                sq.make_in_owned_column(owning_player_number);
             }
-
-            this.clear_added_elements();
-
-            let color = get_default_player_color(player_number);
-            this.set_internal_colors(color, color);
-
-            this.m_is_owned = true;
         }
+
+        this.clear_added_elements();
+
+        let color = get_default_player_color(owning_player_number);
+        this.set_internal_colors(color, color);
+
+        this.m_is_owned = true;
     }
 
     is_owned()
@@ -374,19 +332,5 @@ class CantStopColumn {
     elem()
     {
         return this.m_column_elem;
-    }
-
-    player_square_clicked(square) {
-        if (this.manual_filling_allowed && !square.is_owned()) {
-            if (square.is_committed()) {
-                this.clear_nonempty_square(square.player_number);
-            } else {
-                this.commit_noncommited_square(square.player_number);
-            }
-        }
-    }
-
-    allow_manual_filling(allow) {
-        this.manual_filling_allowed = allow;
     }
 }
