@@ -1,3 +1,7 @@
+body {
+  display: inline-flex;
+  flex-direction: column;
+}
 
 #loading, #load-error{
   font-family:helvetica;
@@ -15,11 +19,11 @@
 }
 
 #options-div {
+  align-self: flex-end;
   display:flex;
   align-items:center;
   font-size: x-large;
   font-weight:bold;
-  color:darkred;
   margin-bottom: 10px;
 }
 
@@ -59,8 +63,7 @@
 #game {
     /* visibility: visible; */
     position: relative; /* to force a positioning context */
-    display: inline-flex;
-    flex-direction: column;
+
     margin: 5px 10px;
     font-size: 30px;
     --player-color: black; /* Changed in JS */
