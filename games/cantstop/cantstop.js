@@ -1,30 +1,29 @@
+"use strict";
 /*
  * Get and sanity-check the jQuery elements that are used in this file.
  */
- 
 const jq = { 
-    board: $("#board"),
-    bust: $("#bust"),
-    leave: $("#leave"),
-    game_over: $("#game-over"),
-    loading: $("#loading"),
-    load_error: $("#load-error"),
-    move_options: $("#move-options"),
-    dice: $(".csdice"),
-    dont: $("#dont"),
-    game: $("#game"),
-    dice_options: $(".dice-option"), 
-    num_players: $("#num-players"),
-    required_roll: $("#required-roll"),
-    restart: $("#restart"),
-    roll: $("#roll"),
-    pass: $("#pass"),
-    player_name: $("#player-name"),
-}
-
-for (const [key, value] of Object.entries(jq)) {
-    assert(value.length > 0,
-        '"' + key + '"' + " matched " + value.length + " elements");
+    automatic_filling: $_checked("#automatic-filling"),
+    board: $_checked("#board"),
+    bust: $_checked("#bust"),
+    leave: $_checked("#leave"),
+    game_over: $_checked("#game-over"),
+    loading: $_checked("#loading"),
+    load_error: $_checked("#load-error"),
+    move_options: $_checked("#move-options"),
+    dice: $_checked(".csdice"),
+    dont: $_checked("#dont"),
+    game: $_checked("#game"),
+    dice_options: $_checked(".dice-option"),
+    manual_filling: $_checked("#manual-filling"), 
+    num_players: $_checked("#num-players"),
+    options_button: $_checked("#options-button"),
+    options_div: $_checked("#options-div"),
+    required_roll: $_checked("#required-roll"),
+    restart: $_checked("#restart"),
+    roll: $_checked("#roll"),
+    pass: $_checked("#pass"),
+    player_name: $_checked("#player-name"),
 }
 
 const disable_at_end_of_game = [jq.pass, jq.leave];
@@ -37,10 +36,18 @@ let num_players = null; // set by restart_game()
 const n_dice = 4;
 const last_column = 12;
 
-assert(jq.dice.length == n_dice, "4 dice expected");
+let option_div_hidden = new SetHidden(jq.options_div);
+option_div_hidden.hidden(true);
+
+jq.automatic_filling.prop("checked", true);
+function automatic_filling() {
+    return jq.automatic_filling.prop("checked");
+}
+
+assert(jq.dice.length == n_dice);
 
 const max_move_options = 6;
-assert(jq.dice_options.length == max_move_options, "6 move options expect");
+assert(jq.dice_options.length == max_move_options);
 
 let dice_array = make_dice_array();
 
@@ -148,19 +155,19 @@ function do_roll(spin)
     dice_array.forEach((d)=> dice_numbers.push(d.number()));
 
     move_options = game_board.options(current_player, dice_numbers);
-    if(move_options.length == 0)
-    {
+    if (move_options.length == 0) {
         make_visible(bust_visibility);
     }
     else {
         display_move_options();
     }
 
-    disable_roll_and_dont_buttons(true);
+    if (automatic_filling()) { // On by default
+        disable_roll_and_dont_buttons(true);
 
-    if(move_options.length == 1)
-    {
-        select_move_option(0);
+        if (move_options.length == 1) {
+            select_move_option(0);
+        }
     }
  }
 
@@ -300,6 +307,14 @@ function set_current_player_name() {
  * Game interaction
  */
 
+jq.options_button.click(function(elem){
+    option_div_hidden.toggle();
+
+    const div_hidden = option_div_hidden.hidden();
+    console.log("Options div now hidden:", div_hidden);
+    $(this).toggleClass("in-out-button-pressed", !div_hidden);
+});
+
 jq.required_roll.click(function(elem){
     make_visible(move_options_visibility);
     do_roll(true /*spin*/); 
@@ -311,13 +326,13 @@ jq.dice_options.click(function (elem) {
 });
 
 jq.roll.click(function (elem) {
-    assert(selected_precommits);
+    //assert(selected_precommits);
     
     do_roll(true /*spin*/);
 });
 
 jq.dont.click(function(elem){
-    assert (selected_precommits);
+    //assert (selected_precommits);
 
     game_board.commit(current_player);
     make_visible(required_roll_visibility);
@@ -357,6 +372,10 @@ jq.player_name.change(function(elem){
     player_names[current_player] = new_name;
 });
 
+jq.manual_filling.change(function(elem){
+    game_board.allow_manual_filling($(this).prop('checked'));
+});
+
 function cs_fixed_size_columns(size)
 {
     jq.board.empty();
@@ -369,9 +388,12 @@ function cs_fixed_size_columns(size)
     set_num_players();
 }
 
+
+
 $("#debug").click(function (elem) {
     cs_fixed_size_columns(2);
 });
+
 
 
 

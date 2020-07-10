@@ -25,7 +25,23 @@
         <div>Cannot load game</div>
         <div>Either there is a bug or your browser is out of date</div>
     </div>
+    
+    <div id="options-div">
+         <div class="option-title">Colomn filling</div>
+         <div id=column-filling-options>
+              <label>automatic<input type="checkbox" id="automatic-filling"></label>
+              <label>manual<input type="checkbox" id="manual-filling"></label>
+         </div>
+
+        <div>
+            <label for="num-players" class="option-title">Players</label>
+            <input type="number" name="num-players" id="num-players" min=1 max=4 value=2>
+        </div>
+        <!-- <button type="debug" id="debug">debug</button> -->
+    </div>
+
     <div id="game">
+
         <div id="board"> </div>
 
         <div id="below-board">
@@ -76,12 +92,8 @@
         </div>
 
         <div id="setup-options"> <!-- Options not used in normal game play -->
-            <div>
-                <label for="num-players">Num players</label>
-                <input type="number" name="num-players" id="num-players" min=1 max=8 value=2>
-            </div>
+            <button type="button" id="options-button" class="in-out-button">Options</button>
             <button type="button" id="restart">Restart</button>
-            <!-- <button type="debug" id="debug">debug</button> -->
         </div> <!-- options -->
     </div> <!-- game -->
 </body>
