@@ -3,6 +3,7 @@
  * Get and sanity-check the jQuery elements that are used in this file.
  */
 const jq = { 
+    automatic_filling: $_checked("#automatic-filling"),
     board: $_checked("#board"),
     bust: $_checked("#bust"),
     leave: $_checked("#leave"),
@@ -36,8 +37,12 @@ const n_dice = 4;
 const last_column = 12;
 
 let option_div_hidden = new SetHidden(jq.options_div);
-//option_div_hidden.hidden(true);
+option_div_hidden.hidden(true);
 
+jq.automatic_filling.prop("checked", true);
+function automatic_filling() {
+    return jq.automatic_filling.prop("checked");
+}
 
 assert(jq.dice.length == n_dice);
 
@@ -150,19 +155,19 @@ function do_roll(spin)
     dice_array.forEach((d)=> dice_numbers.push(d.number()));
 
     move_options = game_board.options(current_player, dice_numbers);
-    if(move_options.length == 0)
-    {
+    if (move_options.length == 0) {
         make_visible(bust_visibility);
     }
     else {
         display_move_options();
     }
 
-    disable_roll_and_dont_buttons(true);
+    if (automatic_filling()) { // On by default
+        disable_roll_and_dont_buttons(true);
 
-    if(move_options.length == 1)
-    {
-        select_move_option(0);
+        if (move_options.length == 1) {
+            select_move_option(0);
+        }
     }
  }
 
@@ -321,13 +326,13 @@ jq.dice_options.click(function (elem) {
 });
 
 jq.roll.click(function (elem) {
-    assert(selected_precommits);
+    //assert(selected_precommits);
     
     do_roll(true /*spin*/);
 });
 
 jq.dont.click(function(elem){
-    assert (selected_precommits);
+    //assert (selected_precommits);
 
     game_board.commit(current_player);
     make_visible(required_roll_visibility);
