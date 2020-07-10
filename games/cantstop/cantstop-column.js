@@ -55,7 +55,7 @@ class CantStopPlayerSquare {
         this.status = sq_empty;
     }
 
-    make_provisional_precommit() {
+    make_provisional_precommitted() {
         this.make_precommit();
         this.precommit_elem.addClass("cs-provisional-precommit");
  
@@ -84,15 +84,19 @@ class CantStopPlayerSquare {
         this.status = sq_in_owned_column;
     }
 
+    is_owned() {
+        return this.status == sq_in_owned_column;
+    }
+
     is_provisional_precommit() {
         return this.status == sq_provisonally_precommitted;
     }
     
-    is_precommit() {
+    is_precommitted() {
         return this.status == sq_precommitted || this.status == sq_provisonally_precommitted;
     }
 
-    is_commit() {
+    is_committed() {
         return this.status == sq_committed;
     }
 
@@ -205,7 +209,7 @@ class CantStopColumn {
 
     has_precommits(player_number) {
         for (const sq of this.squares(player_number)) {
-            if (sq.is_precommit()) {
+            if (sq.is_precommitted()) {
                 return true;
             }
         }
@@ -225,7 +229,7 @@ class CantStopColumn {
     add_provisional_precommit(player_number) {
         for (const sq of this.squares(player_number)) {
             if (sq.is_empty()) {
-                sq.make_provisional_precommit();
+                sq.make_provisional_precommitted();
                 break;
             }
         }
@@ -249,7 +253,7 @@ class CantStopColumn {
     }
     remove_all_precommits(player_number) {
         for (const sq of this.squares(player_number)) {
-            if (sq.is_precommit()) {
+            if (sq.is_precommitted()) {
                 sq.clear();
             }
         }
@@ -260,7 +264,7 @@ class CantStopColumn {
         for (let i = this.squares(player_number).length - 1; i >= 0; --i) {
             let sq = this.squares(player_number)[i];
 
-            if (sq.is_precommit()) {
+            if (sq.is_precommitted()) {
                 result.push(sq);
             }
         }
@@ -271,18 +275,20 @@ class CantStopColumn {
     commit(player_number) {
         let squares = this.squares(player_number);
         for (const sq of squares) {
-            if (sq.is_precommit())
+            if (sq.is_precommitted())
                 sq.make_commit();
         }
     
         this.process_if_full(player_number);
     }
 
-    // For use with manual column filling
-    add_committed_square(player_number) {
+    // For use with manual column filling.
+    // Commits the first non-committed square.
+    commit_noncommited_square(player_number) {
         let squares = this.squares(player_number);
         for (const sq of squares) {
-            if (sq.is_empty()) {
+            assert(!sq.is_owned());
+            if (!sq.is_committed()) {
                 sq.make_commit();
                 break;
             }
@@ -292,11 +298,13 @@ class CantStopColumn {
     }
 
     // For use with manual column filling
-    remove_committed_square(player_number) {
+    // Clears the final non-empty square
+    clear_nonempty_square(player_number) {
         let squares = this.squares(player_number);
         for (let ind = squares.length-1; ind >= 0; --ind) {
             let sq = squares[ind];
-            if (sq.is_commit()) {
+            assert(!sq.is_owned());
+            if (!sq.is_empty()) {
                 sq.clear();
                 break;
             }
@@ -369,11 +377,11 @@ class CantStopColumn {
     }
 
     player_square_clicked(square) {
-        if (this.manual_filling_allowed) {
-            if (square.status == sq_empty) {
-                this.add_committed_square(square.player_number);
-            } else if (square.status == sq_committed) {
-                this.remove_committed_square(square.player_number);
+        if (this.manual_filling_allowed && !square.is_owned()) {
+            if (square.is_committed()) {
+                this.clear_nonempty_square(square.player_number);
+            } else {
+                this.commit_noncommited_square(square.player_number);
             }
         }
     }
