@@ -378,10 +378,10 @@ class CantStopColumn {
 
     player_square_clicked(square) {
         if (this.manual_filling_allowed && !square.is_owned()) {
-            if (square.is_committed()) {
-                this.clear_nonempty_square(square.player_number);
-            } else {
+            if (square.is_empty()) {
                 this.commit_noncommited_square(square.player_number);
+            } else {
+                this.clear_nonempty_square(square.player_number);
             }
         }
     }

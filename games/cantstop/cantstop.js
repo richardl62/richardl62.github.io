@@ -272,7 +272,7 @@ function clear_selected_move() {
 }
 
 function select_move_option(index) {
-    if (move_options[index]) {
+    if (move_options[index] && automatic_filling()) {
         clear_selected_move();
 
         selected_precommits = move_options[index];

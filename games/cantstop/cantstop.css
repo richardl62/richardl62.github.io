@@ -21,18 +21,12 @@ body {
 #options-div {
   align-self: flex-end;
   display:flex;
-  align-items:center;
   font-size: x-large;
-
   margin-bottom: 10px;
 }
 
 #options-div input {
   font-size: inherit;
-}
-
-.option-title{
-    font-weight:bold;
 }
 
 #num-players {
@@ -43,10 +37,8 @@ body {
   display: flex;
   flex-direction:column;
   align-items: flex-end;
-  margin-left: 0.2em;
-  margin-right: 1em;
+  margin-right: 0.5em;
 }
-
 
 .in-out-button {
   background-color: #e8e8e8;
