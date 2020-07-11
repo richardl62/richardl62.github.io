@@ -184,8 +184,6 @@ class scorePads {
     )
     {
         this.input_elem = $(elem);
-        this.game_support = game_support;
-        
         this.score_pads = [];
         this.callbacks = null;
     }
