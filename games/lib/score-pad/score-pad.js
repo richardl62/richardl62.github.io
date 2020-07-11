@@ -179,13 +179,11 @@ class scorePad {
 
 class scorePads {
 
-    constructor(elem, game_support)
+    constructor(
+        elem // html or jQuery
+    )
     {
-        assert(game_support instanceof GameSupport);
-
-        this.input_elem = elem;
-        $(this.input_elem).addClass("score-pads");
-        
+        this.input_elem = $(elem);
         this.game_support = game_support;
         
         this.score_pads = [];
@@ -205,7 +203,7 @@ class scorePads {
         for(var player_no = 0; player_no < n_players; player_no++)
         {
             var node = $("<div></div>");
-            $(this.input_elem).append(node);
+            this.input_elem.append(node);
             this.score_pads[player_no] = new scorePad(node, player_no, this.callbacks);
         }
 
