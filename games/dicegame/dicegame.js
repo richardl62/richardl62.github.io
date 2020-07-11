@@ -1,7 +1,7 @@
 "use strict";
 
 var game_support = new GameSupport();
-var dice_set = new diceSet(document.querySelector("#dice"), game_support);
+var dice_set = new diceSet(document.querySelector("#dice"));
 var score_pads = new scorePads(document.querySelector("#score-pads"), game_support);
 
 class currentPlayerControl {

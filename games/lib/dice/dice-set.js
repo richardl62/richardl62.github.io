@@ -148,17 +148,13 @@ class holdableDice extends dice
 
 class diceSet {
     constructor( 
-        elem /* div or similar to hold the dice */,
-        game_support) {
+        elem /* div or similar to hold the dice. Can be html or jQuery */
+        ) {
 
-        assert(game_support instanceof GameSupport);
-
-        this.user_elem = elem;
-        this.game_support = game_support;
-        
+        this.user_elem = $(elem);
         this.dice_set = [];
 
-        $(this.user_elem).addClass("dice-set");
+        this.user_elem.addClass("dice-set");
     }
 
     n_dice(num_dice) {
@@ -172,7 +168,7 @@ class diceSet {
         this.dice_set = new Array(num_dice);
         for (var i = 0; i < num_dice; ++i) {
             var node = document.createElement("div");
-            this.user_elem.appendChild(node);
+            this.user_elem.append(node);
 
             this.dice_set[i] = new holdableDice(node);
             this.dice_set[i].click(die => die.hold(!die.hold()));
