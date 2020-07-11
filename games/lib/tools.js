@@ -98,54 +98,61 @@ function sort_unique(arr,
 //     sort_unique(test_array, (a, b) => b - a)
 //     );
 
-// TO DO: Make analogous to SetHidden
-class SetVisiblity
+// Copy-and-edit of CssDisplay
+class CssVisibility
 {
     constructor(elem)
     {
-        this.elem = $(elem);
-        assert(elem.length == 1, "SetVisiblity requires exactly 1 element");
+        this._elem = $(elem);
+        assert(this._elem.length == 1, "CssVisiblity requires exactly 1 element");
+
+        this._intial_css_value = this._elem.css("visibility");
+        this._hidden = false;
+
+        Object.seal(this);
     }
 
-    on() {
-        this.elem.css("visibility", "initial");
-    }
-
-    off() {
-        this.elem.css("visibility", "hidden");
-    }
-
-    visible(on)
+    hidden(hidden)
     {
-        if(on)
-            this.on();
-        else
-            this.off();
-    }
-}
-
-class SetHidden
-{
-    constructor(elem)
-    {
-        this.elem = $(elem);
-        assert(this.elem.length == 1, "SetHidden requires exactly 1 element");
-        this.intial_display_type = this.elem.css("display");
-        this._on = false;
-    }
-
-
-    hidden(on)
-    {
-        if(on === undefined) {
-            return this._on;
+        if(hidden === undefined) {
+            return this._hidden;
         }
-        this._on = on;
-        this.elem.css("display", on ? "none" : this.intial_display_type);
+        this._hidden = hidden;
+        this._elem.css("visibility", hidden ? "hidden" : this._intial_css_value);
     }
 
     toggle() {
-        this.hidden(!this.hidden());
+        this.hidden(!this.CssDisplay());
+    }
+}
+
+// Copy-and-edit of CssVisibility
+// Used to set css 'display' to 'none' or restore to original value.
+class CssDisplay
+{
+    constructor(elem)
+    {
+        this._elem = $(elem);
+        assert(this._elem.length == 1, "CssDisplay requires exactly 1 element");
+
+        this._intial_css_value = this._elem.css("display");
+        this._none = false;
+
+        Object.seal(false);
+    }
+
+
+    none(none)
+    {
+        if(none === undefined) {
+            return this._none;
+        }
+        this._none = none;
+        this._elem.css("display", none ?  "none" : this._intial_css_value);
+    }
+
+    toggle() {
+        this.none(!this.none());
     }
 }
 // Take an array of strings and return the inner html for a select element

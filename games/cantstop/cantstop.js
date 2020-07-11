@@ -36,8 +36,8 @@ let num_players = null; // set by restart_game()
 const n_dice = 4;
 const last_column = 12;
 
-let option_div_hidden = new SetHidden(jq.options_div);
-option_div_hidden.hidden(true);
+let option_div_display = new CssDisplay(jq.options_div);
+option_div_display.none(true);
 
 jq.automatic_filling.prop("checked", true);
 function automatic_filling() {
@@ -51,10 +51,10 @@ assert(jq.dice_options.length == max_move_options);
 
 let dice_array = make_dice_array();
 
-let game_over_visibility = new SetVisiblity(jq.game_over);
-let move_options_visibility = new SetVisiblity(jq.move_options);
-let bust_visibility = new SetVisiblity(jq.bust);
-let required_roll_visibility = new SetVisiblity(jq.required_roll)
+let game_over_visibility = new CssVisibility(jq.game_over);
+let move_options_visibility = new CssVisibility(jq.move_options);
+let bust_visibility = new CssVisibility(jq.bust);
+let required_roll_visibility = new CssVisibility(jq.required_roll)
 
 var move_options = null;
 var selected_precommits = null;
@@ -118,14 +118,14 @@ function make_dice_array() {
     return arr;
 }
 
-function make_visible(visible)
+function show_one(to_show)
 {
-    game_over_visibility.off();
-    bust_visibility.off();
-    move_options_visibility.off();
-    required_roll_visibility.off();
+    game_over_visibility.hidden(true);
+    bust_visibility.hidden(true);
+    move_options_visibility.hidden(true);
+    required_roll_visibility.hidden(true);
 
-    visible.on();
+    to_show.hidden(false);
 }
 
 function disable_roll_and_dont_buttons(disable)
@@ -156,7 +156,7 @@ function do_roll(spin)
 
     move_options = game_board.options(current_player, dice_numbers);
     if (move_options.length == 0) {
-        make_visible(bust_visibility);
+        show_one(bust_visibility);
     }
     else {
         display_move_options();
@@ -213,7 +213,7 @@ function do_roll(spin)
     current_player = num_players;
     change_current_player();
 
-    make_visible(required_roll_visibility);
+    show_one(required_roll_visibility);
 
     disable_at_end_of_game.forEach(e => e.prop("disabled", false));
  }
@@ -240,7 +240,7 @@ function change_current_player() {
     game_board.remove_all_precommits(current_player);
     selected_precommits = null;
 
-    make_visible(required_roll_visibility);
+    show_one(required_roll_visibility);
 
     current_player = next_unfinished_player(current_player);
 
@@ -249,7 +249,7 @@ function change_current_player() {
         player_color = get_default_player_color(current_player);
     } else {
         player_color = "var(--games-board-non-player-color)"
-        make_visible(game_over_visibility); 
+        show_one(game_over_visibility); 
         disable_at_end_of_game.forEach(e => e.prop("disabled", true));
     }
 
@@ -308,15 +308,15 @@ function set_current_player_name() {
  */
 
 jq.options_button.click(function(elem){
-    option_div_hidden.toggle();
+    option_div_display.toggle();
 
-    const div_hidden = option_div_hidden.hidden();
+    const div_hidden = option_div_display.none();
     console.log("Options div now hidden:", div_hidden);
     $(this).toggleClass("in-out-button-pressed", !div_hidden);
 });
 
 jq.required_roll.click(function(elem){
-    make_visible(move_options_visibility);
+    show_one(move_options_visibility);
     do_roll(true /*spin*/); 
 });
 
@@ -335,7 +335,7 @@ jq.dont.click(function(elem){
     //assert (selected_precommits);
 
     game_board.commit(current_player);
-    make_visible(required_roll_visibility);
+    show_one(required_roll_visibility);
     change_current_player();
 });
 

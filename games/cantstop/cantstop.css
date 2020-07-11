@@ -51,12 +51,11 @@ body {
 #game {
     /* visibility: visible; */
     position: relative; /* to force a positioning context */
-
     margin: 5px 10px;
     font-size: 30px;
     --player-color: black; /* Changed in JS */
     margin: 0 0;
-    visibility: hidden; /* Startup option */
+    /* visibility: visible; */ /* Startup option */
 }
 
 #game * {

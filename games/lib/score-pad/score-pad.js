@@ -56,8 +56,8 @@ class scorePad {
         this.current_score_elem = find_elem(".current-score");
         this.total_score_elem = find_elem(".total-score");
 
-        this.score_finished_div_hidden = new SetHidden(find_elem(".score-finished-div"));
-        this.enter_partial_score_hidden = new SetHidden(this.enter_partial_score_elem);
+        this.score_finished_div_display = new CssDisplay(find_elem(".score-finished-div"));
+        this.enter_partial_score_display = new CssDisplay(this.enter_partial_score_elem);
 
         this.resetScores();
         
@@ -103,13 +103,13 @@ class scorePad {
     score_expected(on_off) {
         if(!on_off) {
             this.enter_score_from_elem();
-            this.score_finished_div_hidden.hidden(true);
+            this.score_finished_div_display.none(true);
         }
         return this.user_elem.toggleClass("score-expected", on_off);
     }
 
     allow_partial_scores(allow) {
-        this.enter_partial_score_hidden.hidden(!allow);
+        this.enter_partial_score_display.none(!allow);
 
         this.enter_score_elem.attr("placeholder", allow ? 
             score_placeholder_with_partials : score_placeholder_default
@@ -156,7 +156,7 @@ class scorePad {
     enter_partial_score(number) {
         assert(typeof number == "number");
 
-        this.score_finished_div_hidden.off();
+        this.score_finished_div_display.none(false);
         const total_score = number + this.score_this_turn;
         
         this.score_this_turn = total_score;
