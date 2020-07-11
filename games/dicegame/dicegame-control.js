@@ -3,8 +3,9 @@
 class currentPlayerControl {
     //KLUDGE: Mix of callbacks and 'ordinary' functions
 
-    constructor() {
+    constructor(score_pads) {
         this.current_player = null;
+        this.score_pads = score_pads;
 
         Object.seal(this);
     }
@@ -16,10 +17,10 @@ class currentPlayerControl {
 
         //console.log("current player: ", player_no);
 
-        score_pads.score_expected("all", false);
-        score_pads.allow_partial_scores("all", false);
+        this.score_pads.score_expected("all", false);
+        this.score_pads.allow_partial_scores("all", false);
 
-        score_pads.score_expected(player_no, true);
+        this.score_pads.score_expected(player_no, true);
     }
 
     // Callback - but also used below (kludge?)
@@ -37,23 +38,23 @@ class currentPlayerControl {
         this.set_current_player((player_no + 1) % num_players);
     }
 
-    // Used below
+    // Callback
     dice_rolled() {
         assert(this.current_player !== null);
 
-        score_pads.allow_partial_scores(this.current_player, true);
+        this.score_pads.allow_partial_scores(this.current_player, true);
     }
 }
 
 
 class DicegameControl {
     constructor (dice_set_elem, score_pads_elem) {
-        this.game_support = new GameSupport();
+        //this.game_support = new GameSupport();
         this.dice_set = new diceSet(dice_set_elem);
         this.score_pads = new scorePads(score_pads_elem);
 
-        this.current_player_control = new currentPlayerControl;
-        this.score_pads.set_score_callback(current_player_control);
+        this.current_player_control = new currentPlayerControl(this.score_pads);
+        //this.score_pads.set_score_callback(this.current_player_control);
     }
 
     n_dice(num_dice) {
@@ -66,22 +67,22 @@ class DicegameControl {
     }
 
     restart() {
-        dice_set.initialise_all();
-        score_pads.resetScores()
-        current_player_control.set_current_player(0);
+        this.dice_set.initialise_all();
+        this.score_pads.resetScores()
+        this.current_player_control.set_current_player(0);
     }
 
     shuffle_player_names() {
-        dice_set.shuffle_player_names();
+        this.dice_set.shuffle_player_names();
     }
 
     roll_all() {
-        dice_set.roll_unheld();
-        current_player_control.dice_rolled();
+        this.dice_set.roll_unheld();
+        this.current_player_control.dice_rolled();
     }
 
     roll_unheld() {
-        dice_set.roll_unheld();
-        current_player_control.dice_rolled();
+        this.dice_set.roll_unheld();
+        this.current_player_control.dice_rolled();
     }
 }

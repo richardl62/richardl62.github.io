@@ -15,6 +15,17 @@ function setNumOfPlayers() {
     game_controller.n_player(num_players);
 }
 
+var options_shown;
+function show_options(show) {
+    options_shown = show;
+    $("#options-button").toggleClass("pressed-button", show);
+    $("#options-menu").toggle(show);
+}
+show_options(false);
+
+setNumOfDice(); // kludge ?
+setNumOfPlayers(); // kludge ?
+
 $("#restart").click(() => {
     game_controller.restart()
 });
@@ -25,27 +36,16 @@ $("#shuffle-players").click(() => {
 
 $("#roll-all").click(() => {
     game_controller.roll_all();
-    dice_set.roll_all();
-    current_player_control.dice_rolled();
 });
 
 $("#roll-unheld").click(() => {
     game_controller.roll_unheld();
 });
 
-var options_shown;
-function show_options(show) {
-    options_shown = show;
-    $("#options-button").toggleClass("pressed-button", show);
-    $("#options-menu").toggle(show);
-}
 
 $("#options-button").click(() => show_options(!options_shown));
 
 $("#num-dice").change(setNumOfDice);
 $("#num-players").change(setNumOfPlayers);
 
-show_options(false);
 
-setNumOfDice(); // kludge ?
-setNumOfPlayers(); // kludge ?
