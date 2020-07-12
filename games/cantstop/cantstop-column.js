@@ -330,9 +330,9 @@ class CantStopColumn {
     }
 
     // Record that the colum is 'owned' by the given player
-    // and update elements to reflect this.
+    // and update elements to reflect this. 
     process_if_full(player_number) {
-        if (this.is_full(player_number)) {
+        if (this.is_full(player_number) && !this.is_owned()) {
             for (let psq of this.player_squares) {
                 for (let sq of psq) {
                     sq.make_in_owned_column(player_number);

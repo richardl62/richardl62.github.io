@@ -44,6 +44,10 @@ function automatic_filling() {
     return jq.automatic_filling.prop("checked");
 }
 
+function manual_filling() {
+    return jq.manual_filling.prop("checked");
+}
+
 assert(jq.dice.length == n_dice);
 
 const max_move_options = 6;
@@ -163,7 +167,9 @@ function do_roll(spin)
     }
 
     if (automatic_filling()) { // On by default
-        disable_roll_and_dont_buttons(true);
+        if(!manual_filling()) {
+            disable_roll_and_dont_buttons(true);
+        }
 
         if (move_options.length == 1) {
             select_move_option(0);
@@ -311,7 +317,6 @@ jq.options_button.click(function(elem){
     option_div_display.toggle();
 
     const div_hidden = option_div_display.none();
-    console.log("Options div now hidden:", div_hidden);
     $(this).toggleClass("in-out-button-pressed", !div_hidden);
 });
 
