@@ -8,34 +8,23 @@ class CantStopBoard {
         this.m_columns = new Array;
     }
 
-    add_column(column_number, n_squares)
-    {
-        //TO DO:  Review and tidy up this code
-
-        let [col, square_elems] =  make_columm_and_square_elems(n_squares, column_number);
-        
-        function array_css(arr, property, value)
-        {
-            arr.forEach((s)=>s.css(property, value));
-        }
-        
-        if (column_number < 7)
-            array_css(square_elems, "border-right-style", "none");
-        if (column_number > 7)
-            array_css(square_elems, "border-left-style", "none");
-
-        array_css(square_elems, "border-top-style", "none");
-            
-        square_elems[0].css("border-top-style", "solid");
-
+    add_column(column_number, n_squares) {
         // Pad with empty columns as necessary before added the requested column
-        assert(this.m_columns.length <= column_number);
-        while (this.m_columns.length < column_number) {
-            this.m_columns.push(new CantStopColumn(this.m_columns.length, null, null));
+        if (this.m_columns.length < column_number) {
+            this.add_column(column_number-1, 0); // recursive.
         }
-        this.m_columns.push(new CantStopColumn(column_number, col, square_elems.reverse()));
 
-        this.board_elem.append(col);
+        assert(this.m_columns.length == column_number);
+
+        let col = new CantStopColumn({
+            column_number: column_number,
+            n_squares: n_squares,
+            left_side: column_number < 7,
+            right_side: column_number > 7,
+        });
+
+        this.m_columns.push(col);
+        this.board_elem.append(col.top_elem());
     }
 
     // Must be called after last column is added

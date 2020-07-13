@@ -109,40 +109,75 @@ class CantStopPlayerSquare {
     }
 }
 
-function make_columm_and_square_elems(n_squares, column_number) {
-    let squares = new Array(n_squares);
-
-    let col = $("<div class='cs-column'></div>");
-    col.append("<div class='cs-top-number'>" + column_number + "</div>");
-    
-
-    for (let i = 0; i < n_squares; ++i)
-        {
-        squares[i] = $("<div class='cs-square'></div>");
-        col.append(squares[i]);
-        }
-
-    col.append("<div class='cs-bottom-number'>" + column_number + "</div>");
-
-    return [col, squares];
-}
-
 class CantStopColumn {
-    constructor(column_number,column_elem, square_elems) {
-        assert((column_elem === null) == (square_elems === null));
+    constructor(options) {
+        this.column_number = options.column_number; // Recorded to help with debugging
+        const n_squares = options.n_squares;
 
-
-        this.column_number = column_number; // To help with debugging
-        this.m_column_elem = column_elem;
-        this.square_elems = square_elems;
+        this.square_elems = new Array(n_squares);
+        if(n_squares > 0)
+            this.make_html_elements(options);
+ 
         this.m_is_owned = false;
-
         this.player_squares = null; // [player-number][square] - set in num_players() 
-
         this.manual_filling_allowed = false;
 
         Object.seal(this);
+
     }
+
+    make_html_elements(options) {
+        let opt = (name) => {
+            const val = options[name];
+            assert(val !== undefined);
+            return val;
+        }
+
+        /*
+         * Create the elements
+         */
+        this.m_top_elem = $("<div class='cs-column'></div>");
+        
+        let top_number = $("<div class='cs-top-number'>" + this.column_number + "</div>");
+        let bottom_number = $("<div class='cs-bottom-number'>" + this.column_number + "</div>");
+        for (let i = 0; i < this.square_elems.length; ++i) {
+            this.square_elems[i] = $("<div class='cs-square'></div>");
+        }
+
+        /*
+         * Append internal elements to m_top_elem in the approrpriate order
+         */
+        
+        this.m_top_elem.append(top_number);
+        
+//         for (let i = 0; i < this.square_elems.length; ++i) {
+//             this.m_top_elem.append(this.square_elems[i]);
+//         }
+        for (let i = this.square_elems.length-1; i >= 0; --i) {
+            this.m_top_elem.append(this.square_elems[i]);
+        }
+
+        this.m_top_elem.append(bottom_number);
+
+        /* 
+         * style the elements
+         */
+        let style_squares = (property, value) => {
+            this.square_elems.forEach(s => s.css(property, value));
+        }
+
+        if (opt('left_side'))
+            style_squares("border-right-style", "none");
+        if (opt('right_side'))
+            style_squares("border-left-style", "none");
+
+        style_squares("border-top-style", "none");
+
+        this.square_elems[this.square_elems.length-1].css("border-top-style", "solid");
+    }
+
+
+    top_elem() {return this.m_top_elem;}
 
     clear_added_elements() {
         if (this.player_squares) {
@@ -154,7 +189,6 @@ class CantStopColumn {
         }
     }
     
-
     num_players(n_players)
     {
         if(n_players === undefined)
