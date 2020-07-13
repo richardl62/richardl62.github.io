@@ -169,10 +169,10 @@ function do_roll(spin)
     if (automatic_filling()) { // On by default
         if(!manual_filling()) {
             disable_roll_and_dont_buttons(true);
-        }
 
-        if (move_options.length == 1) {
-            select_move_option(0);
+            if (move_options.length == 1) {
+                select_move_option(0);
+            }
         }
     }
  }
@@ -335,14 +335,10 @@ jq.dice_options.click(function (elem) {
 });
 
 jq.roll.click(function (elem) {
-    //assert(selected_precommits);
-    
     do_roll(true /*spin*/);
 });
 
 jq.dont.click(function(elem){
-    //assert (selected_precommits);
-
     game_board.commit(current_player);
     show_one(required_roll_visibility);
     change_current_player();
