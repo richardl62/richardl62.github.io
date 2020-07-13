@@ -278,9 +278,13 @@ function clear_selected_move() {
 }
 
 function select_move_option(index) {
-    if (move_options[index] && automatic_filling()) {
+    const auto_move = move_options[index] && automatic_filling();
+    if (auto_move || manual_filling()) {
         clear_selected_move();
+        game_board.remove_all_provisional_precommits(current_player);
+    }
 
+    if(auto_move) {
         selected_precommits = move_options[index];
         $(jq.dice_options[index]).addClass(selected_move);
 
