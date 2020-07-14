@@ -48,12 +48,12 @@ class CantStopBoard {
     // 0 1 or 2 column numbers.
     options(player_number, dice_numbers/* array of numbers */) {
 
-        let has_precommits = new Set;
+        let in_play = new Set;
         let is_full = new Set;
         for (let cn = 0; cn < this.m_columns.length; ++cn) {
             let col = this.m_columns[cn];
-            if (col && col.has_precommits(player_number)) {
-                has_precommits.add(cn);
+            if (col && col.in_play()) {
+                in_play.add(cn);
             }
 
             if (col && col.is_full(player_number)) {
@@ -61,15 +61,27 @@ class CantStopBoard {
             }
         }
 
-        let accumulator = new CantStopOptionAccumulator(has_precommits, is_full);
-
+        let accumulator_OLD = new CantStopOptionAccumulator_OLD(in_play, is_full);
+        let accumulator = new CantStopOptionAccumulator(in_play, is_full);
         let options = new Array;
         function add_option(index1a, index1b, index2a, index2b) {
             let s1 = dice_numbers[index1a] + dice_numbers[index1b];
             let s2 = dice_numbers[index2a] + dice_numbers[index2b];
 
+            accumulator_OLD.candidate_pair(s1, s2);
+            const old_opts = accumulator_OLD.get_options();
 
             accumulator.candidate_pair(s1, s2);
+            const new_opts = accumulator.get_options();
+
+            if (!manual_filling()) {
+                if (JSON.stringify(old_opts) != JSON.stringify(new_opts)) {
+                    console.log("Old", old_opts);
+                    console.log("New", new_opts);
+                    alert("Self check of scoring options failed\n" +
+                     "Possible issue with tempory use of manual mode");
+                }
+            }
         }
 
         add_option(0, 1, 2, 3);
@@ -163,10 +175,10 @@ class CantStopBoard {
         return this.m_columns;
     }
 
-    allow_manual_filling(allow) {
+    allow_manual_control(allow) {
         for (let c of this.m_columns)
         {
-            c.allow_manual_filling(allow);
+            c.allow_manual_control(allow);
         }
     }
 }

@@ -68,7 +68,6 @@ const max_players = 8;
 var player_names = new Array(max_players + 1);
 
 const selected_move = "selected-move";
-const in_play_column = "cs-in-play-column";
 
 // Setup to the board
 let game_board;
@@ -148,7 +147,7 @@ function do_roll(spin)
     {
         for(let p of selected_precommits)
         {
-            game_board.column(p).top_elem().addClass(in_play_column);
+            game_board.column(p).in_play(true);
         }
         selected_precommits = null;
     }
@@ -267,9 +266,7 @@ function change_current_player() {
 
 function clear_in_play_columns() {
     for (let cn = 0; cn <= last_column; ++cn) {
-        let elem = game_board.column(cn).top_elem();
-        if (elem)
-            elem.removeClass(in_play_column);
+        game_board.column(cn).in_play(false);
     }
 }
 
@@ -378,7 +375,7 @@ jq.player_name.change(function(elem){
 });
 
 jq.manual_filling.change(function(elem){
-    game_board.allow_manual_filling($(this).prop('checked'));
+    game_board.allow_manual_control($(this).prop('checked'));
 });
 
 function cs_fixed_size_columns(size)

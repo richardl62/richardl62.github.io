@@ -6,7 +6,7 @@ const sq_precommitted = 2;
 const sq_committed = 3;
 const sq_in_owned_column = 4; // Used when the column is filled by any player.
 
-const precommitted_column_limit = 3;
+const in_play_column_limit = 3;
 
 // Record the status in a board square for a particular player
 class CantStopPlayerSquare {
@@ -111,19 +111,30 @@ class CantStopPlayerSquare {
 
 class CantStopColumn {
     constructor(options) {
-        this.column_number = options.column_number; // Recorded to help with debugging
         const n_squares = options.n_squares;
 
         this.square_elems = new Array(n_squares);
-        if(n_squares > 0)
+        if (n_squares > 0) {
             this.make_html_elements(options);
- 
+        }
+
         this.m_is_owned = false;
+        this.m_in_play = false;
         this.player_squares = null; // [player-number][square] - set in num_players() 
-        this.manual_filling_allowed = false;
+        this.manual_control_allowed = false;
 
         Object.seal(this);
 
+        //console.log("has_elems", this.has_elements(), "n_squares", n_squares, has_elems ? "t" :"f"); 
+        if (this.has_elements()) {
+            const number_clicked = () => {
+                if (this.manual_control_allowed) {
+                    this.in_play(!this.in_play());
+                }
+            }
+            this.top_number.click(number_clicked);
+            this.bottom_number.click(number_clicked);
+        }
     }
 
     make_html_elements(options) {
@@ -138,8 +149,8 @@ class CantStopColumn {
          */
         this.m_top_elem = $("<div class='cs-column'></div>");
         
-        let top_number = $("<div class='cs-top-number'>" + this.column_number + "</div>");
-        let bottom_number = $("<div class='cs-bottom-number'>" + this.column_number + "</div>");
+        this.top_number = $("<div class='cs-top-number'>" + opt('column_number') + "</div>");
+        this.bottom_number = $("<div class='cs-bottom-number'>" + opt('column_number') + "</div>");
         for (let i = 0; i < this.square_elems.length; ++i) {
             this.square_elems[i] = $("<div class='cs-square'></div>");
         }
@@ -148,16 +159,14 @@ class CantStopColumn {
          * Append internal elements to m_top_elem in the approrpriate order
          */
         
-        this.m_top_elem.append(top_number);
+        this.m_top_elem.append(this.top_number);
         
-//         for (let i = 0; i < this.square_elems.length; ++i) {
-//             this.m_top_elem.append(this.square_elems[i]);
-//         }
+
         for (let i = this.square_elems.length-1; i >= 0; --i) {
             this.m_top_elem.append(this.square_elems[i]);
         }
 
-        this.m_top_elem.append(bottom_number);
+        this.m_top_elem.append(this.bottom_number);
 
         /* 
          * style the elements
@@ -178,6 +187,10 @@ class CantStopColumn {
 
 
     top_elem() {return this.m_top_elem;}
+
+    has_elements() { 
+     return Boolean(this.m_top_elem);
+     }
 
     clear_added_elements() {
         if (this.player_squares) {
@@ -411,7 +424,7 @@ class CantStopColumn {
     }
 
     player_square_clicked(square) {
-        if (this.manual_filling_allowed && !square.is_owned()) {
+        if (this.manual_control_allowed && !square.is_owned()) {
             if (square.is_empty()) {
                 this.commit_noncommited_square(square.player_number);
             } else {
@@ -420,7 +433,21 @@ class CantStopColumn {
         }
     }
 
-    allow_manual_filling(allow) {
-        this.manual_filling_allowed = allow;
+    in_play(on_off) {
+        if(on_off === undefined) {
+            return this.m_in_play;
+        }
+
+        this.m_in_play = Boolean(on_off);
+
+        if (this.has_elements()) {
+            this.top_number.toggleClass("cs-in-play-column", on_off);
+            this.bottom_number.toggleClass("cs-in-play-column", on_off);
+        }
+    }    
+
+
+    allow_manual_control(allow) {
+        this.manual_control_allowed = allow;
     }
 }
