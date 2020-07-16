@@ -29,6 +29,23 @@ class CantStopPlayerColumn {
     get squares() {
         return this._squares;
     }
+
+    state(input_state) {
+        const n_squares = this._squares.length;
+
+        if (input_state === undefined) {
+            let st = new Array(n_squares);
+            for (let i = 0; i < n_squares; ++i) {
+                st[i] = this._squares[i].state();
+            }
+            return st;
+        } else {
+            assert(input_state instanceof Array && input_state.length == n_squares);
+            for (let i = 0; i < n_squares; ++i) {
+                this._squares[i].state(input_state[i]);
+            }
+        }
+    }
 }
 
 class CantStopColumn {
@@ -114,22 +131,12 @@ class CantStopColumn {
      return Boolean(this.m_top_elem);
      }
 
-    clear_added_elements() {
-        if (this.player_columns) {
-            for (let pc of this.player_columns) {
-                pc.remove_added_elements();
-            }
-        }
-    }
-    
     num_players(n_players)
     {
         if(n_players === undefined)
         {
             return this.player_columns.length;
         }
-
-        this.clear_added_elements();
 
         if (this.player_columns) {
             for (let pc of this.player_columns) {
@@ -294,9 +301,9 @@ class CantStopColumn {
         if (this.is_full(player_number) && !this.is_owned()) {
             for (let pc of this.player_columns) {
                 pc.make_in_owned_column(player_number);
+                pc.remove_added_elements(); // KLUDGE/BUG - Leads to error on restart
             }
 
-            this.clear_added_elements();
 
             let color = get_cantstop_player_color(player_number);
             this.set_internal_colors(color, color);
@@ -357,9 +364,9 @@ class CantStopColumn {
         if(input_state === undefined) {
             let st = new Array(n_player);
             for(let i = 0; i < n_player; ++i) {
-                //st[i] = this.player_columns[i].state();
+                st[i] = this.player_columns[i].state();
             }
-            return this.state;
+            return st;
         } else {
             assert(input_state instanceof Array && input_state.length == n_player);
             for(let i = 0; i < n_player; ++i) {

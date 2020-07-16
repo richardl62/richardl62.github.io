@@ -111,8 +111,19 @@ class CantStopPlayerSquare {
             return this.status;
         }
         else {
-            assert(validStatus(input_status));
-            this.status = input_status;
+            if (input_state == sq_empty) {
+                this.clear();
+            } else if (input_state == sq_provisonally_precommitted) {
+                this.make_provisional_precommitted();
+            } else if (input_state == sq_precommitted) {
+                this.make_precommit();
+            } else if (input_state == sq_committed) {
+                this.make_commit();
+            } else if (input_state == sq_in_owned_column) {
+                this.make_in_owned_column();
+            } else {
+                assert(false);
+            }
         }
     }
 }

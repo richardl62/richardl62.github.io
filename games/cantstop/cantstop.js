@@ -1,4 +1,7 @@
 "use strict";
+
+const manual_mode_on_by_default = false;
+
 /*
  * Get and sanity-check the jQuery elements that are used in this file.
  */
@@ -41,6 +44,9 @@ const last_column = 12;
 
 let option_div_display = new CssDisplay(jq.options_div);
 option_div_display.none(true);
+
+let undo_move_display = new CssDisplay(jq.undo_turn);
+undo_move_display.none(true);
 
 jq.automatic_filling.prop("checked", true);
 
@@ -105,7 +111,6 @@ if(catch_errors) {
     set_num_players();
     jq.loading.css("display", "none");
 }
-
 
 /*
  * helper functions
@@ -318,6 +323,18 @@ function set_current_player_name() {
     elem.value = player_names[current_player];
 }
 
+function manual_filling_set(on) {
+    game_board.allow_manual_control(on);
+    undo_move_display.none(!on);
+}
+
+if(manual_mode_on_by_default) {
+    jq.manual_filling.prop("checked", true);
+    manual_filling_set(true);
+    option_div_display.none(false);
+}
+
+
  /*
  * Game interaction
  */
@@ -383,10 +400,10 @@ jq.player_name.change(function(elem){
 });
 
 jq.manual_filling.change(function(elem){
-    game_board.allow_manual_control($(this).prop('checked'));
+    manual_filling_set($(this).prop('checked'));
 });
 
-jq.undo_turn.change(function(elem){
+jq.undo_turn.click(function(elem){
     game_board.state(game_state);
 });
 
@@ -403,12 +420,9 @@ function cs_fixed_size_columns(size)
     set_num_players();
 }
 
-
-
 $("#debug").click(function (elem) {
     cs_fixed_size_columns(2);
 });
-
 
 
 
