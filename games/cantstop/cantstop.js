@@ -24,6 +24,7 @@ const jq = {
     roll: $_checked("#roll"),
     pass: $_checked("#pass"),
     player_name: $_checked("#player-name"),
+    undo_turn: $_checked("#undo-turn"),
 }
 
 const disable_at_end_of_game = [jq.pass, jq.leave];
@@ -71,6 +72,7 @@ const selected_move = "selected-move";
 
 // Setup to the board
 let game_board;
+let game_state;
 try {
     game_board = make_game_board();
     set_num_players();
@@ -79,7 +81,6 @@ try {
 catch (err) {
     jq.load_error.css("display", "block");
     console.log(err);
-
 }
 finally {
     jq.loading.css("display", "none");
@@ -262,6 +263,8 @@ function change_current_player() {
     jq.game.get(0).style.setProperty("--player-color", player_color);
 
     set_current_player_name();
+
+    game_state = game_board.state();
 }
 
 function clear_in_play_columns() {
@@ -377,6 +380,11 @@ jq.player_name.change(function(elem){
 jq.manual_filling.change(function(elem){
     game_board.allow_manual_control($(this).prop('checked'));
 });
+
+jq.undo_turn.change(function(elem){
+    game_board.state(game_state);
+});
+
 
 function cs_fixed_size_columns(size)
 {

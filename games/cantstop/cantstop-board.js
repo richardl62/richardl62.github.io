@@ -175,6 +175,23 @@ class CantStopBoard {
         return this.m_columns;
     }
 
+    state(input_state) {
+        const n_colums = this.m_columns.length;
+
+        if(input_state === undefined) {
+            let st = new Array(n_colums);
+            for(let i = 0; i < n_colums; ++i) {
+                st[i] = this.m_columns[i].state();
+            }
+            return this.state;
+        } else {
+            assert(input_state instanceof Array && input_state.length == n_colums);
+            for(let i = 0; i < n_colums; ++i) {
+                this.m_columns[i].state(input_state[i]);
+            }
+        }
+    }
+
     allow_manual_control(allow) {
         for (let c of this.m_columns)
         {

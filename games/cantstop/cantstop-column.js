@@ -6,6 +6,12 @@ const sq_precommitted = 2;
 const sq_committed = 3;
 const sq_in_owned_column = 4; // Used when the column is filled by any player.
 
+
+function validStatus(state) {
+    return typeof state == "number" &&  Number. isInteger(state) &&
+     state >= sq_empty && state <= sq_in_owned_column; 
+}
+
 const in_play_column_limit = 3;
 
 // Record the status in a board square for a particular player
@@ -106,6 +112,15 @@ class CantStopPlayerSquare {
 
     elem() {
         return this.player_elem;
+    }
+
+    state(input_state) {
+        if(input_state == undefined) {
+            return this.status;
+        } else {
+            assert(validStatus(input_status));
+            this.status = input_status;
+        }
     }
 }
 
@@ -446,6 +461,22 @@ class CantStopColumn {
         }
     }    
 
+    state(input_state) {
+        const n_player = this.player_squares.length;
+
+        if(input_state === undefined) {
+            let st = new Array(n_player);
+            for(let i = 0; i < n_player; ++i) {
+                //st[i] = this.player_squares[i].state();
+            }
+            return this.state;
+        } else {
+            assert(input_state instanceof Array && input_state.length == n_player);
+            for(let i = 0; i < n_player; ++i) {
+                this.player_squares[i].state(input_state[i]);
+            }
+        }
+    }
 
     allow_manual_control(allow) {
         this.manual_control_allowed = allow;
