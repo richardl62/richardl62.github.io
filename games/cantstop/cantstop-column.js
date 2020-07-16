@@ -1,5 +1,34 @@
 "use strict";
 class CantStopPlayerColumn {
+    constructor(square_elems, player_number, parent_column) {
+        this._squares = [];
+
+        for (let elem of square_elems) {
+            this._squares.push(new CantStopPlayerSquare(elem, player_number, parent_column));
+        }
+    }
+
+    clear() {
+        for(let sq of this._squares) {
+            sq.clear();
+        }
+    }
+
+    remove_added_elements() {
+        for(let sq of this._squares) {
+            sq.remove_added_elements();
+        }
+    }
+
+    make_in_owned_column() {
+        for(let sq of this._squares) {
+            sq.make_in_owned_column();
+        }
+    }
+
+    get squares() {
+        return this._squares;
+    }
 }
 
 class CantStopColumn {
@@ -13,7 +42,7 @@ class CantStopColumn {
 
         this.m_is_owned = false;
         this.m_in_play = false;
-        this.player_squares = null; // [player-number][square] - set in num_players() 
+        this.player_columns = null; // [player-number][square] - set in num_players() 
         this.manual_control_allowed = false;
 
         Object.seal(this);
@@ -86,11 +115,9 @@ class CantStopColumn {
      }
 
     clear_added_elements() {
-        if (this.player_squares) {
-            for (let psq of this.player_squares) {
-                for (let sq of psq) {
-                    sq.remove_added_elements();
-                }
+        if (this.player_columns) {
+            for (let pc of this.player_columns) {
+                pc.remove_added_elements();
             }
         }
     }
@@ -99,44 +126,28 @@ class CantStopColumn {
     {
         if(n_players === undefined)
         {
-            return this.player_squares.length;
+            return this.player_columns.length;
         }
 
         this.clear_added_elements();
 
-        if(this.player_squares)
-        {
-            for(let psq of this.player_squares)
-            {
-                for(let sq of psq)
-                {
-                    sq.remove_added_elements();
-                }
+        if (this.player_columns) {
+            for (let pc of this.player_columns) {
+                pc.remove_added_elements();
             }
         }
 
-        this.player_squares = new Array(n_players);
+        this.player_columns = new Array(n_players);
         for(let player_number = 0; player_number < n_players; ++player_number)
         {
-            let ps = new Array();
-            for (let elem of this.square_elems) {
-                ps.push(new CantStopPlayerSquare(elem, player_number, this));
-            }
-            
-            this.player_squares[player_number] = ps;
+            this.player_columns[player_number] = new CantStopPlayerColumn (
+                this.square_elems, player_number, this);
         }
     }
 
-    squares(player_number)
-    {
-        assert(player_number < this.player_squares.length);
-        
-        let s = this.player_squares[player_number];
-        return s;
-    }
-
+    // Kludge: This would better moved into CantStopPlayerColumn
     is_full(player_number) {
-        for (const sq of this.squares(player_number)) {
+        for (const sq of this.player_columns[player_number].squares) {
             if (sq.is_empty()) {
                 return false;
             }
@@ -145,8 +156,9 @@ class CantStopColumn {
         return true;
     }
 
+    // Kludge: This would better moved into CantStopPlayerColumn
     has_precommits(player_number) {
-        for (const sq of this.squares(player_number)) {
+        for (const sq of this.player_columns[player_number].squares) {
             if (sq.is_precommitted()) {
                 return true;
             }
@@ -155,8 +167,9 @@ class CantStopColumn {
         return false;
     }
 
+    // Kludge: This would better moved into CantStopPlayerColumn
     add_precommit(player_number) {
-       for (const sq of this.squares(player_number)) {
+       for (const sq of this.player_columns[player_number].squares) {
             if (sq.is_empty()) {
                 sq.make_precommit();
                 break;
@@ -164,8 +177,9 @@ class CantStopColumn {
         }
     }
 
+    // Kludge: This would better moved into CantStopPlayerColumn
     add_provisional_precommit(player_number) {
-        for (const sq of this.squares(player_number)) {
+        for (const sq of this.player_columns[player_number].squares) {
             if (sq.is_empty()) {
                 sq.make_provisional_precommitted();
                 break;
@@ -173,34 +187,38 @@ class CantStopColumn {
         }
     }
 
+    // Kludge: This would better moved into CantStopPlayerColumn
     promot_all_provisional_precommits(player_number) {
-        for (const sq of this.squares(player_number)) {
+        for (const sq of this.player_columns[player_number].squares) {
             if (sq.is_provisional_precommit()) {
                 sq.make_precommit();
             }
         }
     }
 
-    
+    // Kludge: This would better moved into CantStopPlayerColumn
     remove_all_provisional_precommits(player_number) {
-        for (const sq of this.squares(player_number)) {
+        for (const sq of this.player_columns[player_number].squares) {
             if (sq.is_provisional_precommit()) {
                 sq.clear();
             }
         }
     }
+
+    // Kludge: This would better moved into CantStopPlayerColumn
     remove_all_precommits(player_number) {
-        for (const sq of this.squares(player_number)) {
+        for (const sq of this.player_columns[player_number].squares) {
             if (sq.is_precommitted()) {
                 sq.clear();
             }
         }
     }
 
+    // Kludge: This would better moved into CantStopPlayerColumn
     precommits(player_number) {
         let result = new Array;
-        for (let i = this.squares(player_number).length - 1; i >= 0; --i) {
-            let sq = this.squares(player_number)[i];
+        for (let i = this.player_columns[player_number].squares.length - 1; i >= 0; --i) {
+            let sq = this.player_columns[player_number].squares[i];
 
             if (sq.is_precommitted()) {
                 result.push(sq);
@@ -210,8 +228,9 @@ class CantStopColumn {
         return result;
     }
 
+    // Kludge: This would better moved into CantStopPlayerColumn
     commit(player_number) {
-        let squares = this.squares(player_number);
+        let squares = this.player_columns[player_number].squares;
         for (const sq of squares) {
             if (sq.is_precommitted())
                 sq.make_commit();
@@ -222,8 +241,9 @@ class CantStopColumn {
 
     // For use with manual column filling.
     // Commits the first non-committed square.
+    // Kludge: This would better moved into CantStopPlayerColumn
     commit_noncommited_square(player_number) {
-        let squares = this.squares(player_number);
+        let squares = this.player_columns[player_number].squares;
         for (const sq of squares) {
             assert(!sq.is_owned());
             if (!sq.is_committed()) {
@@ -237,8 +257,9 @@ class CantStopColumn {
 
     // For use with manual column filling
     // Clears the final non-empty square
+    // Kludge: This would better moved into CantStopPlayerColumn
     clear_nonempty_square(player_number) {
-        let squares = this.squares(player_number);
+        let squares = this.player_columns[player_number].squares;
         for (let ind = squares.length-1; ind >= 0; --ind) {
             let sq = squares[ind];
             assert(!sq.is_owned());
@@ -271,10 +292,8 @@ class CantStopColumn {
     // and update elements to reflect this. 
     process_if_full(player_number) {
         if (this.is_full(player_number) && !this.is_owned()) {
-            for (let psq of this.player_squares) {
-                for (let sq of psq) {
-                    sq.make_in_owned_column(player_number);
-                }
+            for (let pc of this.player_columns) {
+                pc.make_in_owned_column(player_number);
             }
 
             this.clear_added_elements();
@@ -293,19 +312,14 @@ class CantStopColumn {
 
     // Return to starting state for all player.
     reset() {
-        for (let psq of this.player_squares) {
-            for (let sq of psq) {
-                sq.clear();
-            }
+        for (let pc of this.player_columns) {
+            pc.clear();
         }
     }
 
     // Return to starting state for a single player.
     reset_player(player_number) {
-        for(let sq of this.squares(player_number))
-        {   
-            sq.clear();
-        }
+        this.player_columns[player_number].clear();
     }
 
     // Return the top-level HTML element for this column
@@ -338,18 +352,18 @@ class CantStopColumn {
     }    
 
     state(input_state) {
-        const n_player = this.player_squares.length;
+        const n_player = this.player_columns.length;
 
         if(input_state === undefined) {
             let st = new Array(n_player);
             for(let i = 0; i < n_player; ++i) {
-                //st[i] = this.player_squares[i].state();
+                //st[i] = this.player_columns[i].state();
             }
             return this.state;
         } else {
             assert(input_state instanceof Array && input_state.length == n_player);
             for(let i = 0; i < n_player; ++i) {
-                this.player_squares[i].state(input_state[i]);
+                this.player_columns[i].state(input_state[i]);
             }
         }
     }
