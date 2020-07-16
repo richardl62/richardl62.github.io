@@ -31,6 +31,7 @@ const disable_at_end_of_game = [jq.pass, jq.leave];
 /*
  * Global variables (other the jq)
  */
+const in_play_column_limit = 3;
 
 let current_player = null; // set by restart_game()
 let num_players = null; // Starts at 0. Set by restart_game()
