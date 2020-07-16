@@ -33,7 +33,8 @@ const disable_at_end_of_game = [jq.pass, jq.leave];
  */
 
 let current_player = null; // set by restart_game()
-let num_players = null; // set by restart_game()
+let num_players = null; // Starts at 0. Set by restart_game()
+
 const n_dice = 4;
 const last_column = 12;
 
@@ -41,6 +42,12 @@ let option_div_display = new CssDisplay(jq.options_div);
 option_div_display.none(true);
 
 jq.automatic_filling.prop("checked", true);
+
+// Cant stop play numbers start at 0, but player colors start at 1.
+function get_cantstop_player_color(player_number) {
+    return get_default_player_color(player_number+1);
+}
+
 function automatic_filling() {
     return jq.automatic_filling.prop("checked");
 }
@@ -66,23 +73,35 @@ var selected_precommits = null;
 var player_left = null;
 
 const max_players = 8;
-var player_names = new Array(max_players + 1);
+var player_names = new Array(max_players);
+for(let i = 0; i < max_players; ++i) {
+    player_names[i] = "Player " + (i+1);
+}
 
 const selected_move = "selected-move";
 
 // Setup to the board
 let game_board;
 let game_state;
-try {
+
+// Hmm.  The try catch stuff could be improved.
+let catch_errors = false;
+if(catch_errors) {
+    try {
+        game_board = make_game_board();
+        set_num_players();
+        jq.game.css("visibility", "visible");
+    }
+    catch (err) {
+        jq.load_error.css("display", "block");
+        console.log(err);
+    }
+    finally {
+        jq.loading.css("display", "none");
+    }
+} else {
     game_board = make_game_board();
     set_num_players();
-    jq.game.css("visibility", "visible");
-}
-catch (err) {
-    jq.load_error.css("display", "block");
-    console.log(err);
-}
-finally {
     jq.loading.css("display", "none");
 }
 
@@ -213,33 +232,40 @@ function do_roll(spin)
  {
     game_board.reset();
 
-    player_left = new Array(num_players+1).fill(false);
-    // Set the current_player to 1 and set apporpriate colours.
-    // Method is a kludge.
-    current_player = num_players;
-    change_current_player();
+    player_left = new Array(num_players).fill(false);
+    set_current_player(0);
 
     show_one(required_roll_visibility);
 
     disable_at_end_of_game.forEach(e => e.prop("disabled", false));
  }
 
-// Return null if all players have left
-function next_unfinished_player(in_p)
-{
-    let p = in_p;
-
-    do {
-        ++p;
-        if(p > num_players)
-            p = 1;
-    } while(player_left[p] && p != in_p);
-
-    return player_left[p] ? null : p;
+function set_css_player_color(color) {
+    jq.game.get(0).style.setProperty("--player-color", color);
 }
 
 function change_current_player() {
-    assert(current_player);
+    // Find the next unfinished player
+    let np = current_player; // np -> next player
+    do {
+        np = (np + 1) % num_players;
+    } while(player_left[np] && np != current_player);
+
+    if(player_left[np]) {
+        // All players have left.
+        set_css_player_color("var(--games-board-non-player-color)");
+        show_one(game_over_visibility); 
+        disable_at_end_of_game.forEach(e => e.prop("disabled", true));
+    } else {
+        set_current_player(np);
+    }
+}
+
+function set_current_player(new_current_player) {
+    assert(typeof new_current_player == "number" &&
+        new_current_player < num_players);
+
+    current_player = new_current_player;
 
     game_board.remove_all_provisional_precommits(current_player);
 
@@ -248,19 +274,9 @@ function change_current_player() {
 
     show_one(required_roll_visibility);
 
-    current_player = next_unfinished_player(current_player);
-
-    let player_color;
-    if(current_player) {
-        player_color = get_default_player_color(current_player);
-    } else {
-        player_color = "var(--games-board-non-player-color)"
-        show_one(game_over_visibility); 
-        disable_at_end_of_game.forEach(e => e.prop("disabled", true));
-    }
+    set_css_player_color(get_cantstop_player_color(current_player));
 
     clear_in_play_columns();
-    jq.game.get(0).style.setProperty("--player-color", player_color);
 
     set_current_player_name();
 
@@ -298,19 +314,7 @@ function select_move_option(index) {
 
 function set_current_player_name() {
     let elem = jq.player_name[0];
-
-    if(!current_player)
-    {
-        // All player have left the game
-        elem.placeholder = "Player";
-        elem.value = "";
-    }
-    else if (player_names[current_player]) {
-        elem.value = player_names[current_player];
-    } else {
-        elem.placeholder = "Player " + current_player;
-        elem.value = "";
-    }
+    elem.value = player_names[current_player];
 }
 
  /*

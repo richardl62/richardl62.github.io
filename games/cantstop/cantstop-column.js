@@ -6,7 +6,6 @@ const sq_precommitted = 2;
 const sq_committed = 3;
 const sq_in_owned_column = 4; // Used when the column is filled by any player.
 
-
 function validStatus(state) {
     return typeof state == "number" &&  Number. isInteger(state) &&
      state >= sq_empty && state <= sq_in_owned_column; 
@@ -24,7 +23,7 @@ class CantStopPlayerSquare {
 
         let css = {};
 
-        if (player_number <= 1)
+        if (player_number == 0)
             css["borderLeft"] = "none";
         css["borderRight"] = "none";
         css["borderBottom"] = "none";
@@ -81,7 +80,7 @@ class CantStopPlayerSquare {
     make_commit() {
         this.clear();
 
-        this.player_elem.css("background-color", get_default_player_color(this.player_number));
+        this.player_elem.css("background-color", get_cantstop_player_color(this.player_number));
         this.status = sq_committed;
     }
 
@@ -122,6 +121,9 @@ class CantStopPlayerSquare {
             this.status = input_status;
         }
     }
+}
+
+class CantStopPlayerColumn {
 }
 
 class CantStopColumn {
@@ -221,7 +223,7 @@ class CantStopColumn {
     {
         if(n_players === undefined)
         {
-            return this.player_squares.length - 1;
+            return this.player_squares.length;
         }
 
         this.clear_added_elements();
@@ -237,14 +239,12 @@ class CantStopColumn {
             }
         }
 
-        this.player_squares = new Array(n_players+1);
-        for(let player_number = 0; player_number <= n_players; ++player_number)
+        this.player_squares = new Array(n_players);
+        for(let player_number = 0; player_number < n_players; ++player_number)
         {
             let ps = new Array();
-            if (this.square_elems && player_number >= 1) {
-                for (let elem of this.square_elems) {
-                    ps.push(new CantStopPlayerSquare(elem, player_number, this));
-                }
+            for (let elem of this.square_elems) {
+                ps.push(new CantStopPlayerSquare(elem, player_number, this));
             }
             
             this.player_squares[player_number] = ps;
@@ -253,9 +253,9 @@ class CantStopColumn {
 
     squares(player_number)
     {
-        assert(player_number);
-
-        let s = this.player_squares[player_number]; // For now
+        assert(player_number < this.player_squares.length);
+        
+        let s = this.player_squares[player_number];
         return s;
     }
 
@@ -403,7 +403,7 @@ class CantStopColumn {
 
             this.clear_added_elements();
 
-            let color = get_default_player_color(player_number);
+            let color = get_cantstop_player_color(player_number);
             this.set_internal_colors(color, color);
 
             this.m_is_owned = true;
