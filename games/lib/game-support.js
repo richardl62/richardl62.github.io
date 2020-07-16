@@ -71,9 +71,10 @@ class GameSupport {
 
     constructor() {
         this._serverConnection = new GameServerConnection;
-        this._onHitosryChange = null;
-        this._historyFilter = null;
-        
+        this._onHistoryChange = [];
+        this._onMove = [];
+        this._onServerMessage = [];
+
         Object.seal(this);
     }
 
@@ -83,8 +84,11 @@ class GameSupport {
     connect(url) { }
 
     // Send a move to the server, if connected.
-    // Also trigger the onMove() callback if set
-    move(gameMove) { assert(gameMove instanceof GameMove); }
+    // Also trigger the onMove() callback if set.
+    move(gameMove) { 
+        assert(gameMove instanceof GameMove);
+        this._onMove.forEach(cb => cb(null, gameMove));
+    }
 
     // Return the accumulated state
     get state() { assert(false);}
@@ -106,13 +110,24 @@ class GameSupport {
     undo() { assert(false);}
     redo() { assert(false);}
 
-    // Set a callback that is triggered by an undo/redo. It is called as
+    // Add a callback that is triggered by an undo/redo. It is called as
+    //   callback(playerID, gameMove)
+    //
+    // Where 'gameMove' is an instance of the GameMove class.
+    // and playerID is a unique non-zero number identified for the player
+    // who made the move, or null if the move was sent by the current instance
+    // of the class.
+    onGameMove(callback) {_this.onMove.push(callback); }
+
+
+    // Add a callback that is triggered by an undo/redo. It is called as
     //   callback(state)
     //
     // Where 'state' is the accumulated state after the undo/redo.
-    set onHitosryChange(callback) {_this.onHitosryChange = callback; }
+    onHistoryChange(callback) {_this.onHitosryChange.push(callback); }
 
-    // Recieve messages from the server. (See GameServerConnection.onMessage)
+    // Add a callback that is triggered when a message in received from the 
+    // server. (See GameServerConnection.onMessage for more about server messages)
     set onServerMessage(callback) {
         this._serverConnection.onMessage(callback);
     }
