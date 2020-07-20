@@ -45,9 +45,6 @@ const last_column = 12;
 let option_div_display = new CssDisplay(jq.options_div);
 option_div_display.none(true);
 
-let undo_move_display = new CssDisplay(jq.undo_turn);
-undo_move_display.none(true);
-
 jq.automatic_filling.prop("checked", true);
 
 // Cant stop play numbers start at 0, but player colors start at 1.
@@ -325,7 +322,6 @@ function set_current_player_name() {
 
 function manual_filling_set(on) {
     game_board.allow_manual_control(on);
-    undo_move_display.none(!on);
 }
 
 if(manual_mode_on_by_default) {
@@ -367,10 +363,12 @@ jq.dont.click(function(elem){
 });
 
 jq.bust.click(function(elem){
+    game_board.state(game_state);
     change_current_player();
 });
 
 jq.pass.click(function(elem){
+    game_board.state(game_state);
     change_current_player();
 });
 

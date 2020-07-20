@@ -37,20 +37,30 @@ class CantStopPlayerSquare {
         this.player_elem.click(elem => board.player_square_clicked(this));
     }
 
-    remove_added_elements() {
+    Xremove_added_elements() {
         if (this.player_elem) {
             this.player_elem.remove();
             this.player_elem = null;
         }
     }
 
-    clear() {
+    hide_added_elements(hide ) {
+        if (this.player_elem) {
+            this.player_elem.css("visibility",
+                hide ? "hidden" : "visibile"
+            );
+        }
+    }
+
+    // Return to the starting state
+    reset() {
         //assert((this.precommit_elem == null) == (this.status == sq_empty));
         if (this.precommit_elem) {
             this.precommit_elem.remove();
             this.precommit_elem = null;
         }
         this.player_elem.css("background-color", "var(--games-board-background-colour)");
+        this.player_elem.css("visibility", "visible");
         this.status = sq_empty;
     }
 
@@ -62,7 +72,7 @@ class CantStopPlayerSquare {
     }
 
     make_precommit() {
-        this.clear();
+        this.reset();
 
         this.precommit_elem = $("<div>");
         this.precommit_elem.addClass("cs-precommit");
@@ -72,7 +82,7 @@ class CantStopPlayerSquare {
     }
 
     make_commit() {
-        this.clear();
+        this.reset();
 
         this.player_elem.css("background-color", get_cantstop_player_color(this.player_number));
         this.status = sq_committed;
@@ -112,7 +122,7 @@ class CantStopPlayerSquare {
         }
         else {
             if (input_state == sq_empty) {
-                this.clear();
+                this.reset();
             } else if (input_state == sq_provisonally_precommitted) {
                 this.make_provisional_precommitted();
             } else if (input_state == sq_precommitted) {

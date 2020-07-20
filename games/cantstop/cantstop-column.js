@@ -8,15 +8,16 @@ class CantStopPlayerColumn {
         }
     }
 
-    clear() {
+    // Return column to it's starting state
+    reset() {
         for(let sq of this._squares) {
-            sq.clear();
+            sq.reset();
         }
     }
 
-    remove_added_elements() {
+   hide_added_elements(hide) {
         for(let sq of this._squares) {
-            sq.remove_added_elements();
+            sq.hide_added_elements(hide);
         }
     }
 
@@ -57,12 +58,15 @@ class CantStopColumn {
             this.make_html_elements(options);
         }
 
-        this.m_is_owned = false;
-        this.m_in_play = false;
+        this.m_is_owned = null; // set by reset_non_column_state
+        this.m_in_play = null; // set by reset_non_column_state
+
         this.player_columns = null; // [player-number][square] - set in num_players() 
         this.manual_control_allowed = false;
 
         Object.seal(this);
+
+        this.reset_non_column_state();
 
         //console.log("has_elems", this.has_elements(), "n_squares", n_squares, has_elems ? "t" :"f"); 
         if (this.has_elements()) {
@@ -74,6 +78,11 @@ class CantStopColumn {
             this.top_number.click(number_clicked);
             this.bottom_number.click(number_clicked);
         }
+    }
+
+    reset_non_column_state() {
+        this.m_is_owned = false;
+        this.in_play(false);
     }
 
     make_html_elements(options) {
@@ -140,7 +149,7 @@ class CantStopColumn {
 
         if (this.player_columns) {
             for (let pc of this.player_columns) {
-                pc.remove_added_elements();
+                pc.Xremove_added_elements();
             }
         }
 
@@ -207,7 +216,7 @@ class CantStopColumn {
     remove_all_provisional_precommits(player_number) {
         for (const sq of this.player_columns[player_number].squares) {
             if (sq.is_provisional_precommit()) {
-                sq.clear();
+                sq.reset();
             }
         }
     }
@@ -216,7 +225,7 @@ class CantStopColumn {
     remove_all_precommits(player_number) {
         for (const sq of this.player_columns[player_number].squares) {
             if (sq.is_precommitted()) {
-                sq.clear();
+                sq.reset();
             }
         }
     }
@@ -271,7 +280,7 @@ class CantStopColumn {
             let sq = squares[ind];
             assert(!sq.is_owned());
             if (!sq.is_empty()) {
-                sq.clear();
+                sq.reset();
                 break;
             }
         }
@@ -300,8 +309,9 @@ class CantStopColumn {
     process_if_full(player_number) {
         if (this.is_full(player_number) && !this.is_owned()) {
             for (let pc of this.player_columns) {
+                pc.hide_added_elements(true); // hide indivual squares as the
+                    // whole column will be filled in.
                 pc.make_in_owned_column(player_number);
-                pc.remove_added_elements(); // KLUDGE/BUG - Leads to error on restart
             }
 
 
@@ -319,14 +329,15 @@ class CantStopColumn {
 
     // Return to starting state for all player.
     reset() {
+        this.reset_non_column_state();
         for (let pc of this.player_columns) {
-            pc.clear();
+            pc.reset();
         }
     }
 
     // Return to starting state for a single player.
     reset_player(player_number) {
-        this.player_columns[player_number].clear();
+        this.player_columns[player_number].reset();
     }
 
     // Return the top-level HTML element for this column
@@ -359,6 +370,8 @@ class CantStopColumn {
     }    
 
     state(input_state) {
+        this.reset_non_column_state();
+        
         const n_player = this.player_columns.length;
 
         if(input_state === undefined) {
