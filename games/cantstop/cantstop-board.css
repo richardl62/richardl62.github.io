@@ -73,7 +73,7 @@ https://stackoverflow.com/questions/14540602/selector-for-all-but-first-of-class
 }
 
 .cs-owned-player-square {
-    border: none;
+    visibility: hidden;
 }
 
 .cs-precommit {

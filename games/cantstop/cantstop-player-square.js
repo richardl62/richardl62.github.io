@@ -1,17 +1,10 @@
 'use strict';
 
-const sq_empty = -1;
-const sq_provisonally_precommitted = -2;
-const sq_precommitted = -3;
-const sq_committed = -4;
-
-// A status of x >= 0 indicates that the square is owned by player x.
-function is_owned_by(status) {
-    return status >= 0 ? status : null;
-}
-function make_owning_status(owning_player) {
-    return owning_player;
-}
+const sq_empty = 1;
+const sq_provisonally_precommitted = 2;
+const sq_precommitted = 3;
+const sq_committed = 4;
+const sq_owned = 5;
 
 class CantStopPlayerSquare {
     constructor(board_square, player_number, board) {
@@ -67,22 +60,13 @@ class CantStopPlayerSquare {
         this.status = sq_committed;
     }
 
-    make_owned_by(owning_player) {
-        assert(typeof owning_player == "number");
+    make_owned() {
         this.reset();
-
-        this.status = make_owning_status(owning_player);
-
         this.player_elem.addClass('cs-owned-player-square');
-        this.player_elem.css("background-color", get_cantstop_player_color(owning_player));
-    }
-
-    is_owned_by() {
-        return is_owned_by(this.status);
     }
 
     is_owned() {
-        return this.is_owned_by() != null;
+        return this.status == sq_owned;
     }
 
     is_provisional_precommit() {
@@ -118,8 +102,8 @@ class CantStopPlayerSquare {
                 this.make_precommit();
             } else if (input_state == sq_committed) {
                 this.make_commit();
-            } else if (is_owned_by(input_state) != null) {
-                this.make_owned_by(is_owned_by(input_state));
+            } else if (input_state == sq_owned) {
+                this.make_owned();
             } else {
                 assert(false);
             }

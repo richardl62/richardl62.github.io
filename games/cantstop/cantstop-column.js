@@ -15,9 +15,9 @@ class CantStopPlayerColumn {
         }
     }
 
-    make_owned_by(owning_player) {
+    make_owned() {
         for(let sq of this._squares) {
-            sq.make_owned_by(owning_player);
+            sq.make_owned();
         }
     }
 
@@ -52,8 +52,8 @@ class CantStopColumn {
             this.make_html_elements(options);
         }
 
-        this.m_is_owned = null; // set by reset_non_column_state
-        this.m_in_play = null; // set by reset_non_column_state
+        this.m_owned_by = null;
+        this.m_in_play = false;
 
         this.player_columns = null; // [player-number][square] - set in num_players() 
         this.manual_control_allowed = false;
@@ -78,7 +78,7 @@ class CantStopColumn {
         for (let sq of this.square_elems) {
             sq.removeClass('cs-square-owned');
         }
-        this.m_is_owned = false;
+        this.m_owned_by = null;
         this.in_play(false);
     }
 
@@ -270,25 +270,33 @@ class CantStopColumn {
         }
     }
 
+    make_owned_by(owning_player) {
+        assert(typeof owning_player == "number");
+        for (let pc of this.player_columns) {
+            pc.make_owned();
+        }
+
+        for (let sq of this.square_elems) {
+            sq.addClass('cs-square-owned');
+            sq.css("background-color", get_cantstop_player_color(owning_player));
+        }
+
+        this.m_owned_by = owning_player;
+    }
+
     // Record that the colum is 'owned' by the given player
     process_if_full(player_number) {
         assert(player_number !== undefined);
-        if (this.is_full(player_number) && !this.is_owned()) {
-            for (let pc of this.player_columns) {
-                pc.make_owned_by(player_number);
-            }
-
-            for (let sq of this.square_elems) {
-                sq.addClass('cs-square-owned');
-            }
-
-            this.m_is_owned = true;
+        if (this.is_full(player_number) && !this.is_owned() &&
+            this.square_elems.length > 0) {
+            this.make_owned_by(player_number);
         }
     }
 
     is_owned()
     {
-        return this.m_is_owned;
+        assert(this.m_owned_by === null || typeof this.m_owned_by == "number");
+        return this.m_owned_by !== null;
     }
 
     // Return to starting state for all player.
@@ -337,18 +345,26 @@ class CantStopColumn {
         const n_player = this.player_columns.length;
 
         if(input_state === undefined) {
-            let st = new Array(n_player);
-            for(let i = 0; i < n_player; ++i) {
-                st[i] = this.player_columns[i].state();
+            if (this.m_owned_by !== null) {
+                assert(typeof this.m_owned_by == "number" )
+                return { owned_by: this.m_owned_by }
+            } else {
+                let st = new Array(n_player);
+                for (let i = 0; i < n_player; ++i) {
+                    st[i] = this.player_columns[i].state();
+                }
+                return st;
             }
-            return st;
         } else {
-            assert(input_state instanceof Array && input_state.length == n_player);
-            this.reset_non_column_state();
-            for(let p = 0; p < n_player; ++p) {
-                this.player_columns[p].state(input_state[p]);
-                this.process_if_full(p);
-             }
+            if (input_state.owned_by !== undefined) {
+                this.make_owned_by(input_state.owned_by);
+            } else {
+                this.reset_non_column_state();
+                for (let p = 0; p < n_player; ++p) {
+                    this.player_columns[p].state(input_state[p]);
+                    this.process_if_full(p);
+                }
+            }
         }
     }
 
