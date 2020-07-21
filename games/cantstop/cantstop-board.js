@@ -19,8 +19,8 @@ class CantStopBoard {
         let col = new CantStopColumn({
             column_number: column_number,
             n_squares: n_squares,
-            left_side: column_number < 7,
-            right_side: column_number > 7,
+            left_side: column_number <= 7,
+            right_side: column_number >= 7,
         });
 
         this.m_columns.push(col);

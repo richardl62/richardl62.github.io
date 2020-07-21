@@ -6,9 +6,9 @@
 .cs-column {
     display: flex;
     flex-direction: column;
-    color: #606060;
-    font-size: 1.3em;
-    font-weight: 400;
+    /* color: #606060; */
+    /* font-size: 1.3em; */
+    /* font-weight: 400; */
     width: 60px;
 }
 
@@ -32,19 +32,48 @@
     align-items: flex-start;
 }
 
-.cs-square {
+.cs-square-left-side, .cs-square-right-side {
     display: flex;
     background-color: var(--games-board-background-colour);
-    border:  3px var(--games-board-border-colour) solid; /* Default - switch off for some edges is JS */
+    border-top :  3px var(--games-board-border-colour) solid;
     height: 40px;
+ 
+}
+
+.cs-square-left-side {
+  border-left :  3px var(--games-board-border-colour) solid;
+}
+
+.cs-square-right-side {
+  border-right :  3px var(--games-board-border-colour) solid;
+}
+
+.cs-square-bottom {
+  border-bottom :  3px var(--games-board-border-colour) solid;
+}
+
+/* Select all but instance of .cs-square-owned. Taken from
+https://stackoverflow.com/questions/14540602/selector-for-all-but-first-of-class
+*/
+.cs-square-owned ~ .cs-square-owned {
+    border-top : none;
+    height: 43px; /*Big kludge!*/
 }
 
 .cs-player-square {
-    border: 1px var(--games-board-border-colour) dashed; /* Default - switch off for some edges is JS */
+    border-left: 1px var(--games-board-border-colour) dashed;
     width: 100%; /* Kludge: Gives all player squares equal width, but I don't understand
                     why it works */
+    display: flex; /* To help with centering the precommit element */
+}
 
-   display: flex; /* To help with centering the precommit element */
+.cs-player0-square {
+    border-left: none;
+
+}
+
+.cs-owned-player-square {
+    border: none;
 }
 
 .cs-precommit {

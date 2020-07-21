@@ -15,15 +15,9 @@ class CantStopPlayerColumn {
         }
     }
 
-   hide_added_elements(hide) {
+    make_owned_by(owning_player) {
         for(let sq of this._squares) {
-            sq.hide_added_elements(hide);
-        }
-    }
-
-    make_in_owned_column() {
-        for(let sq of this._squares) {
-            sq.make_in_owned_column();
+            sq.make_owned_by(owning_player);
         }
     }
 
@@ -81,6 +75,9 @@ class CantStopColumn {
     }
 
     reset_non_column_state() {
+        for (let sq of this.square_elems) {
+            sq.removeClass('cs-square-owned');
+        }
         this.m_is_owned = false;
         this.in_play(false);
     }
@@ -99,8 +96,16 @@ class CantStopColumn {
         
         this.top_number = $("<div class='cs-top-number'>" + opt('column_number') + "</div>");
         this.bottom_number = $("<div class='cs-bottom-number'>" + opt('column_number') + "</div>");
+
         for (let i = 0; i < this.square_elems.length; ++i) {
-            this.square_elems[i] = $("<div class='cs-square'></div>");
+            let elem = $('<div></div>');
+            if (opt('left_side'))
+                elem.addClass('cs-square-left-side');
+            if (opt('right_side'))
+                elem.addClass('cs-square-right-side');
+            if (i == 0)
+                elem.addClass('cs-square-bottom')
+            this.square_elems[i] =  elem;
         }
 
         /*
@@ -116,21 +121,6 @@ class CantStopColumn {
 
         this.m_top_elem.append(this.bottom_number);
 
-        /* 
-         * style the elements
-         */
-        let style_squares = (property, value) => {
-            this.square_elems.forEach(s => s.css(property, value));
-        }
-
-        if (opt('left_side'))
-            style_squares("border-right-style", "none");
-        if (opt('right_side'))
-            style_squares("border-left-style", "none");
-
-        style_squares("border-top-style", "none");
-
-        this.square_elems[this.square_elems.length-1].css("border-top-style", "solid");
     }
 
 
@@ -145,12 +135,6 @@ class CantStopColumn {
         if(n_players === undefined)
         {
             return this.player_columns.length;
-        }
-
-        if (this.player_columns) {
-            for (let pc of this.player_columns) {
-                pc.Xremove_added_elements();
-            }
         }
 
         this.player_columns = new Array(n_players);
@@ -286,37 +270,17 @@ class CantStopColumn {
         }
     }
 
-    set_internal_colors(background, border)
-    {
-        if(this.m_column_elem !== null)
-        {
-            for(let i = 0; i < this.square_elems.length; ++i)
-            {
-                let elem = this.square_elems[i];
-                elem.css("background-color", background);
-
-                if(i != 0)
-                {
-                    elem.css("border-bottom-color", border);
-                }
-            }
-
-        }
-    }
-
     // Record that the colum is 'owned' by the given player
-    // and update elements to reflect this. 
     process_if_full(player_number) {
+        assert(player_number !== undefined);
         if (this.is_full(player_number) && !this.is_owned()) {
             for (let pc of this.player_columns) {
-                pc.hide_added_elements(true); // hide indivual squares as the
-                    // whole column will be filled in.
-                pc.make_in_owned_column(player_number);
+                pc.make_owned_by(player_number);
             }
 
-
-            let color = get_cantstop_player_color(player_number);
-            this.set_internal_colors(color, color);
+            for (let sq of this.square_elems) {
+                sq.addClass('cs-square-owned');
+            }
 
             this.m_is_owned = true;
         }
@@ -370,8 +334,6 @@ class CantStopColumn {
     }    
 
     state(input_state) {
-        this.reset_non_column_state();
-        
         const n_player = this.player_columns.length;
 
         if(input_state === undefined) {
@@ -382,9 +344,11 @@ class CantStopColumn {
             return st;
         } else {
             assert(input_state instanceof Array && input_state.length == n_player);
-            for(let i = 0; i < n_player; ++i) {
-                this.player_columns[i].state(input_state[i]);
-            }
+            this.reset_non_column_state();
+            for(let p = 0; p < n_player; ++p) {
+                this.player_columns[p].state(input_state[p]);
+                this.process_if_full(p);
+             }
         }
     }
 

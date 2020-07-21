@@ -1,66 +1,45 @@
 'use strict';
 
-const sq_empty = 0;
-const sq_provisonally_precommitted = 1;
-const sq_precommitted = 2;
-const sq_committed = 3;
-const sq_in_owned_column = 4; // Used when the column is filled by any player.
+const sq_empty = -1;
+const sq_provisonally_precommitted = -2;
+const sq_precommitted = -3;
+const sq_committed = -4;
 
-function validStatus(state) {
-    return typeof state == "number" &&  Number. isInteger(state) &&
-     state >= sq_empty && state <= sq_in_owned_column; 
+// A status of x >= 0 indicates that the square is owned by player x.
+function is_owned_by(status) {
+    return status >= 0 ? status : null;
+}
+function make_owning_status(owning_player) {
+    return owning_player;
 }
 
-// Record the status in a board square for a particular player
 class CantStopPlayerSquare {
-    constructor(input_elem, player_number, board) {
-
-        this.player_elem = $("<div class='cs-player-square'></div>");
-        input_elem.append(this.player_elem);
-
-
-        let css = {};
-
+    constructor(board_square, player_number, board) {
+        this.player_elem = $('<div></div>');
+        this.player_elem.addClass('cs-player-square');
+        
         if (player_number == 0)
-            css["borderLeft"] = "none";
-        css["borderRight"] = "none";
-        css["borderBottom"] = "none";
-        css["borderTop"] = "none";
-
-        this.player_elem.css(css);
-
+            this.player_elem.addClass('cs-player0-square');
+        
+        this.player_elem.click(elem => board.player_square_clicked(this));
+        
+        board_square.append(this.player_elem);
         this.precommit_elem = null;
 
         this.player_number = player_number;
         this.status = sq_empty;
-
-        this.player_elem.click(elem => board.player_square_clicked(this));
     }
 
-    Xremove_added_elements() {
-        if (this.player_elem) {
-            this.player_elem.remove();
-            this.player_elem = null;
-        }
-    }
-
-    hide_added_elements(hide ) {
-        if (this.player_elem) {
-            this.player_elem.css("visibility",
-                hide ? "hidden" : "visibile"
-            );
-        }
-    }
 
     // Return to the starting state
     reset() {
-        //assert((this.precommit_elem == null) == (this.status == sq_empty));
         if (this.precommit_elem) {
             this.precommit_elem.remove();
             this.precommit_elem = null;
         }
+
+        this.player_elem.removeClass('cs-owned-player-square'); 
         this.player_elem.css("background-color", "var(--games-board-background-colour)");
-        this.player_elem.css("visibility", "visible");
         this.status = sq_empty;
     }
 
@@ -88,12 +67,22 @@ class CantStopPlayerSquare {
         this.status = sq_committed;
     }
 
-    make_in_owned_column() {
-        this.status = sq_in_owned_column;
+    make_owned_by(owning_player) {
+        assert(typeof owning_player == "number");
+        this.reset();
+
+        this.status = make_owning_status(owning_player);
+
+        this.player_elem.addClass('cs-owned-player-square');
+        this.player_elem.css("background-color", get_cantstop_player_color(owning_player));
+    }
+
+    is_owned_by() {
+        return is_owned_by(this.status);
     }
 
     is_owned() {
-        return this.status == sq_in_owned_column;
+        return this.is_owned_by() != null;
     }
 
     is_provisional_precommit() {
@@ -129,8 +118,8 @@ class CantStopPlayerSquare {
                 this.make_precommit();
             } else if (input_state == sq_committed) {
                 this.make_commit();
-            } else if (input_state == sq_in_owned_column) {
-                this.make_in_owned_column();
+            } else if (is_owned_by(input_state) != null) {
+                this.make_owned_by(is_owned_by(input_state));
             } else {
                 assert(false);
             }
