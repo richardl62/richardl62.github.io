@@ -23,13 +23,21 @@ class CantStopPlayerSquare {
         this.status = sq_empty;
     }
 
+    destroy() {
+        this.player_elem.remove();
+        this.remove_precommit_elem();
+    }
 
-    // Return to the starting state
-    reset() {
+    remove_precommit_elem() {
         if (this.precommit_elem) {
             this.precommit_elem.remove();
             this.precommit_elem = null;
         }
+    }
+
+    // Return to the starting state
+    reset() {
+        this.remove_precommit_elem();
 
         this.player_elem.removeClass('cs-owned-player-square'); 
         this.player_elem.css("background-color", "var(--games-board-background-colour)");

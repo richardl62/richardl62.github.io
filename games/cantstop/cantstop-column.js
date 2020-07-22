@@ -8,6 +8,13 @@ class CantStopPlayerColumn {
         }
     }
 
+    // Free resources (i.e. html elements) allocated to the column.
+    destroy() {
+        for(let sq of this._squares) {
+            sq.destroy();
+        }
+    }
+
     // Return column to it's starting state
     reset() {
         for(let sq of this._squares) {
@@ -135,6 +142,12 @@ class CantStopColumn {
         if(n_players === undefined)
         {
             return this.player_columns.length;
+        }
+
+        if (this.player_columns) {
+            for (let col of this.player_columns) {
+                col.destroy();
+            }
         }
 
         this.player_columns = new Array(n_players);
