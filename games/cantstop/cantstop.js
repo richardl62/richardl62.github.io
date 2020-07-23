@@ -1,6 +1,6 @@
 "use strict";
 const manual_mode_on_by_default = false;
-const suppress_load_error_handling = true;
+const suppress_load_error_handling = false;
 
 /*
  * Get and sanity-check the jQuery elements that are used in this file.

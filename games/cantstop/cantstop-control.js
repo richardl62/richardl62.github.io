@@ -1,6 +1,6 @@
 "use strict";
 
-function new_CantStopControl(...args) {
+function new_CantStopControl() {
 
    const disable_at_end_of_game = [jq.pass, jq.leave];
    
@@ -287,5 +287,5 @@ function new_CantStopControl(...args) {
     };
 
 
-    return new Control(...args);
+    return new Control();
 }
