@@ -17,6 +17,7 @@
     <script defer src="cantstop-player-square.js"></script>
     <script defer src="cantstop-column.js"></script>
     <script defer src="cantstop-board.js"></script>
+    <script defer src="cantstop-control.js"></script>
     <script defer src="cantstop.js"></script>
 </head>
 
@@ -25,12 +26,16 @@
     <div id="load-error">
         <div>Error loading game</div>
         <div>Either there is a bug or your browser is out of date</div>
+        <div id="load-error-description"></div>
     </div>
-    
+    <div id="main">
     <div id="options-div">
         <fieldset>
-            <legend>Test/beta</legend>
-            <button type="button" id="undo-turn">Undo turn</button>
+            <legend>Misc</legend>
+            <div id="misc-options">
+                <button type="button" id="undo">Undo</button>
+                <button type="button" id="commit">Commit</button>
+            </div>
         </fieldset>
         <fieldset>
             <legend>Column filling</legend>
@@ -107,6 +112,7 @@
             <button type="button" id="restart">Restart</button>
         </div> <!-- options -->
     </div> <!-- game -->
+    </div> <!-- main -->
 </body>
 
 </html>

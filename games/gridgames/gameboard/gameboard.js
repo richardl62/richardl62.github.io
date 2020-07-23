@@ -61,3 +61,16 @@ class BasicGameBoard extends GridOfSquares {
         );
     }
 }
+
+
+function cs_fixed_size_columns(size)
+{
+    jq.board.empty();
+    game_board = new CantStopBoard(jq.board);
+    
+    for (let cn = 2; cn <= 12; ++cn) // cn -> column number
+    {
+        game_board.add_column(cn, size);
+    }
+    set_num_players();
+}

@@ -82,9 +82,7 @@ class CantStopColumn {
     }
 
     reset_non_column_state() {
-        for (let sq of this.square_elems) {
-            sq.removeClass('cs-square-owned');
-        }
+        this.decorate_owned_square_elems(null);
         this.m_owned_by = null;
         this.in_play(false);
     }
@@ -145,6 +143,7 @@ class CantStopColumn {
         }
 
         if (this.player_columns) {
+            this.reset();
             for (let col of this.player_columns) {
                 col.destroy();
             }
@@ -283,16 +282,27 @@ class CantStopColumn {
         }
     }
 
+    decorate_owned_square_elems(owning_player) {
+        if(owning_player === null) {
+            for (let sq of this.square_elems) {
+                sq.removeClass('cs-square-owned');
+                sq.css("background-color", get_css_variable('--games-board-background-colour'));
+            }
+        } else {
+            assert(typeof owning_player == "number");
+            for (let sq of this.square_elems) {
+                sq.addClass('cs-square-owned');
+                sq.css("background-color", get_cantstop_player_color(owning_player));
+            }
+        }
+    }
     make_owned_by(owning_player) {
-        assert(typeof owning_player == "number");
+
         for (let pc of this.player_columns) {
             pc.make_owned();
         }
 
-        for (let sq of this.square_elems) {
-            sq.addClass('cs-square-owned');
-            sq.css("background-color", get_cantstop_player_color(owning_player));
-        }
+        this.decorate_owned_square_elems(owning_player);
 
         this.m_owned_by = owning_player;
     }

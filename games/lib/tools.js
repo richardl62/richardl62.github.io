@@ -189,18 +189,21 @@ function make_hidden(elem, hidden,
 
 }
 
+// Name should include the initial '--'
+function get_css_variable(name) {
+
+    var bodyStyles = window.getComputedStyle(document.body); 
+    var value = bodyStyles.getPropertyValue(name);
+    
+    assert(value, `Value for CSS variable "${name}" not found`);
+
+    return value;
+}
+
 // Uses colours defined in preferred-colours.css
 function get_default_player_color(player)
 {
-    var css_var = '--game-board-player-colours-' + player;
-    
-    var bodyStyles = window.getComputedStyle(document.body); 
-    var color = bodyStyles.getPropertyValue(css_var);
-    
-    assert(color, "Cannot get colour for player " + player + " - "
-             + css_var + " was not found");
-
-    return color;
+    return get_css_variable('--game-board-player-colours-' + player);
 }
 
 

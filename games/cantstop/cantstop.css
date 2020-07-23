@@ -1,4 +1,5 @@
-body {
+#main {
+  visibility: hidden;
   display: inline-flex;
   flex-direction: column;
 }
@@ -18,6 +19,12 @@ body {
   font-size: xx-large;
 }
 
+#load-error-description{
+  text-align:left;
+  font-size:initial;
+  margin-top: 1em;
+}
+
 #options-div {
   align-self: flex-end;
   display:flex;
@@ -27,6 +34,11 @@ body {
 
 #options-div input {
   font-size: inherit;
+}
+
+#misc-options {
+  display: inline-flex;
+  flex-direction: column;
 }
 
 #num-players {
