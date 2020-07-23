@@ -6,31 +6,32 @@ const suppress_load_error_handling = true;
  * Get and sanity-check the jQuery elements that are used in this file.
  */
 const jq = { 
+    // Should be in alphabetical order
     automatic_filling: $_checked("#automatic-filling"),
     board: $_checked("#board"),
     bust: $_checked("#bust"),
-    leave: $_checked("#leave"),
+    commit: $_checked("#commit"),
+    dice: $_checked(".csdice"),
+    dice_options: $_checked(".dice-option"),
+    dont: $_checked("#dont"),
+    game: $_checked("#game"),
     game_over: $_checked("#game-over"),
+    leave: $_checked("#leave"),
     loading: $_checked("#loading"),
     load_error: $_checked("#load-error"),
     load_error_description: $_checked("#load-error-description"),
-    move_options: $_checked("#move-options"),
-    dice: $_checked(".csdice"),
-    dont: $_checked("#dont"),
-    game: $_checked("#game"),
-    dice_options: $_checked(".dice-option"),
+    main: $_checked("#main"),
     manual_filling: $_checked("#manual-filling"), 
+    move_options: $_checked("#move-options"),
     num_players: $_checked("#num-players"),
     options_button: $_checked("#options-button"),
     options_div: $_checked("#options-div"),
+    pass: $_checked("#pass"),
+    player_name: $_checked("#player-name"),
     required_roll: $_checked("#required-roll"),
     restart: $_checked("#restart"),
     roll: $_checked("#roll"),
-    pass: $_checked("#pass"),
-    player_name: $_checked("#player-name"),
     undo: $_checked("#undo"),
-    commit: $_checked("#commit"),
-    main: $_checked("#main"),
 }
 
 const in_play_column_limit = 3;
