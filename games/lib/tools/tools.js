@@ -106,8 +106,7 @@ class CssVisibility
         this._elem = $(elem);
         assert(this._elem.length == 1, "CssVisiblity requires exactly 1 element");
 
-        this._intial_css_value = this._elem.css("visibility");
-        this._hidden = false;
+        this._hidden = this._elem.css("visibility") == "hidden";
 
         Object.seal(this);
     }
@@ -118,7 +117,7 @@ class CssVisibility
             return this._hidden;
         }
         this._hidden = hidden;
-        this._elem.css("visibility", hidden ? "hidden" : this._intial_css_value);
+        this._elem.css("visibility", hidden ? "hidden" : "visible");
     }
 
     toggle() {

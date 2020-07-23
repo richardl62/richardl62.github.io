@@ -84,7 +84,7 @@ function new_CantStopControl() {
    
        to_show.hidden(false);
    }
-   
+
    function disable_roll_and_dont_buttons(disable)
    {
        jq.roll.prop("disabled", disable);
