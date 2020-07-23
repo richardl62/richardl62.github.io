@@ -112,20 +112,18 @@ function new_CantStopControl(...args) {
        dice_array.forEach((d)=> dice_numbers.push(d.number()));
    
        move_options = game_board.options(current_player, dice_numbers);
-       if (move_options.length == 0) {
+       if (move_options.length == 0 && automatic_filling()) {
            show_one(bust_visibility);
        }
        else {
            display_move_options();
        }
    
-       if (automatic_filling()) { // On by default
-           if(!manual_filling()) {
-               disable_roll_and_dont_buttons(true);
-   
-               if (move_options.length == 1) {
-                   select_move_option(0);
-               }
+       if (automatic_filling() && !manual_filling()) {
+           disable_roll_and_dont_buttons(true);
+
+           if (move_options.length == 1) {
+               select_move_option(0);
            }
        }
     }
@@ -221,23 +219,18 @@ function new_CantStopControl(...args) {
        jq.dice_options.removeClass(selected_move);
    }
    
-   function select_move_option(index) {
-       const auto_move = move_options[index] && automatic_filling();
-       if (auto_move || manual_filling()) {
-           clear_selected_move();
-           game_board.remove_all_provisional_precommits(current_player);
-       }
-   
-       if(auto_move) {
-           selected_precommits = move_options[index];
-           $(jq.dice_options[index]).addClass(selected_move);
-   
-           game_board.remove_all_provisional_precommits(current_player);
-           game_board.add_provisional_precommit(current_player, selected_precommits);
-   
-           disable_roll_and_dont_buttons(false);
-       }
-   }
+    function select_move_option(index) {
+        clear_selected_move();
+        game_board.remove_all_provisional_precommits(current_player);
+
+        selected_precommits = move_options[index];
+        $(jq.dice_options[index]).addClass(selected_move);
+
+        game_board.remove_all_provisional_precommits(current_player);
+        game_board.add_provisional_precommit(current_player, selected_precommits);
+
+        disable_roll_and_dont_buttons(false);
+    }
    
    
    function set_current_player_name() {

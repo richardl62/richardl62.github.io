@@ -1,6 +1,6 @@
 "use strict";
-const manual_mode_on_by_default = true;
-const use_load_error_window = true;
+const manual_mode_on_by_default = false;
+const suppress_load_error_handling = true;
 
 /*
  * Get and sanity-check the jQuery elements that are used in this file.
@@ -133,8 +133,14 @@ function cantstop_setup() {
     }
 }
 
-if (use_load_error_window) {
+// Run the setup function with optional error handling
+if (suppress_load_error_handling) {
+    // Visibility fixed to help show errors
+    jq.main.css('visibility', 'initial');
+    cantstop_setup();
+} else {
     try {
+        // Visibility second to help hide errors
         cantstop_setup();
         jq.main.css('visibility', 'initial');
     } catch (error) {
@@ -142,11 +148,5 @@ if (use_load_error_window) {
         jq.load_error.css('display', 'initial');
         jq.load_error_description.text(error.stack);
     }
-    finally {
-        jq.loading.css('display', 'none');
-    }
-} else {
-    jq.main.css('visibility', 'initial');
-    cantstop_setup();
-    jq.loading.css('display', 'none'); 
 }
+jq.loading.css('display', 'none');
