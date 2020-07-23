@@ -67,7 +67,7 @@ Undo: Only moves made on the current client can be undone. After an undo
 
 To do: Add more notes
 `
-class GameSupport {
+class OnlineGameSupport {
 
     constructor() {
         this._serverConnection = new GameServerConnection;
