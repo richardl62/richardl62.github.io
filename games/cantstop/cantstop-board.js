@@ -61,27 +61,14 @@ class CantStopBoard {
             }
         }
 
-        let accumulator_OLD = new CantStopOptionAccumulator_OLD(in_play, is_full);
         let accumulator = new CantStopOptionAccumulator(in_play, is_full);
         let options = new Array;
         function add_option(index1a, index1b, index2a, index2b) {
             let s1 = dice_numbers[index1a] + dice_numbers[index1b];
             let s2 = dice_numbers[index2a] + dice_numbers[index2b];
 
-            accumulator_OLD.candidate_pair(s1, s2);
-            const old_opts = accumulator_OLD.get_options();
 
             accumulator.candidate_pair(s1, s2);
-            const new_opts = accumulator.get_options();
-
-            if (!manual_filling()) {
-                if (JSON.stringify(old_opts) != JSON.stringify(new_opts)) {
-                    console.log("Old", old_opts);
-                    console.log("New", new_opts);
-                    alert("Self check of scoring options failed\n" +
-                     "Possible issue with tempory use of manual mode");
-                }
-            }
         }
 
         add_option(0, 1, 2, 3);
