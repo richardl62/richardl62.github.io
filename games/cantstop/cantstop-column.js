@@ -28,8 +28,111 @@ class CantStopPlayerColumn {
         }
     }
 
-    get squares() {
-        return this._squares;
+    is_full(player_number) {
+        for (const sq of this._squares) {
+            if (sq.is_empty()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    has_precommits(player_number) {
+        for (const sq of this._squares) {
+            if (sq.is_precommitted()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    add_precommit(player_number) {
+        for (const sq of this._squares) {
+            if (sq.is_empty()) {
+                sq.make_precommit();
+                break;
+            }
+        }
+    }
+
+    add_provisional_precommit(player_number) {
+        for (const sq of this._squares) {
+            if (sq.is_empty()) {
+                sq.make_provisional_precommitted();
+                break;
+            }
+        }
+    }
+
+    promot_all_provisional_precommits(player_number) {
+        for (const sq of this._squares) {
+            if (sq.is_provisional_precommit()) {
+                sq.make_precommit();
+            }
+        }
+    }
+
+    remove_all_provisional_precommits(player_number) {
+        for (const sq of this._squares) {
+            if (sq.is_provisional_precommit()) {
+                sq.reset();
+            }
+        }
+    }
+
+    remove_all_precommits(player_number) {
+        for (const sq of this._squares) {
+            if (sq.is_precommitted()) {
+                sq.reset();
+            }
+        }
+    }
+
+    precommits(player_number) {
+        let result = new Array;
+        for (let i = this._squares.length - 1; i >= 0; --i) {
+            let sq = this._squares[i];
+
+            if (sq.is_precommitted()) {
+                result.push(sq);
+            }
+        }
+
+        return result;
+    }
+
+    commit(player_number) {
+        for (const sq of this._squares) {
+            if (sq.is_precommitted())
+                sq.make_commit();
+        }
+    }
+
+    // For use with manual column filling.
+    // Commits the first non-committed square.
+    commit_noncommited_square(player_number) {
+        for (const sq of this._squares) {
+            assert(!sq.is_owned());
+            if (!sq.is_committed()) {
+                sq.make_commit();
+                break;
+            }
+        }
+    }
+
+    // For use with manual column filling
+    // Clears the final non-empty square
+    clear_nonempty_square(player_number) {
+        for (let ind = this._squares.length - 1; ind >= 0; --ind) {
+            let sq = this._squares[ind];
+            assert(!sq.is_owned());
+            if (!sq.is_empty()) {
+                sq.reset();
+                break;
+            }
+        }
     }
 
     state(input_state) {
@@ -128,12 +231,13 @@ class CantStopColumn {
 
     }
 
+    top_elem() { // Is this used?
+        return this.m_top_elem;
+    }
 
-    top_elem() {return this.m_top_elem;}
-
-    has_elements() { 
-     return Boolean(this.m_top_elem);
-     }
+    has_elements() {
+        return Boolean(this.m_top_elem);
+    }
 
     num_players(n_players)
     {
@@ -157,129 +261,51 @@ class CantStopColumn {
         }
     }
 
-    // Kludge: This would better moved into CantStopPlayerColumn
-    is_full(player_number) {
-        for (const sq of this.player_columns[player_number].squares) {
-            if (sq.is_empty()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    // Kludge: This would better moved into CantStopPlayerColumn
     has_precommits(player_number) {
-        for (const sq of this.player_columns[player_number].squares) {
-            if (sq.is_precommitted()) {
-                return true;
-            }
-        }
-
-        return false;
+        // Kludge?: The 'return' might not be necessary.
+        return this.player_columns[player_number].has_precommits();
     }
 
-    // Kludge: This would better moved into CantStopPlayerColumn
     add_precommit(player_number) {
-       for (const sq of this.player_columns[player_number].squares) {
-            if (sq.is_empty()) {
-                sq.make_precommit();
-                break;
-            }
-        }
+        // Kludge?: The 'return' might not be necessary.
+        return this.player_columns[player_number].add_precommit();
     }
 
-    // Kludge: This would better moved into CantStopPlayerColumn
     add_provisional_precommit(player_number) {
-        for (const sq of this.player_columns[player_number].squares) {
-            if (sq.is_empty()) {
-                sq.make_provisional_precommitted();
-                break;
-            }
-        }
+        // Kludge?: The 'return' might not be necessary.
+        return this.player_columns[player_number].add_provisional_precommit();
     }
 
-    // Kludge: This would better moved into CantStopPlayerColumn
     promot_all_provisional_precommits(player_number) {
-        for (const sq of this.player_columns[player_number].squares) {
-            if (sq.is_provisional_precommit()) {
-                sq.make_precommit();
-            }
-        }
+        // Kludge?: The 'return' might not be necessary.
+        return this.player_columns[player_number].promot_all_provisional_precommits();
     }
 
-    // Kludge: This would better moved into CantStopPlayerColumn
     remove_all_provisional_precommits(player_number) {
-        for (const sq of this.player_columns[player_number].squares) {
-            if (sq.is_provisional_precommit()) {
-                sq.reset();
-            }
-        }
+        // Kludge?: The 'return' might not be necessary.
+        return this.player_columns[player_number].remove_all_provisional_precommits();
     }
 
-    // Kludge: This would better moved into CantStopPlayerColumn
     remove_all_precommits(player_number) {
-        for (const sq of this.player_columns[player_number].squares) {
-            if (sq.is_precommitted()) {
-                sq.reset();
-            }
-        }
+        // Kludge?: The 'return' might not be necessary.
+        return this.player_columns[player_number].remove_all_precommits();
     }
 
-    // Kludge: This would better moved into CantStopPlayerColumn
     precommits(player_number) {
-        let result = new Array;
-        for (let i = this.player_columns[player_number].squares.length - 1; i >= 0; --i) {
-            let sq = this.player_columns[player_number].squares[i];
-
-            if (sq.is_precommitted()) {
-                result.push(sq);
-            }
-        }
-
-        return result;
+        // Kludge?: The 'return' might not be necessary.
+        return this.player_columns[player_number].precommits()
     }
 
-    // Kludge: This would better moved into CantStopPlayerColumn
     commit(player_number) {
-        let squares = this.player_columns[player_number].squares;
-        for (const sq of squares) {
-            if (sq.is_precommitted())
-                sq.make_commit();
-        }
-    
-        this.process_if_full(player_number);
-    }
-
-    // For use with manual column filling.
-    // Commits the first non-committed square.
-    // Kludge: This would better moved into CantStopPlayerColumn
-    commit_noncommited_square(player_number) {
-        let squares = this.player_columns[player_number].squares;
-        for (const sq of squares) {
-            assert(!sq.is_owned());
-            if (!sq.is_committed()) {
-                sq.make_commit();
-                break;
-            }
-        }
-
+        this.player_columns[player_number].commit()
         this.process_if_full(player_number);
     }
 
     // For use with manual column filling
     // Clears the final non-empty square
-    // Kludge: This would better moved into CantStopPlayerColumn
     clear_nonempty_square(player_number) {
-        let squares = this.player_columns[player_number].squares;
-        for (let ind = squares.length-1; ind >= 0; --ind) {
-            let sq = squares[ind];
-            assert(!sq.is_owned());
-            if (!sq.is_empty()) {
-                sq.reset();
-                break;
-            }
-        }
+        // Kludge?: The 'return' might not be necessary.
+        return this.player_columns[player_number].clear_nonempty_square()
     }
 
     decorate_owned_square_elems(owning_player) {
@@ -310,7 +336,7 @@ class CantStopColumn {
     // Record that the colum is 'owned' by the given player
     process_if_full(player_number) {
         assert(player_number !== undefined);
-        if (this.is_full(player_number) && !this.is_owned() &&
+        if (this.player_columns[player_number].is_full() && !this.is_owned() &&
             this.square_elems.length > 0) {
             this.make_owned_by(player_number);
         }
@@ -342,11 +368,13 @@ class CantStopColumn {
     }
 
     player_square_clicked(square) {
-        if (this.manual_control_allowed && !square.is_owned()) {
+        if (this.manual_control_allowed && !this.is_owned()) {
+            const player_number = square.player_number;
             if (square.is_empty()) {
-                this.commit_noncommited_square(square.player_number);
+                this.player_columns[player_number].commit_noncommited_square();
+                this.process_if_full(player_number);
             } else {
-                this.clear_nonempty_square(square.player_number);
+                this.clear_nonempty_square(player_number);
             }
         }
     }

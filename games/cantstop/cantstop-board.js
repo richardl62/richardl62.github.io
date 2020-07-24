@@ -49,19 +49,21 @@ class CantStopBoard {
     options(player_number, dice_numbers/* array of numbers */) {
 
         let in_play = new Set;
-        let is_full = new Set;
+        let is_owned = new Set;
         for (let cn = 0; cn < this.m_columns.length; ++cn) {
             let col = this.m_columns[cn];
-            if (col && col.in_play()) {
-                in_play.add(cn);
-            }
+            if (col) {
+                if (col.in_play()) {
+                    in_play.add(cn);
+                }
 
-            if (col && col.is_full(player_number)) {
-                is_full.add(cn);
+                if (col.is_owned()) {
+                    is_owned.add(cn);
+                }
             }
         }
 
-        let accumulator = new CantStopOptionAccumulator(in_play, is_full);
+        let accumulator = new CantStopOptionAccumulator(in_play, is_owned);
         let options = new Array;
         function add_option(index1a, index1b, index2a, index2b) {
             let s1 = dice_numbers[index1a] + dice_numbers[index1b];
