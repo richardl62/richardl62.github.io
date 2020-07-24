@@ -150,8 +150,8 @@ function CantStopControl(game_board, dice_array, game_display) {
             game_state = game_board.state();
         }
         
-        next_player() {
-            change_current_player();
+        set_current_player(player) {
+            set_current_player(player);
         }
 
         start_game(num_players) {
@@ -179,6 +179,14 @@ function CantStopControl(game_board, dice_array, game_display) {
             game_display.manual_filling(on);
 
             game_board.allow_manual_control(on);
+        }
+        
+        name_change(player, name) {
+            player_names[player] = name; 
+        }
+
+        state() {
+            console.log("WARNING: State not yet implemented");
         }
 
         name_change(player_number, name) {
