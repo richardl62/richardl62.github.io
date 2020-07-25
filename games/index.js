@@ -11,7 +11,7 @@ const refresh_open_games_elem = getElementById_Checked("refresh-open-games");
 const clear_games_elem = getElementById_Checked("clear-games");
 const open_games_info = getElementById_Checked("open-games-info"); 
 
-const online_games = [ "dropdown", "othello" ];
+const online_games = [ "dropdown", "othello", "cantstop" ];
     
 function local_server() {
    return local_server_elem.checked;

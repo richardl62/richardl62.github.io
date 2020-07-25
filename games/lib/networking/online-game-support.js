@@ -1,30 +1,6 @@
 'use strict';
 
-// Manage the connection with the server.
-// Has no knowledge about game play.
-class GameServerConnection {
-    constructor() {
-        Object.seal(this);
-    }
 
-    // Attempt to connect to the server at the give url.
-    // Return a promise that is forefilled when/if the connection is 
-    // established.
-    connect(url) { }
-
-    // Disconnect from the server;
-    disconnect() { }
-
-    get connected() { }
-
-
-    // Callback this is triggered when the server issues a message,
-    // e.g. about an error.  For now: 
-    // - The message is a string which is passed to the callback. 
-    // - Only one callback is allowed. 
-    // Passing a null callback cancels any previous callback.
-    onMessage(callback) { }
-}
 
 
 
@@ -45,43 +21,69 @@ To do: Add more notes
 class OnlineGameSupport {
 
     constructor() {
-        this._serverConnection = new GameServerConnection();
-        this._onHistoryChange = [];
-        this._onAction = [];
-        this._onServerMessage = [];
+        this._game_socket = new GameSocket();
+        this._onAction = null;
 
         Object.seal(this);
     }
 
-    // Attempt to connect the server at the given url.
-    // Return a promise that is forefilled when/if the connection is 
-    // established.
-    connect(url) { }
+    set onAction(callback) {
+        this._onAction = callback;
+        this._game_socket.onAction = callback;
+    }
 
-    onAction(callback) {this._onAction.push(callback); }
+    // Attempt to connect to a server and then join a game as specified in the
+    // url parameters.
+    // Return a promise that is forefilled when/if the game is joined
+    joinGame(url_params) {
+        const server_url = get_game_server(url_params.has('local'));
+        
+        const game_id = url_params.get('id');
+        
+        assert(game_id !== undefined);
+        
+        this._game_socket.connect(server_url);
+        return this._game_socket.joinGame(game_id);
+    }
 
     // Send an action to the server, if connected.
     // Also trigger the onAction() callbacks if set.
-    action(input_action, state) {
-        let action; 
-        if(typeof input_action == "string") {
-            action = {};
-            action[input_action] = null;
-        } else {
-            action = input_action;
+    action(action_) {
+        if(this._onAction) {
+            this._onAction(action_);
         }
-
-        this._onAction.forEach(cb => cb(null, action, state));
-    }
-
-    state(state_) {
-        this.action(undefined,state_);
+        this._game_socket.action(action_);
     }
 }
 
 /*
  * Off cuts
  */
+// // Manage the connection with the server.
+// // Has no knowledge about game play.
+// class GameServerConnection {
+//     constructor() {
+//         Object.seal(this);
+//     }
+
+//     // Attempt to connect to the server at the give url.
+//     // Return a promise that is forefilled when/if the connection is 
+//     // established.
+//     connect(url) { }
+
+//     // Disconnect from the server;
+//     disconnect() { }
+
+//     get connected() { }
+
+
+//     // Callback this is triggered when the server issues a message,
+//     // e.g. about an error.  For now: 
+//     // - The message is a string which is passed to the callback. 
+//     // - Only one callback is allowed. 
+//     // Passing a null callback cancels any previous callback.
+//     onMessage(callback) { }
+// }
 
 // A GameAction records (as name-value pairs) two sorts of data:
 // State:   Accumulated in the game controllr and the server.

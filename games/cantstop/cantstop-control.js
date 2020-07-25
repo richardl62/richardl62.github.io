@@ -37,9 +37,7 @@ function CantStopControl(game_board, dice_array, game_display) {
 
    function do_roll(spin)
    {
-       assert(spin != undefined, "spin option not set");
-   
-       game_board.promot_all_provisional_precommits(current_player);
+        game_board.promot_all_provisional_precommits(current_player);
        
        if(selected_precommits)
        {
@@ -71,7 +69,7 @@ function CantStopControl(game_board, dice_array, game_display) {
        num_players = num_players_;
        
        game_board.num_players(num_players);
-       game_state = game_board.state();
+       game_state_for_undo = game_board.state();
 
        player_left = new Array(num_players).fill(false);
        set_current_player(0);
@@ -118,7 +116,6 @@ function CantStopControl(game_board, dice_array, game_display) {
            game_board.column(cn).in_play(false);
        }
    }
-
    
     function select_move_option(index) {
         game_board.remove_all_provisional_precommits(current_player);
@@ -142,12 +139,12 @@ function CantStopControl(game_board, dice_array, game_display) {
         }
 
         undo() {
-            game_board.state(game_state);
+            game_board.state(game_state_for_undo);
         }
 
         commit() {
             game_board.commit(current_player);
-            game_state = game_board.state();
+            game_state_for_undo = game_board.state();
         }
         
         set_current_player(player) {
@@ -185,8 +182,20 @@ function CantStopControl(game_board, dice_array, game_display) {
             player_names[player] = name; 
         }
 
-        state() {
-            console.log("WARNING: State not yet implemented");
+        // Covers the board position, but not player names.
+        game_state(input_state) {
+            if (input_state === undefined) {
+                return {
+                    game_board: game_board.state(),
+                    current_player: current_player,
+                };
+            } else {
+                assert(input_state.game_board !== undefined);
+                assert(input_state.current_player !== undefined);
+
+                game_board.state(input_state.game_board);
+                set_current_player(input_state.current_player);
+            }
         }
 
         name_change(player_number, name) {
