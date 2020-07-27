@@ -1,6 +1,6 @@
 "use strict";
 
-function new_CantStopControl(game_board, dice_array, game_display) {
+function CantStopControl(game_board, dice_array, game_display) {
 
    let current_player = null; // set by start_game()
    let num_players = null; // Starts at 0. Set by start_game()
