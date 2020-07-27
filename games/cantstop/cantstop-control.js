@@ -1,10 +1,7 @@
 "use strict";
 
-function new_CantStopControl() {
+function new_CantStopControl(game_board) {
 
-   const disable_at_end_of_game = [jq.pass, jq.leave];
-   
-   
    let current_player = null; // set by start_game()
    let num_players = null; // Starts at 0. Set by start_game()
    
@@ -24,7 +21,14 @@ function new_CantStopControl() {
 
    
    // Setup to the board
-   let game_board = make_game_board();
+   let n_squares = 3;
+   for (let cn = 2; cn <= last_column; ++cn) // cn -> column number
+   {
+       game_board.add_column(cn, n_squares);
+       n_squares += (cn <= (last_column/2)) ? 2 : -2;
+   }
+
+
    let game_state;
    
    
@@ -32,21 +36,6 @@ function new_CantStopControl() {
     * helper functions
     */
    
-   
-    // Must call set_num_players() after make_game_board();
-   function make_game_board() {
-   
-       let board = new CantStopBoard(jq.board);
-       
-       let n_squares = 3;
-       for (let cn = 2; cn <= last_column; ++cn) // cn -> column number
-       {
-           board.add_column(cn, n_squares);
-           n_squares += (cn <= (last_column/2)) ? 2 : -2;
-       }
-   
-       return board;
-   }
    
    function make_dice_array() {
        let arr = new Array(n_dice);
@@ -101,8 +90,6 @@ function new_CantStopControl() {
        set_current_player(0);
    
        gameDisplay.stage('required_roll');
-   
-       disable_at_end_of_game.forEach(e => e.prop("disabled", false));
     }
    
    function set_css_player_color(color) {
@@ -120,7 +107,6 @@ function new_CantStopControl() {
            // All players have left.
            set_css_player_color("var(--games-board-non-player-color)");
            gameDisplay.stage('game_over'); 
-           disable_at_end_of_game.forEach(e => e.prop("disabled", true));
        } else {
            set_current_player(np);
        }
@@ -142,9 +128,9 @@ function new_CantStopControl() {
        set_css_player_color(get_cantstop_player_color(current_player));
    
        clear_in_play_columns();
-   
-       set_current_player_name();
-   }
+       
+       gameDisplay.current_player_name(player_names[current_player]);
+    }
    
    function clear_in_play_columns() {
        for (let cn = 0; cn <= last_column; ++cn) {
@@ -162,12 +148,6 @@ function new_CantStopControl() {
         game_board.remove_all_provisional_precommits(current_player);
         game_board.add_provisional_precommit(current_player, selected_precommits);
     }
-   
-   
-   function set_current_player_name() {
-       let elem = jq.player_name[0];
-       elem.value = player_names[current_player];
-   }
    
     class Control {
 

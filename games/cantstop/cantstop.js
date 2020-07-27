@@ -65,7 +65,7 @@ function disable_roll_and_dont_buttons(disable)
 let gameDisplay = new class {
 
     // Make exactly one of the game-stage elements visible
-    stage(input_stage) {
+    stage(current_stage) {
  
         const stage_map = {
             bust: jq.bust,
@@ -73,14 +73,19 @@ let gameDisplay = new class {
             required_roll: jq.required_roll,
             move_options: jq.move_options,
         }
-        assert(stage_map[input_stage]);
+        assert(stage_map[current_stage]);
 
         for(let s in stage_map) {
             let elem = stage_map[s];
-            let visible = input_stage == s;
+            let visible = current_stage == s;
 
             elem.toggleClass(visibility_hidden_class, !visible);
         }
+
+        // Disable some elements at the end of a game
+        const end_of_game = current_stage = "game_over";
+        jq.pass.prop("disable", end_of_game);
+        jq.leave.prop("disable", end_of_game);
     }
 
     move_options(move_options)
@@ -124,12 +129,15 @@ let gameDisplay = new class {
 
         disable_roll_and_dont_buttons(false);
     }
-}
 
+    current_player_name(name) {
+        jq.player_name.val(name);
+    }
+}
 
 function cantstop_setup() {
 
-    let control = new_CantStopControl();
+    let control = new_CantStopControl(new CantStopBoard(jq.board));
 
     function start_game() {
         const n_players = parseInt(jq.num_players.val());
