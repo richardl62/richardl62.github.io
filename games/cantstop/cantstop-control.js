@@ -1,13 +1,12 @@
 "use strict";
 
-function new_CantStopControl(game_board) {
+function new_CantStopControl(game_board, dice_array) {
 
    let current_player = null; // set by start_game()
    let num_players = null; // Starts at 0. Set by start_game()
    
 
    const last_column = 12;
-   let dice_array = make_dice_array();
    
    var move_options = null;
    var selected_precommits = null;
@@ -35,18 +34,6 @@ function new_CantStopControl(game_board) {
    /*
     * helper functions
     */
-   
-   
-   function make_dice_array() {
-       let arr = new Array(n_dice);
-   
-       for (let i = 0; i < n_dice; i++) {
-           arr[i] = new dice(jq.dice.get(i));
-           arr[i].roll(false /* don't spin */);
-       }
-   
-       return arr;
-   }
 
    function do_roll(spin)
    {
@@ -92,10 +79,6 @@ function new_CantStopControl(game_board) {
        gameDisplay.stage('required_roll');
     }
    
-   function set_css_player_color(color) {
-       jq.game.get(0).style.setProperty("--player-color", color);
-   }
-   
    function change_current_player() {
        // Find the next unfinished player
        let np = current_player; // np -> next player
@@ -105,7 +88,7 @@ function new_CantStopControl(game_board) {
    
        if(player_left[np]) {
            // All players have left.
-           set_css_player_color("var(--games-board-non-player-color)");
+
            gameDisplay.stage('game_over'); 
        } else {
            set_current_player(np);
@@ -125,11 +108,9 @@ function new_CantStopControl(game_board) {
    
        gameDisplay.stage('required_roll');
    
-       set_css_player_color(get_cantstop_player_color(current_player));
-   
        clear_in_play_columns();
        
-       gameDisplay.current_player_name(player_names[current_player]);
+       gameDisplay.current_player(player_names[current_player], current_player);
     }
    
    function clear_in_play_columns() {

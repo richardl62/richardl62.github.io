@@ -62,6 +62,10 @@ function disable_roll_and_dont_buttons(disable)
     jq.dont.prop("disabled", disable);
 }
 
+function set_css_player_color(color) {
+    jq.game.get(0).style.setProperty("--player-color", color);
+}
+
 let gameDisplay = new class {
 
     // Make exactly one of the game-stage elements visible
@@ -83,9 +87,13 @@ let gameDisplay = new class {
         }
 
         // Disable some elements at the end of a game
-        const end_of_game = current_stage = "game_over";
+        const end_of_game = current_stage == "game_over";
         jq.pass.prop("disable", end_of_game);
         jq.leave.prop("disable", end_of_game);
+
+        if(end_of_game) {
+            set_css_player_color("var(--games-board-non-player-color)");
+        }
     }
 
     move_options(move_options)
@@ -130,14 +138,25 @@ let gameDisplay = new class {
         disable_roll_and_dont_buttons(false);
     }
 
-    current_player_name(name) {
+    current_player(name, number) {
         jq.player_name.val(name);
+        set_css_player_color(get_cantstop_player_color(number));
     }
 }
 
 function cantstop_setup() {
+    function make_dice_array() {
+        let arr = new Array(n_dice);
+    
+        for (let i = 0; i < n_dice; i++) {
+            arr[i] = new dice(jq.dice.get(i));
+            arr[i].roll(false /* don't spin */);
+        }
+    
+        return arr;
+    }
 
-    let control = new_CantStopControl(new CantStopBoard(jq.board));
+    let control = new_CantStopControl(new CantStopBoard(jq.board), make_dice_array());
 
     function start_game() {
         const n_players = parseInt(jq.num_players.val());
