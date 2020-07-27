@@ -1,6 +1,6 @@
 "use strict";
 
-function new_CantStopControl(game_board, dice_array) {
+function new_CantStopControl(game_board, dice_array, game_display) {
 
    let current_player = null; // set by start_game()
    let num_players = null; // Starts at 0. Set by start_game()
@@ -57,10 +57,10 @@ function new_CantStopControl(game_board, dice_array) {
    
        move_options = game_board.options(current_player, dice_numbers);
        if (move_options.length == 0 && automatic_filling()) {
-           gameDisplay.stage('bust');
+           game_display.stage('bust');
        }
        else {
-           gameDisplay.move_options(move_options);
+           game_display.move_options(move_options);
        }
     }
 
@@ -76,7 +76,7 @@ function new_CantStopControl(game_board, dice_array) {
        player_left = new Array(num_players).fill(false);
        set_current_player(0);
    
-       gameDisplay.stage('required_roll');
+       game_display.stage('required_roll');
     }
    
    function change_current_player() {
@@ -89,7 +89,7 @@ function new_CantStopControl(game_board, dice_array) {
        if(player_left[np]) {
            // All players have left.
 
-           gameDisplay.stage('game_over'); 
+           game_display.stage('game_over'); 
        } else {
            set_current_player(np);
        }
@@ -106,11 +106,11 @@ function new_CantStopControl(game_board, dice_array) {
        game_board.remove_all_precommits(current_player);
        selected_precommits = null;
    
-       gameDisplay.stage('required_roll');
+       game_display.stage('required_roll');
    
        clear_in_play_columns();
        
-       gameDisplay.current_player(player_names[current_player], current_player);
+       game_display.current_player(player_names[current_player], current_player);
     }
    
    function clear_in_play_columns() {
@@ -124,7 +124,7 @@ function new_CantStopControl(game_board, dice_array) {
         game_board.remove_all_provisional_precommits(current_player);
 
         selected_precommits = move_options[index];
-        gameDisplay.selected_move(index);
+        game_display.selected_move(index);
 
         game_board.remove_all_provisional_precommits(current_player);
         game_board.add_provisional_precommit(current_player, selected_precommits);
@@ -133,7 +133,7 @@ function new_CantStopControl(game_board, dice_array) {
     class Control {
 
         roll() {
-            gameDisplay.stage('move_options');
+            game_display.stage('move_options');
             do_roll(true /*spin*/);
         } 
 

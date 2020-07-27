@@ -1,11 +1,25 @@
 "use strict";
-const manual_mode_on_by_default = false;
-const suppress_load_error_handling = false;
+
+// Members of startup_options should be commented out when this file is pushed.
+const startup_options = {
+    // manual_filling: true,
+    // show_options_div: true,
+    // suppress_load_error_handling: true,
+}
+
+const in_play_column_limit = 3;
+const max_move_options = 6;
+const n_dice = 4;
+
+// Cant stop play numbers start at 0, but player colors start at 1.
+function get_cantstop_player_color(player_number) {
+    return get_default_player_color(player_number + 1);
+}
 
 /*
  * Get and sanity-check the jQuery elements that are used in this file.
  */
-const jq = { 
+const jq = { // For use only in this file
     // Should be in alphabetical order
     automatic_filling: $_checked("#automatic-filling"),
     board: $_checked("#board"),
@@ -21,7 +35,7 @@ const jq = {
     load_error: $_checked("#load-error"),
     load_error_description: $_checked("#load-error-description"),
     main: $_checked("#main"),
-    manual_filling: $_checked("#manual-filling"), 
+    manual_filling: $_checked("#manual-filling"),
     move_options: $_checked("#move-options"),
     num_players: $_checked("#num-players"),
     options_button: $_checked("#options-button"),
@@ -34,129 +48,117 @@ const jq = {
     undo: $_checked("#undo"),
 }
 
-const in_play_column_limit = 3;
-const max_move_options = 6;
-assert(jq.dice_options.length == max_move_options);
+function cantstop_setup() {
 
-const n_dice = 4;
-assert(jq.dice.length == n_dice);
+    assert(jq.dice_options.length == max_move_options);
+    assert(jq.dice.length == n_dice);
 
-jq.automatic_filling.prop("checked", true);
+    jq.automatic_filling.prop("checked", true);
 
-function automatic_filling() {
-    return jq.automatic_filling.prop("checked");
-}
-
-function manual_filling() {
-    return jq.manual_filling.prop("checked");
-}
-
-// Cant stop play numbers start at 0, but player colors start at 1.
-function get_cantstop_player_color(player_number) {
-    return get_default_player_color(player_number+1);
-}
-
-function disable_roll_and_dont_buttons(disable)
-{
-    jq.roll.prop("disabled", disable);
-    jq.dont.prop("disabled", disable);
-}
-
-function set_css_player_color(color) {
-    jq.game.get(0).style.setProperty("--player-color", color);
-}
-
-let gameDisplay = new class {
-
-    // Make exactly one of the game-stage elements visible
-    stage(current_stage) {
- 
-        const stage_map = {
-            bust: jq.bust,
-            game_over: jq.game_over,
-            required_roll: jq.required_roll,
-            move_options: jq.move_options,
-        }
-        assert(stage_map[current_stage]);
-
-        for(let s in stage_map) {
-            let elem = stage_map[s];
-            let visible = current_stage == s;
-
-            elem.toggleClass(visibility_hidden_class, !visible);
-        }
-
-        // Disable some elements at the end of a game
-        const end_of_game = current_stage == "game_over";
-        jq.pass.prop("disable", end_of_game);
-        jq.leave.prop("disable", end_of_game);
-
-        if(end_of_game) {
-            set_css_player_color("var(--games-board-non-player-color)");
-        }
+    function automatic_filling() {
+        return jq.automatic_filling.prop("checked");
     }
 
-    move_options(move_options)
-    {
-       function option_string(opt)
-        {
-           assert(opt.length == 1 || opt.length == 2);
-           let str = "" + opt[0]; 
-           if(opt.length == 2)
-               str += " & " + opt[1];
-   
-           return str;
-        }
-   
-        for(let n = 0; n < max_move_options; ++n)
-        {
-           let str = "";
-           if(n < move_options.length)
-              str = option_string(move_options[n]);
-   
-          $(jq.dice_options[n]).text(str);
-        }
+    function manual_filling() {
+        return jq.manual_filling.prop("checked");
+    }
 
-        this.selected_move(null);
+    function disable_roll_and_dont_buttons(disable) {
+        jq.roll.prop("disabled", disable);
+        jq.dont.prop("disabled", disable);
+    }
 
-        if (automatic_filling() && !manual_filling()) {
-            disable_roll_and_dont_buttons(true);
- 
-            if (move_options.length == 1) {
-                select_move_option(0);
+    function set_css_player_color(color) {
+        jq.game.get(0).style.setProperty("--player-color", color);
+    }
+
+    let game_display = new class {
+
+        // Make exactly one of the game-stage elements visible
+        stage(current_stage) {
+
+            const stage_map = {
+                bust: jq.bust,
+                game_over: jq.game_over,
+                required_roll: jq.required_roll,
+                move_options: jq.move_options,
+            }
+            assert(stage_map[current_stage]);
+
+            for (let s in stage_map) {
+                let elem = stage_map[s];
+                let visible = current_stage == s;
+
+                elem.toggleClass(visibility_hidden_class, !visible);
+            }
+
+            // Disable some elements at the end of a game
+            const end_of_game = current_stage == "game_over";
+            jq.pass.prop("disable", end_of_game);
+            jq.leave.prop("disable", end_of_game);
+
+            if (end_of_game) {
+                set_css_player_color("var(--games-board-non-player-color)");
             }
         }
-    }
 
-    selected_move(index /*integer or null */) {
-        assert(index !== undefined);
-        jq.dice_options.removeClass("selected-move");
-        if(index !== null) {
-             $(jq.dice_options[index]).addClass("selected-move");
+        move_options(move_options) {
+            function option_string(opt) {
+                assert(opt.length == 1 || opt.length == 2);
+                let str = "" + opt[0];
+                if (opt.length == 2)
+                    str += " & " + opt[1];
+
+                return str;
+            }
+
+            for (let n = 0; n < max_move_options; ++n) {
+                let str = "";
+                if (n < move_options.length)
+                    str = option_string(move_options[n]);
+
+                $(jq.dice_options[n]).text(str);
+            }
+
+            this.selected_move(null);
+
+            if (automatic_filling() && !manual_filling()) {
+                disable_roll_and_dont_buttons(true);
+
+                if (move_options.length == 1) {
+                    this.selected_move(0);
+                }
+            }
         }
 
-        disable_roll_and_dont_buttons(false);
+        selected_move(index /*integer or null */) {
+            assert(index !== undefined);
+            jq.dice_options.removeClass("selected-move");
+            if (index !== null) {
+                $(jq.dice_options[index]).addClass("selected-move");
+            }
+
+            disable_roll_and_dont_buttons(false);
+        }
+
+        current_player(name, number) {
+            jq.player_name.val(name);
+            set_css_player_color(get_cantstop_player_color(number));
+        }
     }
 
-    current_player(name, number) {
-        jq.player_name.val(name);
-        set_css_player_color(get_cantstop_player_color(number));
-    }
-}
-
-function cantstop_setup() {
     function make_dice_array() {
         let arr = new Array(n_dice);
-    
+
         for (let i = 0; i < n_dice; i++) {
             arr[i] = new dice(jq.dice.get(i));
             arr[i].roll(false /* don't spin */);
         }
-    
+
         return arr;
     }
 
-    let control = new_CantStopControl(new CantStopBoard(jq.board), make_dice_array());
+    let control = new_CantStopControl(new CantStopBoard(jq.board), make_dice_array(), game_display);
 
     function start_game() {
         const n_players = parseInt(jq.num_players.val());
@@ -166,7 +168,7 @@ function cantstop_setup() {
     start_game();
 
     function toggle_display_options_div(display /*optional*/) {
-        if(display === undefined) {
+        if (display === undefined) {
             // Display if currently not displayed.
             display = jq.options_div.hasClass(display_none_class);
         }
@@ -235,13 +237,13 @@ function cantstop_setup() {
         control.manual_filling_set($(this).prop('checked'));
     });
 
-    jq.manual_filling.prop("checked", manual_mode_on_by_default);
-    control.manual_filling_set(manual_mode_on_by_default);
-    toggle_display_options_div(manual_mode_on_by_default);
+    jq.manual_filling.prop("checked", startup_options.manual_filling);
+    control.manual_filling_set(startup_options.manual_filling);
+    toggle_display_options_div(startup_options.show_options_div);
 }
 
 // Run the setup function with optional error handling
-if (suppress_load_error_handling) {
+if (startup_options.suppress_load_error_handling) {
     // Visibility fixed to help show errors
     jq.main.css('visibility', 'initial');
     cantstop_setup();
