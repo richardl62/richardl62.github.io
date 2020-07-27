@@ -33,7 +33,7 @@ class GameSocket {
     // Set listener used for game play, rather than timeout, errors etc.
     setGameListeners() {
         this._socket.on('action', data => {
-            console.log("Action received", data);
+            //console.log("Action received", data);
             throw_server_error(data);
 
             assert(data.player_id);
@@ -87,7 +87,7 @@ class GameSocket {
 
                 socket.emit('join-game', id,
                     server_response => {
-                        console.log("join-game server response:", server_response);
+                        //console.log("join-game server response:", server_response);
                         if (server_response.server_error) {
                             client_reject(server_response.server_error);
                         }

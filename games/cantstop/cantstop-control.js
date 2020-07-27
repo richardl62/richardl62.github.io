@@ -65,9 +65,6 @@ function CantStopControl(game_board, dice_array, game_display) {
    
     function start_game(num_players_)
     {
-       assert(typeof num_players_ == "number");
-       num_players = num_players_;
-       
        game_board.num_players(num_players);
        game_state_for_undo = game_board.state();
 
@@ -151,8 +148,12 @@ function CantStopControl(game_board, dice_array, game_display) {
             set_current_player(player);
         }
 
-        start_game(num_players) {
-            start_game(num_players);
+        restart() {
+            restart();
+        }
+
+        set_num_players(input_num_players) {
+            set_num_players(input_num_players)
         }
 
         remove_player(player) {
@@ -186,13 +187,16 @@ function CantStopControl(game_board, dice_array, game_display) {
         game_state(input_state) {
             if (input_state === undefined) {
                 return {
+                    num_players: number_player,
                     game_board: game_board.state(),
                     current_player: current_player,
                 };
             } else {
-                assert(input_state.game_board !== undefined);
-                assert(input_state.current_player !== undefined);
+                assert(typeof input_state.num_players == "number");
+                assert(typeof input_state.game_board == "object");
+                assert(typeof input_state.current_player == "number");
 
+                this.set_num_players(input_state.num_players);
                 game_board.state(input_state.game_board);
                 set_current_player(input_state.current_player);
             }
@@ -222,6 +226,28 @@ function CantStopControl(game_board, dice_array, game_display) {
         get manual_filling() {
             return manual_filling;
         }
+
+        get automatic_filling() {
+            return automatic_filling;
+        }
+
+        get manual_filling() {
+            return manual_filling;
+        }
+
+        // Use a standard function rather than a setter for convenience in online support code.
+        set_automatic_filling(on) {
+            automatic_filling = on;
+            jq.automatic_filling.prop("checked", on);
+        }
+
+        set_manual_filling(on) {
+            manual_filling = on;
+            game_board.allow_manual_control(on);
+        
+            jq.manual_filling.prop("checked", on);
+        }
+
     }
 
 
