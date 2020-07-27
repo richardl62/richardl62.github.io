@@ -5,7 +5,7 @@ const startup_options = {
     // manual_filling: true,
     // show_options_div: true,
     // suppress_load_error_handling: true,
-}
+};
 
 const in_play_column_limit = 3;
 const max_move_options = 6;
@@ -14,54 +14,65 @@ const n_dice = 4;
 // Cant stop play numbers start at 0, but player colors start at 1.
 function get_cantstop_player_color(player_number) {
     return get_default_player_color(player_number + 1);
+};
+
+function cant_stop_startup() {
+    /*
+     * Get and sanity-check the jQuery elements that are used in this file.
+     */
+    const jq = { // For use only in this file
+        // Should be in alphabetical order
+        automatic_filling: $_checked("#automatic-filling"),
+        board: $_checked("#board"),
+        bust: $_checked("#bust"),
+        commit: $_checked("#commit"),
+        dice: $_checked(".csdice"),
+        dice_options: $_checked(".dice-option"),
+        dont: $_checked("#dont"),
+        game: $_checked("#game"),
+        game_over: $_checked("#game-over"),
+        leave: $_checked("#leave"),
+        loading: $_checked("#loading"),
+        load_error: $_checked("#load-error"),
+        load_error_description: $_checked("#load-error-description"),
+        main: $_checked("#main"),
+        manual_filling: $_checked("#manual-filling"),
+        move_options: $_checked("#move-options"),
+        num_players: $_checked("#num-players"),
+        options_button: $_checked("#options-button"),
+        options_div: $_checked("#options-div"),
+        pass: $_checked("#pass"),
+        player_name: $_checked("#player-name"),
+        required_roll: $_checked("#required-roll"),
+        restart: $_checked("#restart"),
+        roll: $_checked("#roll"),
+        undo: $_checked("#undo"),
+    };
+
+
+    // Run the setup function with optional error handling
+    if (startup_options.suppress_load_error_handling) {
+        // Visibility fixed to help show errors
+        jq.main.css('visibility', 'initial');
+        do_cantstop_setup(jq);
+    } else {
+        try {
+            // Visibility second to help hide errors
+            do_cantstop_setup(jq);
+            jq.main.css('visibility', 'initial');
+        } catch (error) {
+            console.log('Load error:', error);
+            jq.load_error.css('display', 'initial');
+            jq.load_error_description.text(error.stack);
+        }
+    }
+    jq.loading.css('display', 'none');
 }
 
-/*
- * Get and sanity-check the jQuery elements that are used in this file.
- */
-const jq = { // For use only in this file
-    // Should be in alphabetical order
-    automatic_filling: $_checked("#automatic-filling"),
-    board: $_checked("#board"),
-    bust: $_checked("#bust"),
-    commit: $_checked("#commit"),
-    dice: $_checked(".csdice"),
-    dice_options: $_checked(".dice-option"),
-    dont: $_checked("#dont"),
-    game: $_checked("#game"),
-    game_over: $_checked("#game-over"),
-    leave: $_checked("#leave"),
-    loading: $_checked("#loading"),
-    load_error: $_checked("#load-error"),
-    load_error_description: $_checked("#load-error-description"),
-    main: $_checked("#main"),
-    manual_filling: $_checked("#manual-filling"),
-    move_options: $_checked("#move-options"),
-    num_players: $_checked("#num-players"),
-    options_button: $_checked("#options-button"),
-    options_div: $_checked("#options-div"),
-    pass: $_checked("#pass"),
-    player_name: $_checked("#player-name"),
-    required_roll: $_checked("#required-roll"),
-    restart: $_checked("#restart"),
-    roll: $_checked("#roll"),
-    undo: $_checked("#undo"),
-}
-
-function cantstop_setup() {
+function do_cantstop_setup(jq) {
 
     assert(jq.dice_options.length == max_move_options);
     assert(jq.dice.length == n_dice);
-
-    jq.automatic_filling.prop("checked", true);
-
-    function automatic_filling() {
-        return jq.automatic_filling.prop("checked");
-    }
-
-    function manual_filling() {
-        return jq.manual_filling.prop("checked");
-    }
 
     function disable_roll_and_dont_buttons(disable) {
         jq.roll.prop("disabled", disable);
@@ -122,7 +133,7 @@ function cantstop_setup() {
 
             this.selected_move(null);
 
-            if (automatic_filling() && !manual_filling()) {
+            if (control.automatic_filling && !control.manual_filling) {
                 disable_roll_and_dont_buttons(true);
 
                 if (move_options.length == 1) {
@@ -144,6 +155,14 @@ function cantstop_setup() {
         current_player(name, number) {
             jq.player_name.val(name);
             set_css_player_color(get_cantstop_player_color(number));
+        }
+
+        automatic_filling(on) {
+            jq.automatic_filling.prop('checked', on);
+        }
+
+        manual_filling(on) {
+            jq.manual_filling.prop('checked', on);
         }
     }
 
@@ -237,25 +256,13 @@ function cantstop_setup() {
         control.manual_filling_set($(this).prop('checked'));
     });
 
-    jq.manual_filling.prop("checked", startup_options.manual_filling);
+    jq.automatic_filling.change(function (elem) {
+        control.automatic_filling_set($(this).prop('checked'));
+    });
+
+    control.automatic_filling_set(true);
     control.manual_filling_set(startup_options.manual_filling);
     toggle_display_options_div(startup_options.show_options_div);
 }
 
-// Run the setup function with optional error handling
-if (startup_options.suppress_load_error_handling) {
-    // Visibility fixed to help show errors
-    jq.main.css('visibility', 'initial');
-    cantstop_setup();
-} else {
-    try {
-        // Visibility second to help hide errors
-        cantstop_setup();
-        jq.main.css('visibility', 'initial');
-    } catch (error) {
-        console.log('Load error:', error);
-        jq.load_error.css('display', 'initial');
-        jq.load_error_description.text(error.stack);
-    }
-}
-jq.loading.css('display', 'none');
+cant_stop_startup();

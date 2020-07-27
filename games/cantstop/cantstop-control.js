@@ -11,6 +11,9 @@ function new_CantStopControl(game_board, dice_array, game_display) {
    var move_options = null;
    var selected_precommits = null;
    var player_left = null;
+
+   var automatic_filling = null;
+   var manual_filling = null;
    
    const max_players = 8;
    var player_names = new Array(max_players);
@@ -56,7 +59,7 @@ function new_CantStopControl(game_board, dice_array, game_display) {
        dice_array.forEach((d)=> dice_numbers.push(d.number()));
    
        move_options = game_board.options(current_player, dice_numbers);
-       if (move_options.length == 0 && automatic_filling()) {
+       if (move_options.length == 0 && automatic_filling) {
            game_display.stage('bust');
        }
        else {
@@ -169,14 +172,36 @@ function new_CantStopControl(game_board, dice_array, game_display) {
             }
         }
 
+        automatic_filling_set(on) {
+            automatic_filling = on;
+            game_display.automatic_filling(on);
+        }
+
         manual_filling_set(on) {
+            manual_filling = on;
+            game_display.manual_filling(on);
+
             game_board.allow_manual_control(on);
         }
 
+        name_change(player_number, name) {
+            assert(typeof player_number == "number");
+            assert(typeof name == "string");
+            player_names[player_number] = name;
+        }
+        
         get current_player() {
             return current_player;
         }
-    };
+
+        get automatic_filling() {
+            return automatic_filling;
+        }
+
+        get manual_filling() {
+            return manual_filling;
+        }
+    }
 
 
     return new Control();
