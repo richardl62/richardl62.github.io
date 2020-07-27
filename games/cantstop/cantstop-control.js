@@ -17,9 +17,6 @@ function new_CantStopControl(game_board, dice_array, game_display) {
    
    const max_players = 8;
    var player_names = new Array(max_players);
-   for(let i = 0; i < max_players; ++i) {
-       player_names[i] = "Player " + (i+1);
-   }
 
    
    // Setup to the board
@@ -113,7 +110,7 @@ function new_CantStopControl(game_board, dice_array, game_display) {
    
        clear_in_play_columns();
        
-       game_display.current_player(player_names[current_player], current_player);
+       game_display.current_player(current_player, player_names[current_player]);
     }
    
    function clear_in_play_columns() {
@@ -188,6 +185,11 @@ function new_CantStopControl(game_board, dice_array, game_display) {
             assert(typeof player_number == "number");
             assert(typeof name == "string");
             player_names[player_number] = name;
+        }
+
+        player_name(player_number) {
+            assert(typeof player_number == "number");
+            return player_names[player_number];
         }
         
         get current_player() {

@@ -152,7 +152,10 @@ function do_cantstop_setup(jq) {
             disable_roll_and_dont_buttons(false);
         }
 
-        current_player(name, number) {
+        current_player(number, name) {
+            if(!name) {
+                name = "Player " + (number + 1);
+            }
             jq.player_name.val(name);
             set_css_player_color(get_cantstop_player_color(number));
         }
@@ -242,8 +245,18 @@ function do_cantstop_setup(jq) {
     });
 
     jq.player_name.change(function (elem) {
-        control.name_change(control.current_player, this.value);
+        control.name_change(control.current_player, this.value.trim());
     });
+    
+    jq.player_name.click(function (elem) {
+        const recorded_name = control.player_name(control.current_player);
+        //console.log(`Recorded name for player ${control.current_player}: "${recorded_name}"`)
+        // Clear any default names
+        if(!recorded_name) {
+            jq.player_name.val("");
+        }
+    });
+
     jq.undo.click(function (elem) {
         control.undo();
     });
