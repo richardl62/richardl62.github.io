@@ -8,18 +8,8 @@ function new_CantStopControl() {
    let current_player = null; // set by start_game()
    let num_players = null; // Starts at 0. Set by start_game()
    
-   const n_dice = 4;
+
    const last_column = 12;
-   
-   
-   jq.automatic_filling.prop("checked", true);
-   
-   
-   assert(jq.dice.length == n_dice);
-   
-   const max_move_options = 6;
-   assert(jq.dice_options.length == max_move_options);
-   
    let dice_array = make_dice_array();
    
    var move_options = null;
@@ -31,11 +21,10 @@ function new_CantStopControl() {
    for(let i = 0; i < max_players; ++i) {
        player_names[i] = "Player " + (i+1);
    }
-   
-   const selected_move = "selected-move";
+
    
    // Setup to the board
-   let game_board = make_game_board();;
+   let game_board = make_game_board();
    let game_state;
    
    
@@ -70,12 +59,6 @@ function new_CantStopControl() {
        return arr;
    }
 
-   function disable_roll_and_dont_buttons(disable)
-   {
-       jq.roll.prop("disabled", disable);
-       jq.dont.prop("disabled", disable);
-   }
-   
    function do_roll(spin)
    {
        assert(spin != undefined, "spin option not set");
@@ -101,41 +84,10 @@ function new_CantStopControl() {
            gameDisplay.stage('bust');
        }
        else {
-           display_move_options();
+           gameDisplay.move_options(move_options);
        }
-   
-       if (automatic_filling() && !manual_filling()) {
-           disable_roll_and_dont_buttons(true);
+    }
 
-           if (move_options.length == 1) {
-               select_move_option(0);
-           }
-       }
-    }
-   
-    function display_move_options()
-    {
-       clear_selected_move();
-   
-       function option_string(opt)
-        {
-           assert(opt.length == 1 || opt.length == 2);
-           let str = "" + opt[0]; 
-           if(opt.length == 2)
-               str += " & " + opt[1];
-   
-           return str;
-        }
-   
-        for(let n = 0; n < max_move_options; ++n)
-        {
-           let str = "";
-           if(n < move_options.length)
-              str = option_string(move_options[n]);
-   
-          $(jq.dice_options[n]).text(str);
-        }
-    }
    
     function start_game(num_players_)
     {
@@ -199,22 +151,16 @@ function new_CantStopControl() {
            game_board.column(cn).in_play(false);
        }
    }
-   
-   function clear_selected_move() {
-       jq.dice_options.removeClass(selected_move);
-   }
+
    
     function select_move_option(index) {
-        clear_selected_move();
         game_board.remove_all_provisional_precommits(current_player);
 
         selected_precommits = move_options[index];
-        $(jq.dice_options[index]).addClass(selected_move);
+        gameDisplay.selected_move(index);
 
         game_board.remove_all_provisional_precommits(current_player);
         game_board.add_provisional_precommit(current_player, selected_precommits);
-
-        disable_roll_and_dont_buttons(false);
     }
    
    

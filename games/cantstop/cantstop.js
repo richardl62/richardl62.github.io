@@ -35,6 +35,13 @@ const jq = {
 }
 
 const in_play_column_limit = 3;
+const max_move_options = 6;
+assert(jq.dice_options.length == max_move_options);
+
+const n_dice = 4;
+assert(jq.dice.length == n_dice);
+
+jq.automatic_filling.prop("checked", true);
 
 function automatic_filling() {
     return jq.automatic_filling.prop("checked");
@@ -47,6 +54,12 @@ function manual_filling() {
 // Cant stop play numbers start at 0, but player colors start at 1.
 function get_cantstop_player_color(player_number) {
     return get_default_player_color(player_number+1);
+}
+
+function disable_roll_and_dont_buttons(disable)
+{
+    jq.roll.prop("disabled", disable);
+    jq.dont.prop("disabled", disable);
 }
 
 let gameDisplay = new class {
@@ -68,6 +81,48 @@ let gameDisplay = new class {
 
             elem.toggleClass(visibility_hidden_class, !visible);
         }
+    }
+
+    move_options(move_options)
+    {
+       function option_string(opt)
+        {
+           assert(opt.length == 1 || opt.length == 2);
+           let str = "" + opt[0]; 
+           if(opt.length == 2)
+               str += " & " + opt[1];
+   
+           return str;
+        }
+   
+        for(let n = 0; n < max_move_options; ++n)
+        {
+           let str = "";
+           if(n < move_options.length)
+              str = option_string(move_options[n]);
+   
+          $(jq.dice_options[n]).text(str);
+        }
+
+        this.selected_move(null);
+
+        if (automatic_filling() && !manual_filling()) {
+            disable_roll_and_dont_buttons(true);
+ 
+            if (move_options.length == 1) {
+                select_move_option(0);
+            }
+        }
+    }
+
+    selected_move(index /*integer or null */) {
+        assert(index !== undefined);
+        jq.dice_options.removeClass("selected-move");
+        if(index !== null) {
+             $(jq.dice_options[index]).addClass("selected-move");
+        }
+
+        disable_roll_and_dont_buttons(false);
     }
 }
 
