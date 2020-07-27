@@ -199,7 +199,7 @@ function get_css_variable(name) {
     return value;
 }
 
-// Uses colours defined in preferred-colours.css
+// Uses colours defined in tools.css
 function get_default_player_color(player)
 {
     return get_css_variable('--game-board-player-colours-' + player);
