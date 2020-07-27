@@ -98,44 +98,14 @@ function sort_unique(arr,
 //     sort_unique(test_array, (a, b) => b - a)
 //     );
 
-// Copy-and-edit of CssDisplay
-class CssVisibility
-{
-    constructor(elem)
-    {
-        this._elem = $(elem);
-        assert(this._elem.length == 1, "CssVisiblity requires exactly 1 element");
 
-        this._hidden = this._elem.css("visibility") == "hidden";
+// Using const rather than directly using strings helps to reduce subtle problems caused
+// by misspelling
+const display_none_class = "display-none-important";
+const visibility_hidden_class = "visibility-hidden-important";
 
-        Object.seal(this);
-    }
-
-    hidden(hidden)
-    {
-        if(hidden === undefined) {
-            return this._hidden;
-        }
-        this._hidden = hidden;
-        this._elem.css("visibility", hidden ? "hidden" : "visible");
-    }
-
-    toggle() {
-        this.hidden(!this.CssDisplay());
-    }
-}
-
-function toggleDisplayNoneClass(elem, value) {;
-    $(elem).toggleClass("display-none", value);
-}
-
-function toggleVisibilityHiddenClass(elem, value) {;
-    $(elem).toggleClass("visibility-hidden", value);
-}
-
-
-// Copy-and-edit of CssVisibility
 // Used to set css 'display' to 'none' or restore to original value.
+// DEPRECATED: Prefer use of display_none_class;
 class CssDisplay
 {
     constructor(elem)

@@ -1,6 +1,6 @@
 "use strict";
-const manual_mode_on_by_default = true;
-const suppress_load_error_handling = true;
+const manual_mode_on_by_default = false;
+const suppress_load_error_handling = false;
 
 /*
  * Get and sanity-check the jQuery elements that are used in this file.
@@ -66,7 +66,7 @@ let gameDisplay = new class {
             let elem = stage_map[s];
             let visible = input_stage == s;
 
-            toggleVisibilityHiddenClass(elem, !visible);
+            elem.toggleClass(visibility_hidden_class, !visible);
         }
     }
 }
@@ -83,14 +83,18 @@ function cantstop_setup() {
     }
     start_game();
 
-    let option_div_display = new CssDisplay(jq.options_div);
-    option_div_display.none(true);
+    function toggle_display_options_div(display /*optional*/) {
+        if(display === undefined) {
+            // Display if currently not displayed.
+            display = jq.options_div.hasClass(display_none_class);
+        }
+
+        jq.options_div.toggleClass(display_none_class, !display)
+        jq.options_button.toggleClass("in-out-button-pressed", display);
+    }
 
     jq.options_button.click(function (elem) {
-        option_div_display.toggle();
-
-        const div_hidden = option_div_display.none();
-        $(this).toggleClass("in-out-button-pressed", !div_hidden);
+        toggle_display_options_div();
     });
 
     jq.required_roll.click(function (elem) {
@@ -149,12 +153,9 @@ function cantstop_setup() {
         control.manual_filling_set($(this).prop('checked'));
     });
 
-
-    if (manual_mode_on_by_default) {
-        jq.manual_filling.prop("checked", true);
-        control.manual_filling_set(true);
-        option_div_display.none(false);
-    }
+    jq.manual_filling.prop("checked", manual_mode_on_by_default);
+    control.manual_filling_set(manual_mode_on_by_default);
+    toggle_display_options_div(manual_mode_on_by_default);
 }
 
 // Run the setup function with optional error handling

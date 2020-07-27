@@ -15,10 +15,12 @@ body {
     --games-board-non-player-color: gray;
 }
 
-.display-none {
-    display: none
+.display-none-important {
+    /* KLUDGE? Make important so it can override setting made for specific element */
+    display: none !important;
 }
 
-.visibility-hidden {
-    visibility: hidden;  
+.visibility-hidden-important {
+    /* KLUDGE? Make important so it can override setting made for specific element */
+    visibility: hidden !important;  
 }
