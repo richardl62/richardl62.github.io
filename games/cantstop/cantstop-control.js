@@ -22,11 +22,6 @@ function new_CantStopControl() {
    
    let dice_array = make_dice_array();
    
-   let game_over_visibility = new CssVisibility(jq.game_over);
-   let move_options_visibility = new CssVisibility(jq.move_options);
-   let bust_visibility = new CssVisibility(jq.bust);
-   let required_roll_visibility = new CssVisibility(jq.required_roll)
-   
    var move_options = null;
    var selected_precommits = null;
    var player_left = null;
@@ -74,16 +69,6 @@ function new_CantStopControl() {
    
        return arr;
    }
-   
-   function show_one(to_show)
-   {
-       game_over_visibility.hidden(true);
-       bust_visibility.hidden(true);
-       move_options_visibility.hidden(true);
-       required_roll_visibility.hidden(true);
-   
-       to_show.hidden(false);
-   }
 
    function disable_roll_and_dont_buttons(disable)
    {
@@ -113,7 +98,7 @@ function new_CantStopControl() {
    
        move_options = game_board.options(current_player, dice_numbers);
        if (move_options.length == 0 && automatic_filling()) {
-           show_one(bust_visibility);
+           gameDisplay.stage('bust');
        }
        else {
            display_move_options();
@@ -163,7 +148,7 @@ function new_CantStopControl() {
        player_left = new Array(num_players).fill(false);
        set_current_player(0);
    
-       show_one(required_roll_visibility);
+       gameDisplay.stage('required_roll');
    
        disable_at_end_of_game.forEach(e => e.prop("disabled", false));
     }
@@ -182,7 +167,7 @@ function new_CantStopControl() {
        if(player_left[np]) {
            // All players have left.
            set_css_player_color("var(--games-board-non-player-color)");
-           show_one(game_over_visibility); 
+           gameDisplay.stage('game_over'); 
            disable_at_end_of_game.forEach(e => e.prop("disabled", true));
        } else {
            set_current_player(np);
@@ -200,7 +185,7 @@ function new_CantStopControl() {
        game_board.remove_all_precommits(current_player);
        selected_precommits = null;
    
-       show_one(required_roll_visibility);
+       gameDisplay.stage('required_roll');
    
        set_css_player_color(get_cantstop_player_color(current_player));
    
@@ -241,7 +226,7 @@ function new_CantStopControl() {
     class Control {
 
         roll() {
-            show_one(move_options_visibility);
+            gameDisplay.stage('move_options');
             do_roll(true /*spin*/);
         } 
 

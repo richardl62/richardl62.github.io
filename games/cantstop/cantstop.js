@@ -1,6 +1,6 @@
 "use strict";
-const manual_mode_on_by_default = false;
-const suppress_load_error_handling = false;
+const manual_mode_on_by_default = true;
+const suppress_load_error_handling = true;
 
 /*
  * Get and sanity-check the jQuery elements that are used in this file.
@@ -48,6 +48,29 @@ function manual_filling() {
 function get_cantstop_player_color(player_number) {
     return get_default_player_color(player_number+1);
 }
+
+let gameDisplay = new class {
+
+    // Make exactly one of the game-stage elements visible
+    stage(input_stage) {
+ 
+        const stage_map = {
+            bust: jq.bust,
+            game_over: jq.game_over,
+            required_roll: jq.required_roll,
+            move_options: jq.move_options,
+        }
+        assert(stage_map[input_stage]);
+
+        for(let s in stage_map) {
+            let elem = stage_map[s];
+            let visible = input_stage == s;
+
+            toggleVisibilityHiddenClass(elem, !visible);
+        }
+    }
+}
+
 
 function cantstop_setup() {
 

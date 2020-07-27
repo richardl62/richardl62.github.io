@@ -125,6 +125,15 @@ class CssVisibility
     }
 }
 
+function toggleDisplayNoneClass(elem, value) {;
+    $(elem).toggleClass("display-none", value);
+}
+
+function toggleVisibilityHiddenClass(elem, value) {;
+    $(elem).toggleClass("visibility-hidden", value);
+}
+
+
 // Copy-and-edit of CssVisibility
 // Used to set css 'display' to 'none' or restore to original value.
 class CssDisplay

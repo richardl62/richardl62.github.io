@@ -14,3 +14,11 @@ body {
 
     --games-board-non-player-color: gray;
 }
+
+.display-none {
+    display: none
+}
+
+.visibility-hidden {
+    visibility: hidden;  
+}
