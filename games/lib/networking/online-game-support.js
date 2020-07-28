@@ -25,10 +25,6 @@ class OnlineGameSupport {
         Object.seal(this);
     }
 
-    set onReceiveState(callback) {
-        this._game_socket.onAction = callback;
-    }
-
     // Attempt to connect to a server and then join a game as specified in the
     // url parameters.
     // Return a promise that is forefilled when/if the game is joined
@@ -43,9 +39,13 @@ class OnlineGameSupport {
         return this._game_socket.joinGame(game_id);
     }
 
-    // Send an action to the server, if connected.
+    set onReceiveState(callback) {
+        this._game_socket.onStateReceive = callback;
+    }
+
+    // Send state to the server, if connected.
     sendState(state) {
-        this._game_socket.action(state);
+        this._game_socket.state(state);
     }
 }
 

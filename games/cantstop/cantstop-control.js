@@ -154,6 +154,10 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
 
     class Control {
 
+        constructor() {
+            Object.seal(this);
+        }
+
         joinGame(url_params) {
             return online_support.joinGame(url_params);
         }

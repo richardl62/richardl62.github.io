@@ -1,14 +1,12 @@
 class GameSocket {
 
     /* gameManger requires the following member functions
-        action(player_id, transient, state);
-            - player_id is null for actions that do not come from the server.
-        
+        state(state);
         joinedGroup(player_id); // Another player joined the group
         leftGroup(player_id);  // Another player left the group
     */
     constructor(callbacks) {
-        this._onAction = null;
+        this._onStateReceive = null;
         this._onPlayerJoin = null;
         this._onPlayerleave = null;
 
@@ -17,7 +15,7 @@ class GameSocket {
         // this._player_id = null;
     }
 
-    set onAction(callback) {this._onAction = callback;}
+    set onStateReceive(callback) {this._onStateReceive = callback;}
     set onPlayerJoin(callback) {this.onPlayerJoin = callback;}
     set onPlayerLeave(callback) {this.onPlayerleave = callback;}
    
@@ -32,16 +30,16 @@ class GameSocket {
 
     // Set listener used for game play, rather than timeout, errors etc.
     setGameListeners() {
-        this._socket.on('action', data => {
-            //console.log("Action received", data);
-            throw_server_error(data);
+        this._socket.on('state', data => {
+            console.log("State received", data.server_info);
+            throw_server_error(data.server_info);
 
-            assert(data.player_id);
+            assert(data.server_info.player_id);
 
             // this.mergeState(data.state);
 
-            if(this._onAction) {
-                this._onAction(data);
+            if(this._onStateReceive) {
+                this._onStateReceive(data.state, data.server_info);
             }
         });
 
@@ -121,12 +119,12 @@ class GameSocket {
         });
     }
 
-    action(action_) {
+    state(state_) {
         // this.mergeState(state);
         // this._gameManager.receiveData(null, state, info);
 
         if (this._socket) {
-            this._socket.emit('action', action_);
+            this._socket.emit('state', state_);
         }
     }
 

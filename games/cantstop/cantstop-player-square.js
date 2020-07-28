@@ -21,6 +21,8 @@ class CantStopPlayerSquare {
 
         this.player_number = player_number;
         this.status = sq_empty;
+
+        Object.seal(this);
     }
 
     destroy() {

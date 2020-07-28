@@ -6,6 +6,8 @@ class CantStopPlayerColumn {
         for (let elem of square_elems) {
             this._squares.push(new CantStopPlayerSquare(elem, player_number, parent_column));
         }
+
+        Object.seal(this);
     }
 
     // Free resources (i.e. html elements) allocated to the column.

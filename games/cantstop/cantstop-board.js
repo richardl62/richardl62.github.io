@@ -6,6 +6,8 @@ class CantStopBoard {
         this.board_elem = $(board_elem);
         this.board_elem.addClass("cs-board");
         this.m_columns = new Array;
+        
+        Object.seal(this);
     }
 
     add_column(column_number, n_squares) {
