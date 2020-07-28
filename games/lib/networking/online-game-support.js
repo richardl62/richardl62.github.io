@@ -22,13 +22,10 @@ class OnlineGameSupport {
 
     constructor() {
         this._game_socket = new GameSocket();
-        this._onAction = null;
-
         Object.seal(this);
     }
 
-    set onAction(callback) {
-        this._onAction = callback;
+    set onReceiveState(callback) {
         this._game_socket.onAction = callback;
     }
 
@@ -47,12 +44,8 @@ class OnlineGameSupport {
     }
 
     // Send an action to the server, if connected.
-    // Also trigger the onAction() callbacks if set.
-    action(action_) {
-        if(this._onAction) {
-            this._onAction(action_);
-        }
-        this._game_socket.action(action_);
+    sendState(state) {
+        this._game_socket.action(state);
     }
 }
 

@@ -68,7 +68,13 @@ function get_cantstop_player_color(player_number) {
     jq.loading.css('display', 'none');
 
 
-    function do_cantstop_setup(jq) {
+    async function do_cantstop_setup(jq) {
+        const url_params = new URLSearchParams(window.location.search);
+
+        let online_support = new OnlineGameSupport;
+        if (url_params.has('id')) {
+            await online_support.joinGame(url_params);
+        }
 
         assert(jq.dice_options.length == max_move_options);
         assert(jq.dice.length == n_dice);
@@ -193,7 +199,11 @@ function get_cantstop_player_color(player_number) {
             return arr;
         }
 
-        let control = new CantStopControl(new CantStopBoard(jq.board), make_dice_array(), game_display);
+        if (url_params.has('id')) {
+            await online_support.joinGame(url_params);
+        }
+        let control = new CantStopControl(new CantStopBoard(jq.board), make_dice_array(),
+            game_display, online_support);
 
         function start_game() {
             const n_players = parseInt(jq.num_players.val());

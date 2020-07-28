@@ -1,6 +1,6 @@
 "use strict";
 
-function CantStopControl(game_board, dice_array, game_display) {
+function CantStopControl(game_board, dice_array, game_display, online_support) {
 
    let current_player = null; // set by start_game()
    let num_players = null; // Starts at 0. Set by start_game()
@@ -28,7 +28,7 @@ function CantStopControl(game_board, dice_array, game_display) {
    }
 
 
-   let game_state;
+   let game_state_for_undo = {};
    
    
    /*
@@ -37,7 +37,9 @@ function CantStopControl(game_board, dice_array, game_display) {
 
    function do_roll(spin)
    {
-        game_board.promot_all_provisional_precommits(current_player);
+       assert(spin != undefined, "spin option not set");
+   
+       game_board.promot_all_provisional_precommits(current_player);
        
        if(selected_precommits)
        {
@@ -65,6 +67,9 @@ function CantStopControl(game_board, dice_array, game_display) {
    
     function start_game(num_players_)
     {
+       assert(typeof num_players_ == "number");
+       num_players = num_players_;
+       
        game_board.num_players(num_players);
        game_state_for_undo = game_board.state();
 
@@ -123,37 +128,72 @@ function CantStopControl(game_board, dice_array, game_display) {
         game_board.remove_all_provisional_precommits(current_player);
         game_board.add_provisional_precommit(current_player, selected_precommits);
     }
-   
+
+
+    function record_state() {
+        return {
+           num_players: num_players,
+           game_board: game_board.state(),
+           current_player: current_player,
+        }
+    }
+
+    function receive_state(state) {
+        //set_num_players(state.num_players);
+        game_board.state(state.game_board);
+        set_current_player(state.current_player);
+    }
+
+    function state_change() {
+        const state = record_state();
+        online_support.sendState(state);
+    }
+    
+    online_support.onReceiveState = receive_state;
+
+
     class Control {
+
+        joinGame(url_params) {
+            return online_support.joinGame(url_params);
+        }
 
         roll() {
             game_display.stage('move_options');
             do_roll(true /*spin*/);
+
+            state_change();
         } 
 
         select_move_option(index) {
             select_move_option(index);
+
+            state_change();
         }
 
         undo() {
             game_board.state(game_state_for_undo);
+
+            state_change();
         }
 
         commit() {
             game_board.commit(current_player);
             game_state_for_undo = game_board.state();
+
+            state_change();
         }
         
-        set_current_player(player) {
-            set_current_player(player);
+        next_player() {
+            change_current_player();
+
+            state_change();
         }
 
-        restart() {
-            restart();
-        }
+        start_game(num_players) {
+            start_game(num_players);
 
-        set_num_players(input_num_players) {
-            set_num_players(input_num_players)
+            state_change();
         }
 
         remove_player(player) {
@@ -165,11 +205,15 @@ function CantStopControl(game_board, dice_array, game_display) {
                 if(!c.is_owned())
                     c.reset_player(player);
             }
+
+            state_change();
         }
 
         automatic_filling_set(on) {
             automatic_filling = on;
             game_display.automatic_filling(on);
+
+            state_change();
         }
 
         manual_filling_set(on) {
@@ -177,29 +221,8 @@ function CantStopControl(game_board, dice_array, game_display) {
             game_display.manual_filling(on);
 
             game_board.allow_manual_control(on);
-        }
-        
-        name_change(player, name) {
-            player_names[player] = name; 
-        }
 
-        // Covers the board position, but not player names.
-        game_state(input_state) {
-            if (input_state === undefined) {
-                return {
-                    num_players: number_player,
-                    game_board: game_board.state(),
-                    current_player: current_player,
-                };
-            } else {
-                assert(typeof input_state.num_players == "number");
-                assert(typeof input_state.game_board == "object");
-                assert(typeof input_state.current_player == "number");
-
-                this.set_num_players(input_state.num_players);
-                game_board.state(input_state.game_board);
-                set_current_player(input_state.current_player);
-            }
+            state_change();
         }
 
         name_change(player_number, name) {
@@ -208,6 +231,8 @@ function CantStopControl(game_board, dice_array, game_display) {
             player_names[player_number] = name;
 
             game_display.player_name_changed(player_number);
+
+            state_change();
         }
 
         player_name(player_number) {
@@ -226,28 +251,6 @@ function CantStopControl(game_board, dice_array, game_display) {
         get manual_filling() {
             return manual_filling;
         }
-
-        get automatic_filling() {
-            return automatic_filling;
-        }
-
-        get manual_filling() {
-            return manual_filling;
-        }
-
-        // Use a standard function rather than a setter for convenience in online support code.
-        set_automatic_filling(on) {
-            automatic_filling = on;
-            jq.automatic_filling.prop("checked", on);
-        }
-
-        set_manual_filling(on) {
-            manual_filling = on;
-            game_board.allow_manual_control(on);
-        
-            jq.manual_filling.prop("checked", on);
-        }
-
     }
 
 
