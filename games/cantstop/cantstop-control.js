@@ -185,6 +185,8 @@ function CantStopControl(game_board, dice_array, game_display) {
             assert(typeof player_number == "number");
             assert(typeof name == "string");
             player_names[player_number] = name;
+
+            game_display.player_name_changed(player_number);
         }
 
         player_name(player_number) {

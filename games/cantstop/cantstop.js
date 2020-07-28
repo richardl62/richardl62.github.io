@@ -82,6 +82,15 @@ function get_cantstop_player_color(player_number) {
             jq.game.get(0).style.setProperty("--player-color", color);
         }
 
+        function set_displayed_player_name(player_number) {
+            const recorded_name = control.player_name(player_number);
+            const display_name = recorded_name ? recorded_name :
+                "Player " + (player_number + 1);
+
+            jq.player_name.val(display_name);
+        }
+
+
         let game_display = new class {
 
             // Make exactly one of the game-stage elements visible
@@ -136,7 +145,7 @@ function get_cantstop_player_color(player_number) {
                     disable_roll_and_dont_buttons(true);
 
                     if (move_options.length == 1) {
-                        this.selected_move(0);
+                        control.select_move_option(0);
                     }
                 }
             }
@@ -151,12 +160,10 @@ function get_cantstop_player_color(player_number) {
                 disable_roll_and_dont_buttons(false);
             }
 
-            current_player(number, name) {
-                if(!name) {
-                    name = "Player " + (number + 1);
-                }
-                jq.player_name.val(name);
-                set_css_player_color(get_cantstop_player_color(number));
+            current_player(player_number) {
+                set_css_player_color(get_cantstop_player_color(player_number));
+
+                set_displayed_player_name(player_number);
             }
 
             automatic_filling(on) {
@@ -165,6 +172,13 @@ function get_cantstop_player_color(player_number) {
 
             manual_filling(on) {
                 jq.manual_filling.prop('checked', on);
+            }
+
+            // An alert which may or may not need an action.
+            player_name_changed(player_number) {
+                if(player_number == control.current_player) {
+                    set_displayed_player_name(player_number);
+                }
             }
         }
 
@@ -244,15 +258,23 @@ function get_cantstop_player_color(player_number) {
         });
 
         jq.player_name.change(function (elem) {
-            control.name_change(control.current_player, this.value.trim());
+            const name_to_record = this.value.trim();
+            control.name_change(control.current_player, name_to_record);
         });
         
-        jq.player_name.click(function (elem) {
+        jq.player_name.focusin(function (elem) {
+            // Clear any default name
             const recorded_name = control.player_name(control.current_player);
-            //console.log(`Recorded name for player ${control.current_player}: "${recorded_name}"`)
-            // Clear any default names
             if(!recorded_name) {
                 jq.player_name.val("");
+            }
+        });
+
+        jq.player_name.focusout(function (elem) {
+            // Re-apply any default name
+            const recorded_name = control.player_name(control.current_player);
+            if(!recorded_name) {
+                set_displayed_player_name(control.current_player); // Kludge?
             }
         });
 
