@@ -34,6 +34,36 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
    /*
     * helper functions
     */
+    function set_automatic_filling(on) {
+        automatic_filling = on;
+        game_display.automatic_filling(on);
+    }
+
+    function set_manual_filling(on) {
+        manual_filling = on;
+        game_display.manual_filling(on);
+
+        game_board.allow_manual_control(on);
+    }
+
+    function player_name_change(player_number, name) {
+        assert(typeof player_number == "number");
+        assert(typeof name == "string");
+        player_names[player_number] = name;
+
+        game_display.player_name_changed(player_number);
+    }
+    
+    function remove_player(player) {
+        player_left[player] = true;
+        game_board.commit(player);
+    
+        for(let c of game_board.columns())
+        {
+            if(!c.is_owned())
+                c.reset_player(player);
+        }
+    }
 
    function do_roll(spin)
    {
@@ -64,7 +94,11 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
        }
     }
 
-   
+    function roll() {
+        game_display.stage('move_options');
+        do_roll(true /*spin*/);
+    }
+
     function start_game(num_players_)
     {
        assert(typeof num_players_ == "number");
@@ -79,7 +113,7 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
        game_display.stage('required_roll');
     }
    
-   function change_current_player() {
+   function next_player() {
        // Find the next unfinished player
        let np = current_player; // np -> next player
        do {
@@ -126,36 +160,96 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
         game_display.selected_move(index);
 
         game_board.remove_all_provisional_precommits(current_player);
-        game_board.add_provisional_precommit(current_player, selected_precommits);
-    }
 
-
-    function record_state() {
-        return {
-           num_players: num_players,
-           game_board: game_board.state(),
-           current_player: current_player,
+        if(selected_precommits) { // Can be null in manual mode
+            game_board.add_provisional_precommit(current_player, selected_precommits);
         }
     }
 
-    function receive_state(state) {
-        //set_num_players(state.num_players);
-        game_board.state(state.game_board);
-        set_current_player(state.current_player);
+    function undo() {
+        game_board.state(game_state_for_undo);
     }
 
-    function state_change() {
-        const state = record_state();
-        online_support.sendState(state);
+    function commit() {
+        game_board.commit(current_player);
+        game_state_for_undo = game_board.state();
+    }
+
+    const state_control = {
+        game_options:  {
+            record: obj => {
+                obj.manual_filling = control.manual_filling;
+                obj.automatic_filling = control.automatic_filling;
+            },
+            receive: obj => {
+                if (obj.hasOwnProperty(manual_filling)) {
+                    control.manual_filling = obj.manual_filling;
+                }
+                if (obj.hasOwnProperty(automatic_filling)) {
+                    control.automatic_filling = obj.automatic_filling;
+                }
+            },
+        },
+
+        game_board: {
+            record: obj => {
+                obj.num_players = num_players;
+                obj.game_board = game_board.state();
+                obj.current_player = current_player;
+            },
+            receive: obj => {
+                if (obj.hasOwnProperty(game_board)) {
+                    //set_num_players(state.num_players);
+                    game_board.state(obj.game_board);
+                    set_current_player(obj.current_player);
+                }
+            },
+        },
+
+        move_options: {
+            record: obj => {
+                //obj.dice_values = XXX;
+                //obj.move_options = XXX;
+            },
+            receive: obj => {
+                if (obj.hasOwnProperty(dice_values)) {
+                    //xxx();
+                }
+                if (obj.hasOwnProperty(move_options)) {
+                    //xxx();
+                }
+            },
+        },
+
+        player_names: {
+            record: obj => {
+                obj.player_names = player_names;
+            },
+            receive: obj => {
+                if (obj.hasOwnProperty(player_names)) {
+                    //set_num_players(state.num_players);
+                    game_board.state(obj.game_board);
+                    set_current_player(obj.current_player);
+                }
+            },
+        },
+    }
+
+
+    function send_state_change() {
+        // const state = record_state();
+        // online_support.sendState(state);
     }
     
-    online_support.onReceiveState = receive_state;
+    //online_support.onReceiveState = receive_state;
 
 
-    class Control {
+    // Public interface for functionality defined above.
+    // Also sends state changes to the server when apppopriate.
+    class PublicControl {
 
         constructor() {
-            Object.seal(this);
+            Object.freeze(this);
         }
 
         joinGame(url_params) {
@@ -163,80 +257,63 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
         }
 
         roll() {
-            game_display.stage('move_options');
-            do_roll(true /*spin*/);
+            roll();
 
-            state_change();
+            send_state_change();
         } 
 
         select_move_option(index) {
             select_move_option(index);
 
-            state_change();
+            send_state_change();
         }
 
         undo() {
-            game_board.state(game_state_for_undo);
+            undo();
 
-            state_change();
+            send_state_change();
         }
 
         commit() {
-            game_board.commit(current_player);
-            game_state_for_undo = game_board.state();
+            commit();
 
-            state_change();
+            send_state_change();
         }
         
         next_player() {
-            change_current_player();
+            next_player();
 
-            state_change();
+            send_state_change();
         }
 
         start_game(num_players) {
             start_game(num_players);
 
-            state_change();
+            send_state_change();
         }
 
-        remove_player(player) {
-            player_left[player] = true;
-            game_board.commit(player);
-        
-            for(let c of game_board.columns())
-            {
-                if(!c.is_owned())
-                    c.reset_player(player);
-            }
+        set automatic_filling(on) {
+            set_automatic_filling(on);
 
-            state_change();
+            send_state_change();
         }
 
-        automatic_filling_set(on) {
-            automatic_filling = on;
-            game_display.automatic_filling(on);
+        set manual_filling(on) {
+            set_manual_filling(on);
 
-            state_change();
-        }
-
-        manual_filling_set(on) {
-            manual_filling = on;
-            game_display.manual_filling(on);
-
-            game_board.allow_manual_control(on);
-
-            state_change();
+            send_state_change();
         }
 
         name_change(player_number, name) {
-            assert(typeof player_number == "number");
-            assert(typeof name == "string");
-            player_names[player_number] = name;
+            player_name_change(player_number, name);
 
-            game_display.player_name_changed(player_number);
+            send_state_change();
+        }
 
-            state_change();
+        remove_player(player) {
+            remove_player(player);
+
+            send_state_change();
         }
 
         player_name(player_number) {
@@ -258,5 +335,5 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
     }
 
 
-    return new Control();
+    return new PublicControl();
 }

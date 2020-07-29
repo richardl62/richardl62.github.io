@@ -297,15 +297,15 @@ function get_cantstop_player_color(player_number) {
         });
 
         jq.manual_filling.change(function (elem) {
-            control.manual_filling_set($(this).prop('checked'));
+            control.manual_filling = $(this).prop('checked');
         });
 
         jq.automatic_filling.change(function (elem) {
-            control.automatic_filling_set($(this).prop('checked'));
+            control.automatic_filling = $(this).prop('checked');
         });
 
-        control.automatic_filling_set(true);
-        control.manual_filling_set(startup_options.manual_filling);
+        control.automatic_filling = true;
+        control.manual_filling = startup_options.manual_filling;
         toggle_display_options_div(startup_options.show_options_div);
     }
 })()
