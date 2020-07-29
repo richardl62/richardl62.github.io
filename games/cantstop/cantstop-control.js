@@ -1,10 +1,10 @@
 "use strict";
 
-function CantStopControl(game_board, dice_array, game_display, online_support) {
+function CantStopControl(game_board, dice_array, game_display) {
 
    let current_player = null; // set by start_game()
    let num_players = null; // Starts at 0. Set by start_game()
-   
+   let online_support = null;
 
    const last_column = 12;
    
@@ -16,7 +16,7 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
    var manual_filling = null;
    
    const max_players = 8;
-   var player_names = new Array(max_players);
+   var player_names = new Array(max_players).fill("");
 
    
    // Setup to the board
@@ -46,11 +46,12 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
         game_board.allow_manual_control(on);
     }
 
-    function player_name_change(player_number, name) {
+    function set_player_name(player_number, name) {
         assert(typeof player_number == "number");
-        assert(typeof name == "string");
+        assert(name === null || typeof name == "string");
         player_names[player_number] = name;
 
+        //console.log(player_number, name);
         game_display.player_name_changed(player_number);
     }
     
@@ -176,18 +177,14 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
     }
 
     const state_control = {
-        game_options:  {
+        game_options: {
             record: obj => {
-                obj.manual_filling = control.manual_filling;
-                obj.automatic_filling = control.automatic_filling;
+                obj.manual_filling = manual_filling;
+                obj.automatic_filling = automatic_filling;
             },
             receive: obj => {
-                if (obj.hasOwnProperty(manual_filling)) {
-                    control.manual_filling = obj.manual_filling;
-                }
-                if (obj.hasOwnProperty(automatic_filling)) {
-                    control.automatic_filling = obj.automatic_filling;
-                }
+                set_manual_filling(obj.manual_filling);
+                set_automatic_filling(obj.automatic_filling);
             },
         },
 
@@ -198,11 +195,9 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
                 obj.current_player = current_player;
             },
             receive: obj => {
-                if (obj.hasOwnProperty(game_board)) {
-                    //set_num_players(state.num_players);
-                    game_board.state(obj.game_board);
-                    set_current_player(obj.current_player);
-                }
+                //set_num_players(state.num_players);
+                game_board.state(obj.game_board);
+                set_current_player(obj.current_player);
             },
         },
 
@@ -212,12 +207,7 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
                 //obj.move_options = XXX;
             },
             receive: obj => {
-                if (obj.hasOwnProperty(dice_values)) {
-                    //xxx();
-                }
-                if (obj.hasOwnProperty(move_options)) {
-                    //xxx();
-                }
+
             },
         },
 
@@ -226,24 +216,39 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
                 obj.player_names = player_names;
             },
             receive: obj => {
-                if (obj.hasOwnProperty(player_names)) {
-                    //set_num_players(state.num_players);
-                    game_board.state(obj.game_board);
-                    set_current_player(obj.current_player);
+                assert(obj.player_names instanceof Array);
+
+                const n_player_names = obj.player_names.length; // Can be more that the current number of players
+                for(let index = 0; index < n_player_names; ++index) {
+                    set_player_name(index, obj.player_names[index]);
                 }
             },
         },
     }
 
+    function game_state() {
+        let state = {};
+        for (let sc in state_control) {
+            state_control[sc].record(state);
+        }
 
-    function send_state_change() {
-        // const state = record_state();
-        // online_support.sendState(state);
+        return state;
+
+    }
+
+    function send_state() {
+        if (online_support) {
+            online_support.sendState(game_state());
+        }
     }
     
-    //online_support.onReceiveState = receive_state;
-
-
+    function receive_state(state) {
+        for(let sc in state_control) {
+            //console.log("receiveing", sc);
+            state_control[sc].receive(state);
+        }
+    }
+ 
     // Public interface for functionality defined above.
     // Also sends state changes to the server when apppopriate.
     class PublicControl {
@@ -252,71 +257,83 @@ function CantStopControl(game_board, dice_array, game_display, online_support) {
             Object.freeze(this);
         }
 
-        joinGame(url_params) {
-            return online_support.joinGame(url_params);
+        async join_game(online_support_) {
+            let server_data = await online_support_.joinGame(game_state());
+            
+            online_support = online_support_;
+            assert(online_support.joined);
+            online_support.onReceiveState = receive_state;
+
+            // server_data.state is the game state recorded in the server at 
+            // the time of th join request. If this is the first request, it
+            // will be null. 
+            assert(server_data.hasOwnProperty('state'));
+            if(server_data.state) {
+                receive_state(server_data.state);
+            }
         }
 
         roll() {
             roll();
 
-            send_state_change();
+            send_state();
         } 
 
         select_move_option(index) {
             select_move_option(index);
 
-            send_state_change();
+            send_state();
         }
 
         undo() {
             undo();
 
-            send_state_change();
+            send_state();
         }
 
         commit() {
             commit();
 
-            send_state_change();
+            send_state();
         }
         
         next_player() {
             next_player();
 
-            send_state_change();
+            send_state();
         }
 
         start_game(num_players) {
             start_game(num_players);
 
-            send_state_change();
+            send_state();
         }
 
         set automatic_filling(on) {
             set_automatic_filling(on);
 
-            send_state_change();
+            send_state();
         }
 
         set manual_filling(on) {
             set_manual_filling(on);
 
-            send_state_change();
+            send_state();
         }
 
-        name_change(player_number, name) {
-            player_name_change(player_number, name);
+        set_player_name(player_number, name) {
+            set_player_name(player_number, name);
 
-            send_state_change();
+            send_state();
         }
 
         remove_player(player) {
             remove_player(player);
 
-            send_state_change();
+            send_state();
         }
 
-        player_name(player_number) {
+        get_player_name(player_number) {
             assert(typeof player_number == "number");
             return player_names[player_number];
         }

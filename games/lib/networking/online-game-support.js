@@ -1,9 +1,5 @@
 'use strict';
 
-
-
-
-
 `
 GameSupport provides facilities to support to web based board games.
 In summary, it provides support:
@@ -20,33 +16,42 @@ To do: Add more notes
 `
 class OnlineGameSupport {
 
-    constructor() {
+    constructor(urlParams) {
         this._game_socket = new GameSocket();
-        Object.seal(this);
-    }
 
-    // Attempt to connect to a server and then join a game as specified in the
-    // url parameters.
-    // Return a promise that is forefilled when/if the game is joined
-    joinGame(url_params) {
-        const server_url = get_game_server(url_params.has('local'));
-        
-        const game_id = url_params.get('id');
-        
-        assert(game_id !== undefined);
-        
-        this._game_socket.connect(server_url);
-        return this._game_socket.joinGame(game_id);
+        const server_url = get_game_server(urlParams.has('local'));
+        this._game_socket.connect(server_url)
+        this._game_id = urlParams.get('id')
+        Object.seal(this);
     }
 
     set onReceiveState(callback) {
         this._game_socket.onStateReceive = callback;
     }
 
-    // Send state to the server, if connected.
+    // Return a promise that is forefilled when/if the game is joined.
+    // 
+    joinGame(state) {
+        return this._game_socket.joinGame({
+            id: this._game_id,
+            state: state,
+        });
+    }
+
+    // Send state to the server.
     sendState(state) {
+        assert(this.joined);
         this._game_socket.state(state);
     }
+
+    get connected () {
+        return this._game_socket.connected;
+    }
+
+    get joined() {
+        return this._game_socket.joined;
+    }
+
 }
 
 /*

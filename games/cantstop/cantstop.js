@@ -10,6 +10,7 @@ const startup_options = {
 const in_play_column_limit = 3;
 const max_move_options = 6;
 const n_dice = 4;
+const default_num_players = 2;
 
 // Cant stop play numbers start at 0, but player colors start at 1.
 function get_cantstop_player_color(player_number) {
@@ -71,11 +72,6 @@ function get_cantstop_player_color(player_number) {
     async function do_cantstop_setup(jq) {
         const url_params = new URLSearchParams(window.location.search);
 
-        let online_support = new OnlineGameSupport;
-        if (url_params.has('id')) {
-            await online_support.joinGame(url_params);
-        }
-
         assert(jq.dice_options.length == max_move_options);
         assert(jq.dice.length == n_dice);
 
@@ -89,13 +85,12 @@ function get_cantstop_player_color(player_number) {
         }
 
         function set_displayed_player_name(player_number) {
-            const recorded_name = control.player_name(player_number);
+            const recorded_name = control.get_player_name(player_number);
             const display_name = recorded_name ? recorded_name :
                 "Player " + (player_number + 1);
 
             jq.player_name.val(display_name);
         }
-
 
         let game_display = new class {
 
@@ -199,18 +194,17 @@ function get_cantstop_player_color(player_number) {
             return arr;
         }
 
-        if (url_params.has('id')) {
-            await online_support.joinGame(url_params);
-        }
-        let control = new CantStopControl(new CantStopBoard(jq.board), make_dice_array(),
-            game_display, online_support);
 
-        function start_game() {
-            const n_players = parseInt(jq.num_players.val());
-            assert(!isNaN(n_players));
-            control.start_game(n_players);
-        }
-        start_game();
+        let control = new CantStopControl(new CantStopBoard(jq.board), make_dice_array(),
+            game_display);
+
+        // kludge?: The set up that is done here will be overwritten if joining an existing game.     
+        control.start_game(default_num_players);
+        
+        if (url_params.has('id')) {
+            let online_support = new OnlineGameSupport(url_params);
+            control.join_game(online_support);
+        } 
 
         function toggle_display_options_div(display /*optional*/) {
             if (display === undefined) {
@@ -269,22 +263,24 @@ function get_cantstop_player_color(player_number) {
 
         jq.player_name.change(function (elem) {
             const name_to_record = this.value.trim();
-            control.name_change(control.current_player, name_to_record);
+            control.set_player_name(control.current_player, name_to_record);
         });
         
         jq.player_name.focusin(function (elem) {
             // Clear any default name
-            const recorded_name = control.player_name(control.current_player);
+            const recorded_name = control.get_player_name(control.current_player);
             if(!recorded_name) {
                 jq.player_name.val("");
             }
         });
 
         jq.player_name.focusout(function (elem) {
-            // Re-apply any default name
-            const recorded_name = control.player_name(control.current_player);
+            const recorded_name = control.get_player_name(control.current_player);
             if(!recorded_name) {
-                set_displayed_player_name(control.current_player); // Kludge?
+                // Re-apply any default name. This is done mainly because it many have been
+                // removed by focusin.
+                // The method is a kludge.
+                set_displayed_player_name(control.current_player);
             }
         });
 

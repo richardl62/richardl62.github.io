@@ -11,8 +11,10 @@ class GameSocket {
         this._onPlayerleave = null;
 
         this._socket = null;
-        // this._state = new Object;
-        // this._player_id = null;
+        this._player_id = null;
+        this._game_id = null;
+
+        Object.seal(this);
     }
 
     set onStateReceive(callback) {this._onStateReceive = callback;}
@@ -31,7 +33,7 @@ class GameSocket {
     // Set listener used for game play, rather than timeout, errors etc.
     setGameListeners() {
         this._socket.on('state', data => {
-            console.log("State received", data.server_info);
+            //console.log("State received", data.server_info);
             throw_server_error(data.server_info);
 
             assert(data.server_info.player_id);
@@ -66,14 +68,14 @@ class GameSocket {
     /*
      * Return a promise which when/if resolved has {
      *         player_id: <number>
-     *         group_id: <number>
-     *         group_state: <object with current state for the group>
+     *         game_id: <string> // Typically, records a number.
+     *         state: <object with current state for the group, or null>
      *     }
      *
      * If the promise is rejected an error object is returned (if that is the
      * right word).
      */
-    joinGame(id) {
+    joinGame(id,state) {
         assert(this._socket);
         let socket = this._socket;
 
@@ -81,7 +83,8 @@ class GameSocket {
 
         let p = new promiseWithTimeout(timeout, (client_resolve, client_reject) => {
             socket.on('connect', server_response => {
-                console.log("socket connected");
+                this._game_id = id;
+                console.log("socket connected: game id=",this._game_id);
 
                 socket.emit('join-game', id,
                     server_response => {
@@ -102,19 +105,21 @@ class GameSocket {
                 console.log("Error from ", server, data.server_error);
                 throw Error("Server reported: " + data.server_error);
             }
-            assert(data.player_id);
-            assert(data.state);
 
-            //this.mergeState(data.state);
+            assert(typeof data.state == "number" || typeof data.state == "object");
+            assert(typeof data.player_id == "number");
+            assert(typeof data.game_id == "string");
+
+            this._player_id = data.player_id;
 
             this._socket = socket;
             this.setGameListeners();
 
-            this._player_id = data.player_id;
+
 
             return data;
         }).catch(err => {
-            socket.disconnect();
+            console.log("Error caught in GameSocket.joinGame",err);
             throw err; // Repropogate the error
         });
     }
@@ -129,15 +134,27 @@ class GameSocket {
     }
 
     disconnect() {
-        if (this._socket) {
+        if (this.connected) {
+            console.log("game-socket disconnecting: game id", game_id);
             this._socket.disconnect();
+            
             this._socket = null;
-            // this._player_id = null;
+            this._socket_id = null;
+            this._game_id = null;
         }
     }
 
-    connected() {
+    get connected() {
         return Boolean(this._socket);
+    }
+
+    get joined() {
+        return this.playerId !== null;
+    }
+
+    get playerId() {
+        assert(this._player_id === null || typeof this._player_id == "number");
+        return this._player_id;
     }
 
     // state() {
