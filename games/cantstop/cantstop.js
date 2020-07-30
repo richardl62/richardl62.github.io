@@ -144,10 +144,6 @@ function get_cantstop_player_color(player_number) {
 
                 if (control.automatic_filling && !control.manual_filling) {
                     disable_roll_and_dont_buttons(true);
-
-                    if (move_options.length == 1) {
-                        control.select_move_option(0);
-                    }
                 }
             }
 
@@ -237,18 +233,15 @@ function get_cantstop_player_color(player_number) {
         });
 
         jq.dont.click(function (elem) {
-            control.commit();
-            control.next_player();
+            control.finished_rolling();
         });
 
         jq.bust.click(function (elem) {
-            control.undo();
-            control.next_player();
+            control.pass(); // kludge?? Reuse pass()
         });
 
         jq.pass.click(function (elem) {
-            control.undo();
-            control.next_player();
+            control.pass();
         });
 
         jq.restart.click(function (elem) {
@@ -261,7 +254,6 @@ function get_cantstop_player_color(player_number) {
 
         jq.leave.click(function () {
             control.remove_player(control.current_player);
-            control.next_player();
         });
 
         jq.player_name.change(function (elem) {

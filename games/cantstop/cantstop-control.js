@@ -8,7 +8,7 @@ function CantStopControl(game_board, dice_array, game_display) {
 
    const last_column = 12;
    
-   var move_options = null;
+   var move_options = [];
    var selected_precommits = null;
    var player_left = null;
 
@@ -106,6 +106,8 @@ function CantStopControl(game_board, dice_array, game_display) {
        move_options = game_board.options(current_player, dice_numbers);
        if (move_options.length == 0 && automatic_filling) {
            set_game_stage('bust');
+       } if (move_options.length == 1 && automatic_filling && !manual_filling) {
+           select_move_option(0);
        }
        else {
            game_display.move_options(move_options);
@@ -281,20 +283,46 @@ function CantStopControl(game_board, dice_array, game_display) {
         }
 
         return state;
-
     }
 
+    let sending_state = false;
+    let receiving_state = false;
+    let send_state_count = 0;
+    let receive_state_count = 0;
+
     function send_state() {
+        assert(!sending_state, "Attempt to send of state while already sending");
+        assert(!receiving_state, "Attempt to send of state while receieving");
         if (online_support) {
-            online_support.sendState(game_state());
+            send_state_count++;
+            console.log(`Send state (${send_state_count}): started`);
+
+            try {
+                sending_state = true;
+                online_support.sendState(game_state());
+            } finally {
+                sending_state = false;
+            }
+
+            console.log(`Send state (${send_state_count}): finished`);
         }
     }
     
     function receive_state(state) {
-        for(let sc in state_control) {
-            //console.log("receiveing", sc);
-            state_control[sc].receive(state);
+        assert(!sending_state, "Attempt receive of state while sending");
+        
+        receive_state_count++;
+        console.log(`Receive state (${receive_state_count}): started`);
+        try {
+            for (let sc in state_control) {
+                receiving_state = true;
+                state_control[sc].receive(state);
+            }
+        } finally {
+            receiving_state = false;
         }
+
+        console.log(`Receive state (${receive_state_count}): finished`);
     }
  
     // Public interface for functionality defined above.
@@ -344,10 +372,24 @@ function CantStopControl(game_board, dice_array, game_display) {
 
             send_state();
         }
-        
+
+        finished_rolling() { // used when turn is over without going bust
+            commit();
+            next_player();
+
+            send_state();
+        }
+
         next_player() {
             next_player();
 
+            send_state();
+        }
+
+        pass() {
+            undo();
+
+            next_player();
             send_state();
         }
 
@@ -383,9 +425,13 @@ function CantStopControl(game_board, dice_array, game_display) {
 
         remove_player(player) {
             remove_player(player);
+            if(player == current_player) {
+                next_player();
+            }
 
             send_state();
         }
+
 
         get_player_name(player_number) {
             assert(typeof player_number == "number");
@@ -404,7 +450,6 @@ function CantStopControl(game_board, dice_array, game_display) {
             return manual_filling;
         }
     }
-
 
     return new PublicControl();
 }
