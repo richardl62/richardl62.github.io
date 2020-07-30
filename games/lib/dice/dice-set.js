@@ -38,6 +38,7 @@ const n_dice_dots = 7;
 
 class dice {
     constructor(input_elem) {
+        this.spining = false;
         this.dice_input_elem = input_elem;
 
         $(input_elem).addClass("dice");
@@ -59,11 +60,12 @@ class dice {
         }
 
         this.num = num;
-
-        const dots_to_show = dot_patterns[num];
-        for (var dn = 0; dn < n_dice_dots; ++dn) {
-            var vis = dots_to_show.includes(dn) ? "visible" : "hidden";
-            this.dots[dn].css("visibility", vis);
+        if (!this.spinning) {
+            const dots_to_show = dot_patterns[num];
+            for (var dn = 0; dn < n_dice_dots; ++dn) {
+                var vis = dots_to_show.includes(dn) ? "visible" : "hidden";
+                this.dots[dn].css("visibility", vis);
+            }
         }
     }
 
@@ -71,10 +73,14 @@ class dice {
     // The function is Non-blocking.
     spin(duration = 750 /*millisecs*/) {
         // Show all the dots
+        this.spinning = true;
         this.dots.forEach(dot => dot.css("visibility", "visible"));
 
         rotate_360(this.dice_input_elem, duration,
-            () => this.number(this.num));
+            () => {
+                this.spinning = false;
+                this.number(this.num)
+            });
     }
 
     roll(spin = true) {

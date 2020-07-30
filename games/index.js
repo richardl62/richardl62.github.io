@@ -203,7 +203,7 @@ debug_options_elem.addEventListener("change", function(e) {
 
 //show_debug_only_elems(true);
 
-local_server_elem.checked = true;
+//local_server_elem.checked = true;local_server_elem.checked = true;
 //show_all_open_games();
 
 

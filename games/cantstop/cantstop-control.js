@@ -295,7 +295,7 @@ function CantStopControl(game_board, dice_array, game_display) {
         assert(!receiving_state, "Attempt to send of state while receieving");
         if (online_support) {
             send_state_count++;
-            console.log(`Send state (${send_state_count}): started`);
+            //console.log(`Send state (${send_state_count}): started`);
 
             try {
                 sending_state = true;
@@ -304,7 +304,7 @@ function CantStopControl(game_board, dice_array, game_display) {
                 sending_state = false;
             }
 
-            console.log(`Send state (${send_state_count}): finished`);
+            //console.log(`Send state (${send_state_count}): finished`);
         }
     }
     
@@ -312,7 +312,7 @@ function CantStopControl(game_board, dice_array, game_display) {
         assert(!sending_state, "Attempt receive of state while sending");
         
         receive_state_count++;
-        console.log(`Receive state (${receive_state_count}): started`);
+        //console.log(`Receive state (${receive_state_count}): started`);
         try {
             for (let sc in state_control) {
                 receiving_state = true;
@@ -322,7 +322,7 @@ function CantStopControl(game_board, dice_array, game_display) {
             receiving_state = false;
         }
 
-        console.log(`Receive state (${receive_state_count}): finished`);
+        //console.log(`Receive state (${receive_state_count}): finished`);
     }
  
     // Public interface for functionality defined above.

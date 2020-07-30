@@ -4,7 +4,7 @@
 const startup_options = {
     manual_filling: true,
     show_options_div: true,
-    catch_load_errors: true,
+    dont_catch_load_errors: true,
 };
 
 const in_play_column_limit = 3;
@@ -51,7 +51,7 @@ function get_cantstop_player_color(player_number) {
     };
 
     // Run the setup function with optional error handling
-    if (startup_options.catch_load_errors) {
+    if (startup_options.dont_catch_load_errors) {
         // Visibility fixed to help show errors
         jq.main.css('visibility', 'initial');
         do_cantstop_setup(jq);
@@ -91,6 +91,18 @@ function get_cantstop_player_color(player_number) {
 
             jq.player_name.val(display_name);
         }
+        function make_dice_array() {
+            let arr = new Array(n_dice);
+
+            for (let i = 0; i < n_dice; i++) {
+                arr[i] = new dice(jq.dice.get(i));
+                arr[i].roll(false /* don't spin */);
+            }
+
+            return arr;
+        }
+
+        let dice_array = make_dice_array();
 
         let game_display = new class {
 
@@ -110,6 +122,12 @@ function get_cantstop_player_color(player_number) {
                     let visible = current_stage == s;
 
                     elem.toggleClass(visibility_hidden_class, !visible);
+                }
+
+                if(current_stage == "move_options") {
+                    for(let d of dice_array) {
+                        d.spin();
+                    }
                 }
 
                 // Disable some elements at the end of a game
@@ -183,19 +201,8 @@ function get_cantstop_player_color(player_number) {
             }
         }
 
-        function make_dice_array() {
-            let arr = new Array(n_dice);
 
-            for (let i = 0; i < n_dice; i++) {
-                arr[i] = new dice(jq.dice.get(i));
-                arr[i].roll(false /* don't spin */);
-            }
-
-            return arr;
-        }
-
-
-        let control = new CantStopControl(new CantStopBoard(jq.board), make_dice_array(),
+        let control = new CantStopControl(new CantStopBoard(jq.board), dice_array,
             game_display);
 
         control.set_num_players(default_num_players);
