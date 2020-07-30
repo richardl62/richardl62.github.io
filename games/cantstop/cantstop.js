@@ -2,9 +2,9 @@
 
 // Members of startup_options should be commented out when this file is pushed.
 const startup_options = {
-    // manual_filling: true,
-    // show_options_div: true,
-    // catch_load_errors: true,
+    manual_filling: true,
+    show_options_div: true,
+    catch_load_errors: true,
 };
 
 const in_play_column_limit = 3;
@@ -288,12 +288,20 @@ function get_cantstop_player_color(player_number) {
         });
 
         jq.manual_filling.change(function (elem) {
-            control.manual_filling = $(this).prop('checked');
+            const manual_filling_on = $(this).prop('checked')
+
+            control.manual_filling = manual_filling_on;
         });
 
         jq.automatic_filling.change(function (elem) {
             control.automatic_filling = $(this).prop('checked');
         });
+
+        control.onPlayerSquareClick(
+            // The reason (such as it is)for not doing all this handling in
+            // 'control' is to allow for future error handing, logging etc.
+            info => control.process_player_square_click(info)
+        )
 
         control.automatic_filling = true;
         control.manual_filling = startup_options.manual_filling;

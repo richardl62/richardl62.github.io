@@ -190,4 +190,11 @@ class CantStopBoard {
             c.allow_manual_control(allow);
         }
     }
+
+    onPlayerSquareClick(callback) {
+        for (let c of this.m_columns)
+        {
+            c.onPlayerSquareClick(callback);
+        }
+    }
 }

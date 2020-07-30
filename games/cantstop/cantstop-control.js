@@ -432,12 +432,32 @@ function CantStopControl(game_board, dice_array, game_display) {
             send_state();
         }
 
+        process_player_square_click(info) {
+            assert(info.player_number !== undefined);
+            assert(info.square_empty !== undefined);
+            assert(info.column !== undefined);
+    
+            let col = info.column;
+            if (manual_filling && !col.is_owned()) {
+                if (info.square_empty) {
+                    col.commit_noncommited_square(info.player_number);
+                } else {
+                    col.clear_nonempty_square(info.player_number);
+                }
+    
+                send_state();
+            }
+        }
+
+        onPlayerSquareClick(callback) {
+            game_board.onPlayerSquareClick(callback);
+        }
 
         get_player_name(player_number) {
             assert(typeof player_number == "number");
             return player_names[player_number];
         }
-        
+
         get current_player() {
             return current_player;
         }
