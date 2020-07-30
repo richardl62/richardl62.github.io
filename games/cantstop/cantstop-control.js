@@ -29,11 +29,23 @@ function CantStopControl(game_board, dice_array, game_display) {
 
 
    let game_state_for_undo = {};
-   
-   
+   let game_stage = null;
+   let selected_move_index = null;
+
    /*
     * helper functions
     */
+   function dice_state(state) {
+        if(state === undefined) {
+            return dice_array.map(d => d.state());
+        } else {
+            assert(state.length == dice_array.length);
+            for(let i = 0; i < dice_array.length; ++i) {
+                dice_array[i].state(state[i]);
+            }
+        }
+   }
+
     function set_automatic_filling(on) {
         automatic_filling = on;
         game_display.automatic_filling(on);
@@ -66,6 +78,11 @@ function CantStopControl(game_board, dice_array, game_display) {
         }
     }
 
+    function set_game_stage(stage) {
+        game_stage = stage;
+        game_display.stage(stage);
+    }
+
    function do_roll(spin)
    {
        assert(spin != undefined, "spin option not set");
@@ -88,7 +105,7 @@ function CantStopControl(game_board, dice_array, game_display) {
    
        move_options = game_board.options(current_player, dice_numbers);
        if (move_options.length == 0 && automatic_filling) {
-           game_display.stage('bust');
+           set_game_stage('bust');
        }
        else {
            game_display.move_options(move_options);
@@ -96,7 +113,7 @@ function CantStopControl(game_board, dice_array, game_display) {
     }
 
     function roll() {
-        game_display.stage('move_options');
+        set_game_stage('move_options');
         do_roll(true /*spin*/);
     }
 
@@ -111,7 +128,7 @@ function CantStopControl(game_board, dice_array, game_display) {
        player_left = new Array(num_players).fill(false);
        set_current_player(0);
    
-       game_display.stage('required_roll');
+       set_game_stage('required_roll');
     }
    
    function next_player() {
@@ -124,37 +141,49 @@ function CantStopControl(game_board, dice_array, game_display) {
        if(player_left[np]) {
            // All players have left.
 
-           game_display.stage('game_over'); 
+           set_game_stage('game_over'); 
        } else {
            set_current_player(np);
        }
    }
    
-   function set_current_player(new_current_player) {
-       assert(typeof new_current_player == "number" &&
-           new_current_player < num_players);
-   
-       current_player = new_current_player;
-   
-       game_board.remove_all_provisional_precommits(current_player);
-   
-       game_board.remove_all_precommits(current_player);
-       selected_precommits = null;
-   
-       game_display.stage('required_roll');
-   
-       clear_in_play_columns();
-       
-       game_display.current_player(current_player, player_names[current_player]);
+    // For use when recieving state.  Set the current player without any of the knock-on
+    // actions on the game state.
+    function do_set_current_player(new_current_player) {
+        assert(typeof new_current_player == "number" &&
+            new_current_player < num_players);
+
+        current_player = new_current_player;
+        game_display.current_player(current_player, player_names[current_player]);
     }
-   
-   function clear_in_play_columns() {
-       for (let cn = 0; cn <= last_column; ++cn) {
-           game_board.column(cn).in_play(false);
-       }
-   }
-   
+
+    function set_current_player(new_current_player) {
+
+        do_set_current_player(new_current_player);
+        game_board.remove_all_provisional_precommits(current_player);
+
+        game_board.remove_all_precommits(current_player);
+        selected_precommits = null;
+
+        set_game_stage('required_roll');
+
+        clear_in_play_columns();
+    }
+
+    function clear_in_play_columns() {
+        for (let cn = 0; cn <= last_column; ++cn) {
+            game_board.column(cn).in_play(false);
+        }
+    }
+
+    function do_select_move_index(index) {
+        selected_move_index = index;
+        game_display.selected_move(index);
+    }
+
     function select_move_option(index) {
+        do_select_move_index(index);
+
         game_board.remove_all_provisional_precommits(current_player);
 
         selected_precommits = move_options[index];
@@ -177,6 +206,14 @@ function CantStopControl(game_board, dice_array, game_display) {
     }
 
     const state_control = {
+        stage: {
+            record: obj => {
+                obj.stage = game_stage;
+            },
+            receive: obj => {
+                set_game_stage(obj.stage);
+            },
+        },
         game_options: {
             record: obj => {
                 obj.manual_filling = manual_filling;
@@ -197,17 +234,22 @@ function CantStopControl(game_board, dice_array, game_display) {
             receive: obj => {
                 //set_num_players(state.num_players);
                 game_board.state(obj.game_board);
-                set_current_player(obj.current_player);
+                do_set_current_player(obj.current_player);
             },
         },
 
         move_options: {
             record: obj => {
-                //obj.dice_values = XXX;
-                //obj.move_options = XXX;
+                obj.dice = dice_state();
+                obj.move_options = move_options;
+                obj.selected_move_index = selected_move_index;
             },
             receive: obj => {
+                dice_state(obj.dice);
 
+                move_options = [... obj.move_options]; // Make an independant copy
+                game_display.move_options(move_options);
+                do_select_move_index(obj.selected_move_index);
             },
         },
 
