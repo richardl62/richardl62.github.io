@@ -181,6 +181,10 @@ function get_cantstop_player_color(player_number) {
                     set_displayed_player_name(player_number);
                 }
             }
+
+            num_players(num) {
+                jq.num_players.val(num);
+            }
         }
 
         function make_dice_array() {
@@ -198,8 +202,7 @@ function get_cantstop_player_color(player_number) {
         let control = new CantStopControl(new CantStopBoard(jq.board), make_dice_array(),
             game_display);
 
-        // kludge?: The set up that is done here will be overwritten if joining an existing game.     
-        control.start_game(default_num_players);
+        control.set_num_players(default_num_players);
         
         if (url_params.has('id')) {
             let online_support = new OnlineGameSupport(url_params);
@@ -249,11 +252,11 @@ function get_cantstop_player_color(player_number) {
         });
 
         jq.restart.click(function (elem) {
-            start_game();
+            control.restart();
         });
 
         jq.num_players.change(function (elem) {
-            start_game(); // start_game picked up the changed number of players
+            control.set_num_players(parseInt(this.value));
         });
 
         jq.leave.click(function () {

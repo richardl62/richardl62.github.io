@@ -3,7 +3,7 @@
 function CantStopControl(game_board, dice_array, game_display) {
 
    let current_player = null; // set by start_game()
-   let num_players = null; // Starts at 0. Set by start_game()
+   let num_players = null; 
    let online_support = null;
 
    const last_column = 12;
@@ -117,11 +117,15 @@ function CantStopControl(game_board, dice_array, game_display) {
         do_roll(true /*spin*/);
     }
 
-    function start_game(num_players_)
+    function set_num_players(num_players_)
     {
-       assert(typeof num_players_ == "number");
-       num_players = num_players_;
-       
+        assert(typeof num_players_ == "number");
+        num_players = num_players_;
+        game_display.num_players(num_players);
+        restart();
+    }
+
+    function restart() {
        game_board.num_players(num_players);
        game_state_for_undo = game_board.state();
 
@@ -232,7 +236,9 @@ function CantStopControl(game_board, dice_array, game_display) {
                 obj.current_player = current_player;
             },
             receive: obj => {
-                //set_num_players(state.num_players);
+                if(obj.num_players != num_players) { // Not strictly necessary, but ...
+                    set_num_players(obj.num_players);
+                }
                 game_board.state(obj.game_board);
                 do_set_current_player(obj.current_player);
             },
@@ -345,8 +351,14 @@ function CantStopControl(game_board, dice_array, game_display) {
             send_state();
         }
 
-        start_game(num_players) {
-            start_game(num_players);
+        restart() {
+            restart();
+
+            send_state();
+        }
+
+        set_num_players(num) {
+            set_num_players(num);
 
             send_state();
         }
