@@ -2,14 +2,15 @@
 
 // Members of startup_options should be commented out when this file is pushed.
 const startup_options = {
-    // manual_filling: true,
-    // show_options_div: true,
-    // catch_load_errors: true,
+    manual_filling: true,
+    show_options_div: true,
+    dont_catch_load_errors: true,
 };
 
 const in_play_column_limit = 3;
 const max_move_options = 6;
 const n_dice = 4;
+const default_num_players = 2;
 
 // Cant stop play numbers start at 0, but player colors start at 1.
 function get_cantstop_player_color(player_number) {
@@ -50,7 +51,7 @@ function get_cantstop_player_color(player_number) {
     };
 
     // Run the setup function with optional error handling
-    if (startup_options.catch_load_errors) {
+    if (startup_options.dont_catch_load_errors) {
         // Visibility fixed to help show errors
         jq.main.css('visibility', 'initial');
         do_cantstop_setup(jq);
@@ -68,7 +69,8 @@ function get_cantstop_player_color(player_number) {
     jq.loading.css('display', 'none');
 
 
-    function do_cantstop_setup(jq) {
+    async function do_cantstop_setup(jq) {
+        const url_params = new URLSearchParams(window.location.search);
 
         assert(jq.dice_options.length == max_move_options);
         assert(jq.dice.length == n_dice);
@@ -83,13 +85,24 @@ function get_cantstop_player_color(player_number) {
         }
 
         function set_displayed_player_name(player_number) {
-            const recorded_name = control.player_name(player_number);
+            const recorded_name = control.get_player_name(player_number);
             const display_name = recorded_name ? recorded_name :
                 "Player " + (player_number + 1);
 
             jq.player_name.val(display_name);
         }
+        function make_dice_array() {
+            let arr = new Array(n_dice);
 
+            for (let i = 0; i < n_dice; i++) {
+                arr[i] = new dice(jq.dice.get(i));
+                arr[i].roll(false /* don't spin */);
+            }
+
+            return arr;
+        }
+
+        let dice_array = make_dice_array();
 
         let game_display = new class {
 
@@ -109,6 +122,12 @@ function get_cantstop_player_color(player_number) {
                     let visible = current_stage == s;
 
                     elem.toggleClass(visibility_hidden_class, !visible);
+                }
+
+                if(current_stage == "move_options") {
+                    for(let d of dice_array) {
+                        d.spin();
+                    }
                 }
 
                 // Disable some elements at the end of a game
@@ -143,10 +162,6 @@ function get_cantstop_player_color(player_number) {
 
                 if (control.automatic_filling && !control.manual_filling) {
                     disable_roll_and_dont_buttons(true);
-
-                    if (move_options.length == 1) {
-                        control.select_move_option(0);
-                    }
                 }
             }
 
@@ -180,27 +195,22 @@ function get_cantstop_player_color(player_number) {
                     set_displayed_player_name(player_number);
                 }
             }
-        }
 
-        function make_dice_array() {
-            let arr = new Array(n_dice);
-
-            for (let i = 0; i < n_dice; i++) {
-                arr[i] = new dice(jq.dice.get(i));
-                arr[i].roll(false /* don't spin */);
+            num_players(num) {
+                jq.num_players.val(num);
             }
-
-            return arr;
         }
 
-        let control = new CantStopControl(new CantStopBoard(jq.board), make_dice_array(), game_display);
 
-        function start_game() {
-            const n_players = parseInt(jq.num_players.val());
-            assert(!isNaN(n_players));
-            control.start_game(n_players);
-        }
-        start_game();
+        let control = new CantStopControl(new CantStopBoard(jq.board), dice_array,
+            game_display);
+
+        control.set_num_players(default_num_players);
+        
+        if (url_params.has('id')) {
+            let online_support = new OnlineGameSupport(url_params);
+            control.join_game(online_support);
+        } 
 
         function toggle_display_options_div(display /*optional*/) {
             if (display === undefined) {
@@ -230,51 +240,49 @@ function get_cantstop_player_color(player_number) {
         });
 
         jq.dont.click(function (elem) {
-            control.commit();
-            control.next_player();
+            control.finished_rolling();
         });
 
         jq.bust.click(function (elem) {
-            control.undo();
-            control.next_player();
+            control.pass(); // kludge?? Reuse pass()
         });
 
         jq.pass.click(function (elem) {
-            control.undo();
-            control.next_player();
+            control.pass();
         });
 
         jq.restart.click(function (elem) {
-            start_game();
+            control.restart();
         });
 
         jq.num_players.change(function (elem) {
-            start_game(); // start_game picked up the changed number of players
+            control.set_num_players(parseInt(this.value));
         });
 
         jq.leave.click(function () {
             control.remove_player(control.current_player);
-            control.next_player();
         });
 
         jq.player_name.change(function (elem) {
             const name_to_record = this.value.trim();
-            control.name_change(control.current_player, name_to_record);
+            control.set_player_name(control.current_player, name_to_record);
         });
         
         jq.player_name.focusin(function (elem) {
             // Clear any default name
-            const recorded_name = control.player_name(control.current_player);
+            const recorded_name = control.get_player_name(control.current_player);
             if(!recorded_name) {
                 jq.player_name.val("");
             }
         });
 
         jq.player_name.focusout(function (elem) {
-            // Re-apply any default name
-            const recorded_name = control.player_name(control.current_player);
+            const recorded_name = control.get_player_name(control.current_player);
             if(!recorded_name) {
-                set_displayed_player_name(control.current_player); // Kludge?
+                // Re-apply any default name. This is done mainly because it many have been
+                // removed by focusin.
+                // The method is a kludge.
+                set_displayed_player_name(control.current_player);
             }
         });
 
@@ -287,15 +295,23 @@ function get_cantstop_player_color(player_number) {
         });
 
         jq.manual_filling.change(function (elem) {
-            control.manual_filling_set($(this).prop('checked'));
+            const manual_filling_on = $(this).prop('checked')
+
+            control.manual_filling = manual_filling_on;
         });
 
         jq.automatic_filling.change(function (elem) {
-            control.automatic_filling_set($(this).prop('checked'));
+            control.automatic_filling = $(this).prop('checked');
         });
 
-        control.automatic_filling_set(true);
-        control.manual_filling_set(startup_options.manual_filling);
+        control.onPlayerSquareClick(
+            // The reason (such as it is)for not doing all this handling in
+            // 'control' is to allow for future error handing, logging etc.
+            info => control.process_player_square_click(info)
+        )
+
+        control.automatic_filling = true;
+        control.manual_filling = startup_options.manual_filling;
         toggle_display_options_div(startup_options.show_options_div);
     }
 })()

@@ -6,6 +6,8 @@ class CantStopPlayerColumn {
         for (let elem of square_elems) {
             this._squares.push(new CantStopPlayerSquare(elem, player_number, parent_column));
         }
+
+        Object.seal(this);
     }
 
     // Free resources (i.e. html elements) allocated to the column.
@@ -151,6 +153,12 @@ class CantStopPlayerColumn {
             }
         }
     }
+
+    onPlayerSquareClick(callback)  {
+        for (let s of this._squares) {
+            s.onClick(callback);
+        }
+    }
 }
 
 class CantStopColumn {
@@ -262,37 +270,37 @@ class CantStopColumn {
     }
 
     has_precommits(player_number) {
-        // Kludge?: The 'return' might not be necessary.
+        // The 'return' was added automatically and might not be necessary.
         return this.player_columns[player_number].has_precommits();
     }
 
     add_precommit(player_number) {
-        // Kludge?: The 'return' might not be necessary.
+        // The 'return' was added automatically and might not be necessary.
         return this.player_columns[player_number].add_precommit();
     }
 
     add_provisional_precommit(player_number) {
-        // Kludge?: The 'return' might not be necessary.
+        // The 'return' was added automatically and might not be necessary.
         return this.player_columns[player_number].add_provisional_precommit();
     }
 
     promot_all_provisional_precommits(player_number) {
-        // Kludge?: The 'return' might not be necessary.
+        // The 'return' was added automatically and might not be necessary.
         return this.player_columns[player_number].promot_all_provisional_precommits();
     }
 
     remove_all_provisional_precommits(player_number) {
-        // Kludge?: The 'return' might not be necessary.
+        // The 'return' was added automatically and might not be necessary.
         return this.player_columns[player_number].remove_all_provisional_precommits();
     }
 
     remove_all_precommits(player_number) {
-        // Kludge?: The 'return' might not be necessary.
+        // The 'return' was added automatically and might not be necessary.
         return this.player_columns[player_number].remove_all_precommits();
     }
 
     precommits(player_number) {
-        // Kludge?: The 'return' might not be necessary.
+        // The 'return' was added automatically and might not be necessary.
         return this.player_columns[player_number].precommits()
     }
 
@@ -304,8 +312,15 @@ class CantStopColumn {
     // For use with manual column filling
     // Clears the final non-empty square
     clear_nonempty_square(player_number) {
-        // Kludge?: The 'return' might not be necessary.
+        // The 'return' was added automatically and might not be necessary.
         return this.player_columns[player_number].clear_nonempty_square()
+    }
+
+    // For use with manual column filling
+    // Clears the final non-empty square
+    commit_noncommited_square(player_number) {
+        // The 'return' was added automatically and might not be necessary.
+        return this.player_columns[player_number].commit_noncommited_square()
     }
 
     decorate_owned_square_elems(owning_player) {
@@ -371,14 +386,13 @@ class CantStopColumn {
         return this.m_column_elem;
     }
 
-    player_square_clicked(square) {
-        if (this.manual_control_allowed && !this.is_owned()) {
-            const player_number = square.player_number;
-            if (square.is_empty()) {
-                this.player_columns[player_number].commit_noncommited_square();
-                this.process_if_full(player_number);
-            } else {
-                this.clear_nonempty_square(player_number);
+    onPlayerSquareClick(callback) {
+        if(callback) {
+            for (let pc of this.player_columns) {
+                pc.onPlayerSquareClick(info => {
+                    let extended = Object.assign({column: this}, info);
+                    callback(extended);
+                });
             }
         }
     }

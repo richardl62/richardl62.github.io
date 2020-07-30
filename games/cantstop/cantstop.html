@@ -11,8 +11,14 @@
     <link rel="stylesheet" href="cantstop.css">
 
     <script defer src="../lib/downloads/jquery-3.5.0.js"></script>
+    <script defer src="../lib/downloads/socket.io.dev.js"></script>
     <script defer src="../lib/tools/tools.js"></script>
     <script defer src="../lib/dice/dice-set.js"></script>
+
+    <script defer src="../lib/networking/networking-tools.js"></script>
+    <script defer src="../lib/networking/game-socket.js"></script>
+    <script defer src="../lib/networking/online-game-support.js"></script>
+    
     <script defer src="cantstop-option-accumulator.js"></script>
     <script defer src="cantstop-player-square.js"></script>
     <script defer src="cantstop-column.js"></script>
@@ -48,7 +54,7 @@
         <fieldset>
             <legend>Players</legend>
             <label> Number
-                <input type="number" name="num-players" id="num-players" min=1 max=4 value=2>
+                <input type="number" name="num-players" id="num-players" min=1 max=4>
             </label>
 
         </fieldset>

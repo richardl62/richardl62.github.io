@@ -13,19 +13,28 @@ class CantStopPlayerSquare {
         
         if (player_number == 0)
             this.player_elem.addClass('cs-player0-square');
-        
-        this.player_elem.click(elem => board.player_square_clicked(this));
-        
+
         board_square.append(this.player_elem);
         this.precommit_elem = null;
 
         this.player_number = player_number;
         this.status = sq_empty;
+
+        Object.seal(this);
     }
 
     destroy() {
         this.player_elem.remove();
         this.remove_precommit_elem();
+    }
+
+    onClick(callback) {
+        this.player_elem.click(() => {
+            callback({
+                player_number: this.player_number,
+                square_empty: this.is_empty(),
+            });
+        });
     }
 
     remove_precommit_elem() {
