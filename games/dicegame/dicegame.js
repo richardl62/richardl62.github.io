@@ -1,8 +1,7 @@
 "use strict";
 
-var game_support = new OnlineGameSupport();
 var dice_set = new diceSet(document.querySelector("#dice"));
-var score_pads = new scorePads(document.querySelector("#score-pads"), game_support);
+var score_pads = new scorePads(document.querySelector("#score-pads"));
 
 class currentPlayerControl {
     //KLUDGE: Mix of callbacks and 'ordinary' functions
