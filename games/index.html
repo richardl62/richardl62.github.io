@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Games</title>
+
     <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="lib/tools/tools.css">
+
     <script defer src="lib/downloads/jquery-3.5.0.min.js"></script>
     <script defer src="lib/tools/tools.js"></script>
     <script defer src="lib/networking/networking-tools.js"></script>
@@ -46,7 +49,7 @@
             <legend>Start Online Game</legend>
 
             <label for="game-id">Game ID</label>
-            <input type="text" id="game-id" name="game-id" placeholder="Optional ID">
+            <input type="text" id="game-id" name="game-id" placeholder="Optional identifier">
 
             <button type="button" id="start">Start</button>
         </fieldset>
@@ -55,6 +58,7 @@
 
         <fieldset id="open-games-fieldset">
             <legend>Online Games</legend>
+            <div id="working-message">Working ...</div>
             <div id=open-games-div>
                 <div id="open-games-info"></div>
                 <div id="open-games-controls">

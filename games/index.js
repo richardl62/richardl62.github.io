@@ -9,10 +9,20 @@ const play_offline_elem = getElementById_Checked("play-offline");
 const start_elem = getElementById_Checked("start");
 const refresh_open_games_elem = getElementById_Checked("refresh-open-games");
 const clear_games_elem = getElementById_Checked("clear-games");
-const open_games_info = getElementById_Checked("open-games-info"); 
+const open_games_info_elem = getElementById_Checked("open-games-info"); 
+const working_message_elem = getElementById_Checked("working-message"); 
 
+function display_working_message(on) {
+  if(on) {
+    working_message_elem.classList.add(display_none_class);
+  } else {
+    working_message_elem.classList.remove(display_none_class);
+  }
+}
 const online_games = [ "dropdown", "othello", "cantstop" ];
     
+
+
 function local_server() {
    return local_server_elem.checked;
 }
@@ -77,26 +87,26 @@ class OnlineGameInfo {
   }
 
   reset(class_name) {
-    open_games_info.innerHTML = "";
-    open_games_info.className = class_name ? class_name : "";
+    open_games_info_elem.innerHTML = "";
+    open_games_info_elem.className = class_name ? class_name : "";
   }
 
 
   message(text) {
     this.reset('open-games-message');
-    $(open_games_info).text(text);
+    $(open_games_info_elem).text(text);
   }
 
   error(...lines) {
     this.reset('open-games-error');
 
     for (let line of lines) {
-      open_games_info.innerHTML += `<div>${line}</div>\n`;
+      open_games_info_elem.innerHTML += `<div>${line}</div>\n`;
     }
   }
 
   add_first_game(id, game, local) {
-    if(open_games_info.className != 'open-games-list') {
+    if(open_games_info_elem.className != 'open-games-list') {
       this.reset('open-games-list');
     }
 
@@ -106,7 +116,7 @@ class OnlineGameInfo {
     const link = `<a href="${href}">${id}</a>`;
     const span = `<span>${display_name}</span>\n`;
 
-    open_games_info.innerHTML = link + span + open_games_info.innerHTML;
+    open_games_info_elem.innerHTML = link + span + open_games_info_elem.innerHTML;
   }
 }
 
@@ -114,7 +124,8 @@ let oneline_game_info = new OnlineGameInfo;
 
 
 function show_all_open_games() {
-  oneline_game_info.message("Working ...");
+  oneline_game_info.reset();
+  display_working_message(true);
   game_server_fetch('open-games', local_server())
     .then(function (data) {
       
@@ -130,7 +141,9 @@ function show_all_open_games() {
     })
     .catch(err => {
       oneline_game_info.error("Can't retrieve open games", err);
-    })
+    }).finally(
+      display_working_message(true)
+    )
 }
 
 function start_game(id, game_type) {
@@ -148,13 +161,16 @@ function start_game(id, game_type) {
     sent_data['id'] = id;
   }
  
+  display_working_message(true);
   game_server_fetch('start-game', local_server(), sent_data)
     .then(received_data => {
       oneline_game_info.add_first_game(received_data.id, game_type);
     })
     .catch(err => {
       oneline_game_info.error("Cannot start game", err);
-    });
+    }).finally(
+      () => display_working_message(false)
+    );
 }
 
 function clear_all_games() {
@@ -201,10 +217,8 @@ debug_options_elem.addEventListener("change", function(e) {
   show_debug_only_elems(this.checked);
 });
 
-//show_debug_only_elems(true);
-
 //local_server_elem.checked = true;local_server_elem.checked = true;
-//show_all_open_games();
+show_all_open_games();
 
 
 
