@@ -49,7 +49,6 @@ class CantStopBoard {
     // This will be an array with each element being an array of
     // 0 1 or 2 column numbers.
     options(player_number, dice_numbers/* array of numbers */) {
-
         let in_play = new Set;
         let is_full = new Set;
 
@@ -98,7 +97,9 @@ class CantStopBoard {
             return 0;
         }
 
-        return sort_unique(accumulator.get_options(), compare);
+        const selected_options = sort_unique(accumulator.get_options(), compare);
+        console.log("Move options:", selected_options);
+        return selected_options;
     }
 
     

@@ -54,14 +54,14 @@ function cantstop_setup() {
         bust: $_checked("#bust"),
         commit: $_checked("#commit"),
         dice: $_checked(".csdice"),
-        dice_options: $_checked(".dice-option"),
+        move_options: $_checked(".move-option"), // Expect 6 matches
         dont: $_checked("#dont"),
         game: $_checked("#game"),
         game_over: $_checked("#game-over"),
         leave: $_checked("#leave"),
         loading: $_checked("#loading"),
         manual_filling: $_checked("#manual-filling"),
-        move_options: $_checked("#move-options"),
+        move_option_div: $_checked("#move-options-div"),
         num_players: $_checked("#num-players"),
         options_button: $_checked("#options-button"),
         options_div: $_checked("#options-div"),
@@ -75,7 +75,7 @@ function cantstop_setup() {
 
     const url_params = new URLSearchParams(window.location.search);
 
-    assert(jq.dice_options.length == max_move_options);
+    assert(jq.move_options.length == max_move_options);
     assert(jq.dice.length == n_dice);
 
     function disable_roll_and_dont_buttons(disable) {
@@ -107,7 +107,7 @@ function cantstop_setup() {
 
     let dice_array = make_dice_array();
 
-    const display_stage_elements = [jq.bust, jq.game_over, jq.required_roll, jq.move_options];
+    const display_stage_elements = [jq.bust, jq.game_over, jq.required_roll, jq.move_option_div];
     let game_display = new class {
 
         // Make exactly one of the game-stage elements visible
@@ -122,13 +122,13 @@ function cantstop_setup() {
             // Make changes to reflect the input stage                       
             let make_visible = elem => elem.removeClass(visibility_hidden_class);
             if (input_stage == "roll") {
-                make_visible(jq.move_options);
+                make_visible(jq.move_option_div);
                 
                 for (let d of dice_array) {
                     d.spin();
                 }
             } else if (input_stage == "move_options") {
-                make_visible(jq.move_options);
+                make_visible(jq.move_option_div);
             } else if (input_stage == "required_roll") {
                 make_visible(jq.required_roll);
             } else if (input_stage == "bust") {
@@ -146,6 +146,8 @@ function cantstop_setup() {
         }
 
         move_options(move_options) {
+            console.log("move options to display:", move_options);
+
             function option_string(opt) {
                 assert(opt.length == 1 || opt.length == 2);
                 let str = "" + opt[0];
@@ -160,7 +162,7 @@ function cantstop_setup() {
                 if (n < move_options.length)
                     str = option_string(move_options[n]);
 
-                $(jq.dice_options[n]).text(str);
+                $(jq.move_options[n]).text(str);
             }
 
             this.selected_move(null);
@@ -172,9 +174,9 @@ function cantstop_setup() {
 
         selected_move(index /*integer or null */) {
             assert(index !== undefined);
-            jq.dice_options.removeClass("selected-move");
+            jq.move_options.removeClass("selected-move");
             if (index !== null) {
-                $(jq.dice_options[index]).addClass("selected-move");
+                $(jq.move_options[index]).addClass("selected-move");
             }
 
             disable_roll_and_dont_buttons(false);
@@ -238,8 +240,8 @@ function cantstop_setup() {
         control.roll();
     });
 
-    jq.dice_options.click(function (elem) {
-        let move_index = jq.dice_options.index(this);
+    jq.move_options.click(function (elem) {
+        let move_index = jq.move_options.index(this);
         control.select_move_option(move_index);
     });
 

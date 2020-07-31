@@ -85,7 +85,7 @@
     margin: auto;
 }
 
-#move-options { /* dice-options, roll or don't */
+#move-options-div { /* dice-options, roll or don't */
     display: flex;
     flex-direction: row;
 }
@@ -101,19 +101,19 @@
     text-align:center;
 }
 
-#dice-option-grid {
+#move-option-grid {
     display: flex;
     flex-direction: column;
     color: white;
 }
 
-#dice-option-grid div {
+#move-option-grid div {
     display: flex;
     flex-direction: row;
     border: 1px black solid;
 }
 
-.dice-option {
+.move-option {
   font-size: 0.8em;
   width: 4.1em;
   height: 1.3em;
