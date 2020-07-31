@@ -158,7 +158,8 @@ function cantstop_setup() {
             }
 
             for (let n = 0; n < max_move_options; ++n) {
-                let str = "";
+                let str = " "; // NOTE: Non-empty because, rather annoyingly, an
+                               // an empty string is ignored to jQuery text().
                 if (n < move_options.length)
                     str = option_string(move_options[n]);
 
