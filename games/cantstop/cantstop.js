@@ -17,7 +17,33 @@ function get_cantstop_player_color(player_number) {
     return get_default_player_color(player_number + 1);
 };
 
-(function () {
+if (startup_options.dont_catch_load_errors) {
+    // Make board visible before setup as seeing a partial contructed board might 
+    // help with debugging
+    $_checked('#main').css('visibility', 'initial');
+    cantstop_setup();
+    $_checked('#loading').css('display', 'none');
+} else {
+    // Alert users about uncaught errors. (At the function does not return true, the default
+    // error handler will be invoked, and so details of the error will be written to the 
+    // console.) 
+    window.onerror = () => {
+        alert("INTERNAL ERROR: See console log for details");
+    }
+
+    try {
+        // Make board visible after setup to avoid 'messy' display if there is an error
+        cantstop_setup();
+        $_checked('#main').css('visibility', 'initial');
+    } catch (error) {
+        console.log('Load error:', error);
+        $_checked('#load-error').css('display', 'initial');
+        $_checked('#load-error-description').text(error.stack);
+    }
+    $_checked('#loading').css('display', 'none');
+}
+
+function cantstop_setup() {
     /*
      * Get and sanity-check the jQuery elements that are used in this file.
      */
@@ -34,9 +60,6 @@ function get_cantstop_player_color(player_number) {
         game_over: $_checked("#game-over"),
         leave: $_checked("#leave"),
         loading: $_checked("#loading"),
-        load_error: $_checked("#load-error"),
-        load_error_description: $_checked("#load-error-description"),
-        main: $_checked("#main"),
         manual_filling: $_checked("#manual-filling"),
         move_options: $_checked("#move-options"),
         num_players: $_checked("#num-players"),
@@ -50,268 +73,246 @@ function get_cantstop_player_color(player_number) {
         undo: $_checked("#undo"),
     };
 
-    // Run the setup function with optional error handling
-    if (startup_options.dont_catch_load_errors) {
-        // Visibility fixed to help show errors
-        jq.main.css('visibility', 'initial');
-        do_cantstop_setup(jq);
-    } else {
-        try {
-            // Visibility second to help hide errors
-            do_cantstop_setup(jq);
-            jq.main.css('visibility', 'initial');
-        } catch (error) {
-            console.log('Load error:', error);
-            jq.load_error.css('display', 'initial');
-            jq.load_error_description.text(error.stack);
-        }
+    const url_params = new URLSearchParams(window.location.search);
+
+    assert(jq.dice_options.length == max_move_options);
+    assert(jq.dice.length == n_dice);
+
+    function disable_roll_and_dont_buttons(disable) {
+        jq.roll.prop("disabled", disable);
+        jq.dont.prop("disabled", disable);
     }
-    jq.loading.css('display', 'none');
 
+    function set_css_player_color(color) {
+        jq.game.get(0).style.setProperty("--player-color", color);
+    }
 
-    async function do_cantstop_setup(jq) {
-        const url_params = new URLSearchParams(window.location.search);
+    function set_displayed_player_name(player_number) {
+        const recorded_name = control.get_player_name(player_number);
+        const display_name = recorded_name ? recorded_name :
+            "Player " + (player_number + 1);
 
-        assert(jq.dice_options.length == max_move_options);
-        assert(jq.dice.length == n_dice);
+        jq.player_name.val(display_name);
+    }
+    function make_dice_array() {
+        let arr = new Array(n_dice);
 
-        function disable_roll_and_dont_buttons(disable) {
-            jq.roll.prop("disabled", disable);
-            jq.dont.prop("disabled", disable);
+        for (let i = 0; i < n_dice; i++) {
+            arr[i] = new dice(jq.dice.get(i));
+            arr[i].roll(false /* don't spin */);
         }
 
-        function set_css_player_color(color) {
-            jq.game.get(0).style.setProperty("--player-color", color);
-        }
+        return arr;
+    }
 
-        function set_displayed_player_name(player_number) {
-            const recorded_name = control.get_player_name(player_number);
-            const display_name = recorded_name ? recorded_name :
-                "Player " + (player_number + 1);
+    let dice_array = make_dice_array();
 
-            jq.player_name.val(display_name);
-        }
-        function make_dice_array() {
-            let arr = new Array(n_dice);
+    let game_display = new class {
 
-            for (let i = 0; i < n_dice; i++) {
-                arr[i] = new dice(jq.dice.get(i));
-                arr[i].roll(false /* don't spin */);
+        // Make exactly one of the game-stage elements visible
+        stage(current_stage) {
+
+            const stage_map = {
+                bust: jq.bust,
+                game_over: jq.game_over,
+                required_roll: jq.required_roll,
+                move_options: jq.move_options,
+            }
+            assert(stage_map[current_stage]);
+
+            for (let s in stage_map) {
+                let elem = stage_map[s];
+                let visible = current_stage == s;
+
+                elem.toggleClass(visibility_hidden_class, !visible);
             }
 
-            return arr;
-        }
-
-        let dice_array = make_dice_array();
-
-        let game_display = new class {
-
-            // Make exactly one of the game-stage elements visible
-            stage(current_stage) {
-
-                const stage_map = {
-                    bust: jq.bust,
-                    game_over: jq.game_over,
-                    required_roll: jq.required_roll,
-                    move_options: jq.move_options,
-                }
-                assert(stage_map[current_stage]);
-
-                for (let s in stage_map) {
-                    let elem = stage_map[s];
-                    let visible = current_stage == s;
-
-                    elem.toggleClass(visibility_hidden_class, !visible);
-                }
-
-                if(current_stage == "move_options") {
-                    for(let d of dice_array) {
-                        d.spin();
-                    }
-                }
-
-                // Disable some elements at the end of a game
-                const end_of_game = current_stage == "game_over";
-                jq.pass.prop("disable", end_of_game);
-                jq.leave.prop("disable", end_of_game);
-
-                if (end_of_game) {
-                    set_css_player_color("var(--games-board-non-player-color)");
+            if (current_stage == "move_options") {
+                for (let d of dice_array) {
+                    d.spin();
                 }
             }
 
-            move_options(move_options) {
-                function option_string(opt) {
-                    assert(opt.length == 1 || opt.length == 2);
-                    let str = "" + opt[0];
-                    if (opt.length == 2)
-                        str += " & " + opt[1];
+            // Disable some elements at the end of a game
+            const end_of_game = current_stage == "game_over";
+            jq.pass.prop("disable", end_of_game);
+            jq.leave.prop("disable", end_of_game);
 
-                    return str;
-                }
+            if (end_of_game) {
+                set_css_player_color("var(--games-board-non-player-color)");
+            }
+        }
 
-                for (let n = 0; n < max_move_options; ++n) {
-                    let str = "";
-                    if (n < move_options.length)
-                        str = option_string(move_options[n]);
+        move_options(move_options) {
+            function option_string(opt) {
+                assert(opt.length == 1 || opt.length == 2);
+                let str = "" + opt[0];
+                if (opt.length == 2)
+                    str += " & " + opt[1];
 
-                    $(jq.dice_options[n]).text(str);
-                }
-
-                this.selected_move(null);
-
-                if (control.automatic_filling && !control.manual_filling) {
-                    disable_roll_and_dont_buttons(true);
-                }
+                return str;
             }
 
-            selected_move(index /*integer or null */) {
-                assert(index !== undefined);
-                jq.dice_options.removeClass("selected-move");
-                if (index !== null) {
-                    $(jq.dice_options[index]).addClass("selected-move");
-                }
+            for (let n = 0; n < max_move_options; ++n) {
+                let str = "";
+                if (n < move_options.length)
+                    str = option_string(move_options[n]);
 
-                disable_roll_and_dont_buttons(false);
+                $(jq.dice_options[n]).text(str);
             }
 
-            current_player(player_number) {
-                set_css_player_color(get_cantstop_player_color(player_number));
+            this.selected_move(null);
 
+            if (control.automatic_filling && !control.manual_filling) {
+                disable_roll_and_dont_buttons(true);
+            }
+        }
+
+        selected_move(index /*integer or null */) {
+            assert(index !== undefined);
+            jq.dice_options.removeClass("selected-move");
+            if (index !== null) {
+                $(jq.dice_options[index]).addClass("selected-move");
+            }
+
+            disable_roll_and_dont_buttons(false);
+        }
+
+        current_player(player_number) {
+            set_css_player_color(get_cantstop_player_color(player_number));
+
+            set_displayed_player_name(player_number);
+        }
+
+        automatic_filling(on) {
+            jq.automatic_filling.prop('checked', on);
+        }
+
+        manual_filling(on) {
+            jq.manual_filling.prop('checked', on);
+        }
+
+        // An alert which may or may not need an action.
+        player_name_changed(player_number) {
+            if (player_number == control.current_player) {
                 set_displayed_player_name(player_number);
             }
-
-            automatic_filling(on) {
-                jq.automatic_filling.prop('checked', on);
-            }
-
-            manual_filling(on) {
-                jq.manual_filling.prop('checked', on);
-            }
-
-            // An alert which may or may not need an action.
-            player_name_changed(player_number) {
-                if(player_number == control.current_player) {
-                    set_displayed_player_name(player_number);
-                }
-            }
-
-            num_players(num) {
-                jq.num_players.val(num);
-            }
         }
 
-
-        let control = new CantStopControl(new CantStopBoard(jq.board), dice_array,
-            game_display);
-
-        control.set_num_players(default_num_players);
-        
-        if (url_params.has('id')) {
-            let online_support = new OnlineGameSupport(url_params);
-            control.join_game(online_support);
-        } 
-
-        function toggle_display_options_div(display /*optional*/) {
-            if (display === undefined) {
-                // Display if currently not displayed.
-                display = jq.options_div.hasClass(display_none_class);
-            }
-
-            jq.options_div.toggleClass(display_none_class, !display)
-            jq.options_button.toggleClass("in-out-button-pressed", display);
+        num_players(num) {
+            jq.num_players.val(num);
         }
-
-        jq.options_button.click(function (elem) {
-            toggle_display_options_div();
-        });
-
-        jq.required_roll.click(function (elem) {
-            control.roll();
-        });
-
-        jq.roll.click(function (elem) {
-            control.roll();
-        });
-
-        jq.dice_options.click(function (elem) {
-            let move_index = jq.dice_options.index(this);
-            control.select_move_option(move_index);
-        });
-
-        jq.dont.click(function (elem) {
-            control.finished_rolling();
-        });
-
-        jq.bust.click(function (elem) {
-            control.pass(); // kludge?? Reuse pass()
-        });
-
-        jq.pass.click(function (elem) {
-            control.pass();
-        });
-
-        jq.restart.click(function (elem) {
-            control.restart();
-        });
-
-        jq.num_players.change(function (elem) {
-            control.set_num_players(parseInt(this.value));
-        });
-
-        jq.leave.click(function () {
-            control.remove_player(control.current_player);
-        });
-
-        jq.player_name.change(function (elem) {
-            const name_to_record = this.value.trim();
-            control.set_player_name(control.current_player, name_to_record);
-        });
-        
-        jq.player_name.focusin(function (elem) {
-            // Clear any default name
-            const recorded_name = control.get_player_name(control.current_player);
-            if(!recorded_name) {
-                jq.player_name.val("");
-            }
-        });
-
-        jq.player_name.focusout(function (elem) {
-            const recorded_name = control.get_player_name(control.current_player);
-            if(!recorded_name) {
-                // Re-apply any default name. This is done mainly because it many have been
-                // removed by focusin.
-                // The method is a kludge.
-                set_displayed_player_name(control.current_player);
-            }
-        });
-
-        jq.undo.click(function (elem) {
-            control.undo();
-        });
-
-        jq.commit.click(function (elem) {
-            control.commit();
-        });
-
-        jq.manual_filling.change(function (elem) {
-            const manual_filling_on = $(this).prop('checked')
-
-            control.manual_filling = manual_filling_on;
-        });
-
-        jq.automatic_filling.change(function (elem) {
-            control.automatic_filling = $(this).prop('checked');
-        });
-
-        control.onPlayerSquareClick(
-            // The reason (such as it is)for not doing all this handling in
-            // 'control' is to allow for future error handing, logging etc.
-            info => control.process_player_square_click(info)
-        )
-
-        control.automatic_filling = true;
-        control.manual_filling = startup_options.manual_filling;
-        toggle_display_options_div(startup_options.show_options_div);
     }
-})()
+
+    let control = new CantStopControl(new CantStopBoard(jq.board), dice_array,
+        game_display);
+
+    control.set_num_players(default_num_players);
+
+    if (url_params.has('id')) {
+        let online_support = new OnlineGameSupport(url_params);
+        control.join_game(online_support);
+    }
+
+    function toggle_display_options_div(display /*optional*/) {
+        if (display === undefined) {
+            // Display if currently not displayed.
+            display = jq.options_div.hasClass(display_none_class);
+        }
+
+        jq.options_div.toggleClass(display_none_class, !display)
+        jq.options_button.toggleClass("in-out-button-pressed", display);
+    }
+
+    jq.options_button.click(function (elem) {
+        toggle_display_options_div();
+    });
+
+    jq.required_roll.click(function (elem) {
+        control.roll();
+    });
+
+    jq.roll.click(function (elem) {
+        control.roll();
+    });
+
+    jq.dice_options.click(function (elem) {
+        let move_index = jq.dice_options.index(this);
+        control.select_move_option(move_index);
+    });
+
+    jq.dont.click(function (elem) {
+        control.finished_rolling();
+    });
+
+    jq.bust.click(function (elem) {
+        control.pass(); // kludge?? Reuse pass()
+    });
+
+    jq.pass.click(function (elem) {
+        control.pass();
+    });
+
+    jq.restart.click(function (elem) {
+        control.restart();
+    });
+
+    jq.num_players.change(function (elem) {
+        control.set_num_players(parseInt(this.value));
+    });
+
+    jq.leave.click(function () {
+        control.remove_player(control.current_player);
+    });
+
+    jq.player_name.change(function (elem) {
+        const name_to_record = this.value.trim();
+        control.set_player_name(control.current_player, name_to_record);
+    });
+
+    jq.player_name.focusin(function (elem) {
+        // Clear any default name
+        const recorded_name = control.get_player_name(control.current_player);
+        if (!recorded_name) {
+            jq.player_name.val("");
+        }
+    });
+
+    jq.player_name.focusout(function (elem) {
+        const recorded_name = control.get_player_name(control.current_player);
+        if (!recorded_name) {
+            // Re-apply any default name. This is done mainly because it many have been
+            // removed by focusin.
+            // The method is a kludge.
+            set_displayed_player_name(control.current_player);
+        }
+    });
+
+    jq.undo.click(function (elem) {
+        control.undo();
+    });
+
+    jq.commit.click(function (elem) {
+        control.commit();
+    });
+
+    jq.manual_filling.change(function (elem) {
+        const manual_filling_on = $(this).prop('checked')
+
+        control.manual_filling = manual_filling_on;
+    });
+
+    jq.automatic_filling.change(function (elem) {
+        control.automatic_filling = $(this).prop('checked');
+    });
+
+    control.onPlayerSquareClick(
+        // The reason (such as it is)for not doing all this handling in
+        // 'control' is to allow for future error handing, logging etc.
+        info => control.process_player_square_click(info)
+    )
+
+    control.automatic_filling = true;
+    control.manual_filling = startup_options.manual_filling;
+    toggle_display_options_div(startup_options.show_options_div);
+}
