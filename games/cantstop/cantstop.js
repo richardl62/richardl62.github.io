@@ -308,10 +308,14 @@ function cantstop_setup() {
         control.automatic_filling = $(this).prop('checked');
     });
 
+    // The reason (such as it is)for not doing the 'control.on' stuff entirely
+    // in 'control' is to allow for future error handing, logging etc.
     control.onPlayerSquareClick(
-        // The reason (such as it is)for not doing all this handling in
-        // 'control' is to allow for future error handing, logging etc.
         info => control.process_player_square_click(info)
+    )
+
+    control.onInPlayColumnClick(
+        column => control.in_play_column_clicked(column)
     )
 
     control.automatic_filling = true;

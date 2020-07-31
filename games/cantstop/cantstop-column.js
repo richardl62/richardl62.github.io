@@ -179,17 +179,6 @@ class CantStopColumn {
         Object.seal(this);
 
         this.reset_non_column_state();
-
-        //console.log("has_elems", this.has_elements(), "n_squares", n_squares, has_elems ? "t" :"f"); 
-        if (this.has_elements()) {
-            const number_clicked = () => {
-                if (this.manual_control_allowed) {
-                    this.in_play(!this.in_play());
-                }
-            }
-            this.top_number.click(number_clicked);
-            this.bottom_number.click(number_clicked);
-        }
     }
 
     reset_non_column_state() {
@@ -385,6 +374,13 @@ class CantStopColumn {
     elem()
     {
         return this.m_column_elem;
+    }
+
+    onInPlayClick(callback) {
+        if (this.has_elements()) {
+            this.top_number.click(()=>callback(this));
+            this.bottom_number.click(()=>callback(this));
+        }
     }
 
     onPlayerSquareClick(callback) {

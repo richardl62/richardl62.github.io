@@ -197,4 +197,11 @@ class CantStopBoard {
             c.onPlayerSquareClick(callback);
         }
     }
+
+    onInPlayColumnClick(callback) {
+        for (let c of this.m_columns)
+        {
+            c.onInPlayClick(callback);
+        }
+    }
 }

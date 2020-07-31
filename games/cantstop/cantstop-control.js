@@ -459,6 +459,18 @@ function CantStopControl(game_board, dice_array, game_display) {
             game_board.onPlayerSquareClick(callback);
         }
 
+        in_play_column_clicked(column) {
+            if(manual_filling) {
+                column.in_play(!column.in_play());
+            }
+            
+            send_state();
+        }
+
+        onInPlayColumnClick(callback) {
+            game_board.onInPlayColumnClick(callback);
+        }
+
         get_player_name(player_number) {
             assert(typeof player_number == "number");
             return player_names[player_number];
