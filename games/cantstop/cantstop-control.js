@@ -107,12 +107,14 @@ function CantStopControl(game_board, dice_array, game_display) {
        move_options = game_board.options(current_player, dice_numbers);
        if (move_options.length == 0 && automatic_filling) {
            set_game_stage('bust');
-       } if (move_options.length == 1 && automatic_filling && !manual_filling) {
-           select_move_option(0);
-       }
-       else {
+       } else {
            game_display.move_options(move_options);
+           
+           if (move_options.length == 1 && automatic_filling) {
+               select_move_option(0);
+           }
        }
+
     }
 
     function roll() {
