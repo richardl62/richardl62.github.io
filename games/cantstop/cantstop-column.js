@@ -320,7 +320,8 @@ class CantStopColumn {
     // Clears the final non-empty square
     commit_noncommited_square(player_number) {
         // The 'return' was added automatically and might not be necessary.
-        return this.player_columns[player_number].commit_noncommited_square()
+        this.player_columns[player_number].commit_noncommited_square();
+        this.process_if_full(player_number);
     }
 
     decorate_owned_square_elems(owning_player) {
@@ -367,7 +368,7 @@ class CantStopColumn {
         return this.m_owned_by !== null;
     }
 
-    // Return to starting state for all player.
+    // Return to starting state for all players.
     reset() {
         this.reset_non_column_state();
         for (let pc of this.player_columns) {
@@ -418,21 +419,24 @@ class CantStopColumn {
                 assert(typeof this.m_owned_by == "number" )
                 return { owned_by: this.m_owned_by }
             } else {
-                let st = new Array(n_player);
+                let squares = new Array(n_player);
                 for (let i = 0; i < n_player; ++i) {
-                    st[i] = this.player_columns[i].state();
+                    squares[i] = this.player_columns[i].state();
                 }
-                return st;
+                return {
+                    squares: squares,
+                    in_play: this.in_play(),
+                };
             }
         } else {
             if (input_state.owned_by !== undefined) {
                 this.make_owned_by(input_state.owned_by);
             } else {
-                this.reset_non_column_state();
+                this.reset_non_column_state(); // Hmm
                 for (let p = 0; p < n_player; ++p) {
-                    this.player_columns[p].state(input_state[p]);
-                    this.process_if_full(p);
+                    this.player_columns[p].state(input_state.squares[p]);
                 }
+                this.in_play(input_state.in_play);
             }
         }
     }
