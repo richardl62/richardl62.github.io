@@ -100,7 +100,8 @@ function sort_unique(arr,
 
 
 // Using const rather than directly using strings helps to reduce subtle problems caused
-// by misspelling
+// by misspelling.
+// Requires tools.css to be included.
 const display_none_class = "display-none-important";
 const visibility_hidden_class = "visibility-hidden-important";
 

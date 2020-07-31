@@ -107,40 +107,42 @@ function cantstop_setup() {
 
     let dice_array = make_dice_array();
 
+    const display_stage_elements = [jq.bust, jq.game_over, jq.required_roll, jq.move_options];
     let game_display = new class {
 
         // Make exactly one of the game-stage elements visible
-        stage(current_stage) {
+        stage(input_stage) {
+            //console.log("input stage:", input_stage)
+            // Restore default
+            display_stage_elements.forEach(elem => elem.addClass(visibility_hidden_class));
 
-            const stage_map = {
-                bust: jq.bust,
-                game_over: jq.game_over,
-                required_roll: jq.required_roll,
-                move_options: jq.move_options,
-            }
-            assert(stage_map[current_stage]);
+            jq.pass.prop("disable", false);
+            jq.leave.prop("disable", false);
 
-            for (let s in stage_map) {
-                let elem = stage_map[s];
-                let visible = current_stage == s;
-
-                elem.toggleClass(visibility_hidden_class, !visible);
-            }
-
-            if (current_stage == "move_options") {
+            // Make changes to reflect the input stage                       
+            let make_visible = elem => elem.removeClass(visibility_hidden_class);
+            if (input_stage == "roll") {
+                make_visible(jq.move_options);
+                
                 for (let d of dice_array) {
                     d.spin();
                 }
-            }
+            } else if (input_stage == "move_options") {
+                make_visible(jq.move_options);
+            } else if (input_stage == "required_roll") {
+                make_visible(jq.required_roll);
+            } else if (input_stage == "bust") {
+                make_visible(jq.bust);
+            } else if (input_stage == "game_over") {
+                make_visible(jq.game_over);
 
-            // Disable some elements at the end of a game
-            const end_of_game = current_stage == "game_over";
-            jq.pass.prop("disable", end_of_game);
-            jq.leave.prop("disable", end_of_game);
-
-            if (end_of_game) {
                 set_css_player_color("var(--games-board-non-player-color)");
-            }
+                jq.pass.prop("disable", true);
+                jq.leave.prop("disable", true);
+            } else {
+                throw Error(`Unrecognised display stage: ${input_stage}`);
+            } 
+
         }
 
         move_options(move_options) {

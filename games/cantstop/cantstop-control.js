@@ -78,7 +78,8 @@ function CantStopControl(game_board, dice_array, game_display) {
         }
     }
 
-    function set_game_stage(stage) {
+    function set_game_stage(stage, permitted_while_recieving_state = false) {
+        assert(permitted_while_recieving_state || !receiving_state);
         game_stage = stage;
         game_display.stage(stage);
     }
@@ -115,7 +116,7 @@ function CantStopControl(game_board, dice_array, game_display) {
     }
 
     function roll() {
-        set_game_stage('move_options');
+        set_game_stage('roll');
         do_roll(true /*spin*/);
     }
 
@@ -134,7 +135,7 @@ function CantStopControl(game_board, dice_array, game_display) {
        player_left = new Array(num_players).fill(false);
        set_current_player(0);
    
-       set_game_stage('required_roll');
+       set_game_stage('required_roll', true /*allowed while receiving state*/);
     }
    
    function next_player() {
@@ -146,9 +147,9 @@ function CantStopControl(game_board, dice_array, game_display) {
    
        if(player_left[np]) {
            // All players have left.
-
            set_game_stage('game_over'); 
        } else {
+           set_game_stage('required_roll');
            set_current_player(np);
        }
    }
@@ -171,8 +172,6 @@ function CantStopControl(game_board, dice_array, game_display) {
         game_board.remove_all_precommits(current_player);
         selected_precommits = null;
 
-        set_game_stage('required_roll');
-
         clear_in_play_columns();
     }
 
@@ -188,6 +187,7 @@ function CantStopControl(game_board, dice_array, game_display) {
     }
 
     function select_move_option(index) {
+        set_game_stage('move_options');
         do_select_move_index(index);
 
         game_board.remove_all_provisional_precommits(current_player);
@@ -214,12 +214,18 @@ function CantStopControl(game_board, dice_array, game_display) {
     const state_control = {
         stage: {
             record: obj => {
+                obj.current_player = current_player;
                 obj.stage = game_stage;
+
             },
             receive: obj => {
-                set_game_stage(obj.stage);
+                // WARNING/KLUDGE: The current player should be set before the game stage.
+                // This ensures that the correct player colour is used when bust. 
+                do_set_current_player(obj.current_player);
+                set_game_stage(obj.stage, true /* Permitted called while recieving state*/);
             },
         },
+
         game_options: {
             record: obj => {
                 obj.manual_filling = manual_filling;
@@ -235,14 +241,14 @@ function CantStopControl(game_board, dice_array, game_display) {
             record: obj => {
                 obj.num_players = num_players;
                 obj.game_board = game_board.state();
-                obj.current_player = current_player;
+     
             },
             receive: obj => {
                 if(obj.num_players != num_players) { // Not strictly necessary, but ...
                     set_num_players(obj.num_players);
                 }
                 game_board.state(obj.game_board);
-                do_set_current_player(obj.current_player);
+
             },
         },
 
