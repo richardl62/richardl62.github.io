@@ -70,6 +70,7 @@ function cantstop_setup() {
         required_roll: $_checked("#required-roll"),
         restart: $_checked("#restart"),
         roll: $_checked("#roll"),
+        status_message: $_checked("#status-message"),
         undo: $_checked("#undo"),
     };
 
@@ -207,17 +208,16 @@ function cantstop_setup() {
         num_players(num) {
             jq.num_players.val(num);
         }
+
+        status_message(text) {
+            jq.status_message.text(text);
+        }
     }
 
     let control = new CantStopControl(new CantStopBoard(jq.board), dice_array,
         game_display);
 
     control.set_num_players(default_num_players);
-
-    if (url_params.has('id')) {
-        let online_support = new OnlineGameSupport(url_params);
-        control.join_game(online_support);
-    }
 
     function toggle_display_options_div(display /*optional*/) {
         if (display === undefined) {
@@ -324,4 +324,11 @@ function cantstop_setup() {
     control.automatic_filling = true;
     control.manual_filling = startup_options.manual_filling;
     toggle_display_options_div(startup_options.show_options_div);
+
+    // Do last so that any state that is set during startup is avialable to
+    // record on the server.
+    if (url_params.has('id')) {
+        let online_support = new OnlineGameSupport(url_params);
+        control.join_game(online_support);
+    }
 }

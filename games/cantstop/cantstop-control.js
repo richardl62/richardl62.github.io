@@ -355,6 +355,10 @@ function CantStopControl(game_board, dice_array, game_display) {
             if(server_data.state) {
                 receive_state(server_data.state);
             }
+
+            game_display.status_message(
+                `Connected: Game ID ${online_support.game_id}`
+            );
         }
 
         roll() {

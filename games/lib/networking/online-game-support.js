@@ -52,6 +52,10 @@ class OnlineGameSupport {
         return this._game_socket.joined;
     }
 
+    get game_id() {
+        return this._game_id;
+    }
+
 }
 
 /*

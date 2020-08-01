@@ -1,5 +1,5 @@
 #main {
-  visibility: hidden;
+  /* visibility: hidden; */
   display: inline-flex;
   flex-direction: column;
 }
@@ -197,4 +197,9 @@
 
 #num-players {
   width: 1.7em;
+}
+
+#status-message {
+  font-size: 1.5rem;
+  margin-top: 2px;
 }
