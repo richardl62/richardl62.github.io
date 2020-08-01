@@ -46,7 +46,7 @@ class GameSocket {
             // this.mergeState(data.state);
 
             if(this._onStateReceive) {
-                this._onStateReceive(data.state, data.server_info);
+                this._onStateReceive(data);
             }
         });
 
@@ -86,6 +86,8 @@ class GameSocket {
      */
     joinGame(id,state) {
         assert(this._socket);
+        assert(typeof id == "string");
+        assert(typeof state == "object");
         let socket = this._socket;
 
         const timeout = default_connection_timeout; // For Now
@@ -95,7 +97,7 @@ class GameSocket {
                 this._game_id = id;
                 console.log("socket connected: game id=",this._game_id);
 
-                socket.emit('join-game', id,
+                socket.emit('join-game', {id:id, state:state},
                     server_response => {
                         //console.log("join-game server response:", server_response);
                         if (server_response.server_error) {
@@ -115,7 +117,7 @@ class GameSocket {
                 throw Error("Server reported: " + data.server_error);
             }
 
-            assert(typeof data.state == "number" || typeof data.state == "object");
+            assert(typeof data.state == "null" || typeof data.state == "object");
             assert(typeof data.player_id == "number");
             assert(typeof data.game_id == "string");
 
@@ -133,12 +135,9 @@ class GameSocket {
         });
     }
 
-    state(state_) {
-        // this.mergeState(state);
-        // this._gameManager.receiveData(null, state, info);
-
+    state(data/*state and other info*/) {
         if (this._socket) {
-            this._socket.emit('state', state_);
+            this._socket.emit('state', data);
         }
     }
 

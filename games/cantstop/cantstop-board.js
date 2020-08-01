@@ -98,7 +98,7 @@ class CantStopBoard {
         }
 
         const selected_options = sort_unique(accumulator.get_options(), compare);
-        console.log("Move options:", selected_options);
+        //console.log("Move options:", selected_options);
         return selected_options;
     }
 

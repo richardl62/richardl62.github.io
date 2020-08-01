@@ -211,6 +211,7 @@ function CantStopControl(game_board, dice_array, game_display) {
     function commit() {
         game_board.commit(current_player);
         game_state_for_undo = game_board.state();
+        send_state_for_undo(game_state_for_undo);
     }
 
     const state_control = {
@@ -307,7 +308,7 @@ function CantStopControl(game_board, dice_array, game_display) {
 
             try {
                 sending_state = true;
-                online_support.sendState(game_state());
+                online_support.sendState({state: game_state()});
             } finally {
                 sending_state = false;
             }
@@ -315,22 +316,39 @@ function CantStopControl(game_board, dice_array, game_display) {
             //console.log(`Send state (${send_state_count}): finished`);
         }
     }
-    
-    function receive_state(state) {
+
+    function send_state_for_undo(state) {
+        online_support.sendState({
+                state: null,
+                state_for_undo: state,
+            });
+    }
+
+    function receive_state(data) {
         assert(!sending_state, "Attempt receive of state while sending");
-        
-        receive_state_count++;
-        //console.log(`Receive state (${receive_state_count}): started`);
-        try {
-            for (let sc in state_control) {
-                receiving_state = true;
-                state_control[sc].receive(state);
+        assert(data.state || data.state_for_undo);
+    
+        if (data.state) {
+            receive_state_count++;
+            //console.log(`Receive state (${receive_state_count}): started`);
+            try {
+                for (let sc in state_control) {
+                    receiving_state = true;
+                    state_control[sc].receive(data.state);
+                }
+            } finally {
+                receiving_state = false;
             }
-        } finally {
-            receiving_state = false;
+
+            if (data.use_for_undo) {
+                console.log('Using received state for undo');
+                game_state_for_undo = game_board.state();
+            }
         }
 
-        //console.log(`Receive state (${receive_state_count}): finished`);
+        if (data.state_for_undo) {
+            game_state_for_undo = data.state_for_undo;
+        }
     }
  
     // Public interface for functionality defined above.
@@ -342,6 +360,7 @@ function CantStopControl(game_board, dice_array, game_display) {
         }
 
         async join_game(online_support_) {
+            game_display.status_message('Connecting ...');
             online_support_.onDisconnect = ()=>{
                 game_display.status_message("Offline: Connection lost");
                 alert("Connection to server lost");
@@ -359,7 +378,10 @@ function CantStopControl(game_board, dice_array, game_display) {
                 // will be null. 
                 assert(server_data.hasOwnProperty('state'));
                 if (server_data.state) {
-                    receive_state(server_data.state);
+                    receive_state({
+                        state: server_data.state,
+                    });
+                    game_state_for_undo = game_board.state();
                 }
 
                 game_display.status_message(
@@ -479,9 +501,9 @@ function CantStopControl(game_board, dice_array, game_display) {
         in_play_column_clicked(column) {
             if(manual_filling) {
                 column.in_play(!column.in_play());
+
+                send_state();
             }
-            
-            send_state();
         }
 
         onInPlayColumnClick(callback) {

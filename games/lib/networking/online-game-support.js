@@ -37,17 +37,14 @@ class OnlineGameSupport {
     // Return a promise that is forefilled when/if the game is joined.
     // 
     joinGame(state) {
-        const data = this._game_socket.joinGame({
-            id: this._game_id,
-            state: state,
-        });
+        const data = this._game_socket.joinGame(this._game_id, state);
         return data;
     }
 
     // Send state to the server.
-    sendState(state) {
+    sendState(data/*state and other info*/) {
         assert(this.joined);
-        this._game_socket.state(state);
+        this._game_socket.state(data);
     }
 
     get connected () {

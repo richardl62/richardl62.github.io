@@ -147,7 +147,7 @@ function cantstop_setup() {
         }
 
         move_options(move_options) {
-            console.log("move options to display:", move_options);
+            //console.log("move options to display:", move_options);
 
             function option_string(opt) {
                 assert(opt.length == 1 || opt.length == 2);
