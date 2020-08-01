@@ -342,23 +342,34 @@ function CantStopControl(game_board, dice_array, game_display) {
         }
 
         async join_game(online_support_) {
-            let server_data = await online_support_.joinGame(game_state());
-            
-            online_support = online_support_;
-            assert(online_support.joined);
-            online_support.onReceiveState = receive_state;
+            online_support_.onDisconnect = ()=>{
+                game_display.status_message("Offline: Connection lost");
+                alert("Connection to server lost");
+            };
 
-            // server_data.state is the game state recorded in the server at 
-            // the time of th join request. If this is the first request, it
-            // will be null. 
-            assert(server_data.hasOwnProperty('state'));
-            if(server_data.state) {
-                receive_state(server_data.state);
+            try {
+                let server_data = await online_support_.joinGame(game_state());
+
+                online_support = online_support_;
+                assert(online_support.joined);
+                online_support.onReceiveState = receive_state;
+
+                // server_data.state is the game state recorded in the server at 
+                // the time of th join request. If this is the first request, it
+                // will be null. 
+                assert(server_data.hasOwnProperty('state'));
+                if (server_data.state) {
+                    receive_state(server_data.state);
+                }
+
+                game_display.status_message(
+                    `Online: Game ID ${online_support.game_id}`
+                );
+            } catch(err) {
+                console.log("join_game failed:", err);
+                game_display.status_message('Offline: Connection failed');
+                throw err;
             }
-
-            game_display.status_message(
-                `Connected: Game ID ${online_support.game_id}`
-            );
         }
 
         roll() {

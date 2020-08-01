@@ -29,13 +29,19 @@ class OnlineGameSupport {
         this._game_socket.onStateReceive = callback;
     }
 
+    set onDisconnect(callback) {
+        this._game_socket.onDisconnect = callback;
+    }
+
+    
     // Return a promise that is forefilled when/if the game is joined.
     // 
     joinGame(state) {
-        return this._game_socket.joinGame({
+        const data = this._game_socket.joinGame({
             id: this._game_id,
             state: state,
         });
+        return data;
     }
 
     // Send state to the server.

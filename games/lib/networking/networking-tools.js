@@ -34,7 +34,10 @@ function game_server_fetch(path, local, data) {
 
                 throw new Error(error_message);
             }
-            return response.json()
+            const data =  response.json();
+            throw_server_error(data);
+
+            return data;
         })
         .then(data => {
             // data.error is set if there is a 'legitimate' error,
@@ -45,7 +48,7 @@ function game_server_fetch(path, local, data) {
             return data;
         })
         .catch(err => {
-            //console.log("Fetch failed:", err);
+            console.log("Fetch failed:", err);
             throw err; // repropogate
         });
 }

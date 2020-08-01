@@ -6,21 +6,26 @@ class GameSocket {
         leftGroup(player_id);  // Another player left the group
     */
     constructor(callbacks) {
+        this.reset();
+        
+        Object.seal(this);
+    }
+
+    reset() {
         this._onStateReceive = null;
         this._onPlayerJoin = null;
         this._onPlayerleave = null;
+        this._onDisconnect = null;
 
         this._socket = null;
         this._player_id = null;
         this._game_id = null;
-
-        Object.seal(this);
     }
 
     set onStateReceive(callback) {this._onStateReceive = callback;}
-    set onPlayerJoin(callback) {this.onPlayerJoin = callback;}
-    set onPlayerLeave(callback) {this.onPlayerleave = callback;}
-   
+    set onPlayerJoin(callback) {this._onPlayerJoin = callback;}
+    set onPlayerLeave(callback) {this._onPlayerleave = callback;}
+    set onDisconnect(callback) {this._onDisconnect = callback;}
 
     connect(url) {
         this.disconnect();
@@ -62,6 +67,10 @@ class GameSocket {
             if(this._onPlayerleave) {
                 this._onPlayerLeave(data.player_id);
             }
+        });
+
+        this._socket.on('disconnect', () => {
+            this.disconnect();
         });
     }
 
@@ -135,12 +144,14 @@ class GameSocket {
 
     disconnect() {
         if (this.connected) {
-            console.log("game-socket disconnecting: game id", game_id);
+            console.log("game-socket disconnecting: game id", this._game_id);
+            if(this._onDisconnect) {
+                this._onDisconnect();
+            } 
+
             this._socket.disconnect();
             
-            this._socket = null;
-            this._socket_id = null;
-            this._game_id = null;
+            this.reset();
         }
     }
 
