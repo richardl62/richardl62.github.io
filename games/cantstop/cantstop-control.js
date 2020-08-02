@@ -303,25 +303,32 @@ function CantStopControl(game_board, dice_array, game_display) {
         assert(!sending_state, "Attempt to send of state while already sending");
         assert(!receiving_state, "Attempt to send of state while receieving");
         if (online_support) {
-            send_state_count++;
-            //console.log(`Send state (${send_state_count}): started`);
+            if (!online_support.joined) {
+                // It looks like the connection has been lost. I think continuing
+                // is OK, but any moves will be lost if reconnecting.
+                console.log("Attempt to send state when not connectected to a game");
+            } else {
+                send_state_count++;
+                //console.log(`Send state (${send_state_count}): started`);
 
-            try {
-                sending_state = true;
-                online_support.sendState({state: game_state()});
-            } finally {
-                sending_state = false;
+                try {
+                    sending_state = true;
+                    online_support.sendState({ state: game_state() });
+                } finally {
+                    sending_state = false;
+                }
             }
-
             //console.log(`Send state (${send_state_count}): finished`);
         }
     }
 
     function send_state_for_undo(state) {
-        online_support.sendState({
+        if(online_support && online_support.joined) {
+            online_support.sendState({
                 state: null,
                 state_for_undo: state,
             });
+        }
     }
 
     function receive_state(data) {
