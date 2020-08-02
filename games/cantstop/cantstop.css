@@ -1,5 +1,5 @@
 #main {
-  /* visibility: hidden; */
+  visibility: hidden; /* Made visible if/when game is successfully initialised */
   display: inline-flex;
   flex-direction: column;
 }
