@@ -349,7 +349,7 @@ function CantStopControl(game_board, dice_array, game_display) {
             state_control[sc].receive(input_state);
         }
 
-        if(cant_stop_debug_checks) {
+        if(cant_stop_extra_checks) {
             const current_state = game_state();
             for(let name in input_state) {
                 const input_value = input_state[name];
