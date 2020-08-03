@@ -47,9 +47,9 @@ class CantStopPlayerSquare {
     // Return to the starting state
     reset() {
         this.remove_precommit_elem();
+        this.apply_owned_by_formatting(false);
+        this.apply_player_color(null);
 
-        this.player_elem.removeClass('cs-owned-player-square'); 
-        this.player_elem.css("background-color", "var(--games-board-background-colour)");
         this.status = sq_empty;
     }
 
@@ -70,16 +70,28 @@ class CantStopPlayerSquare {
         this.status = sq_precommitted;
     }
 
+    apply_player_color(player_number) {
+        const color = (player_number === null) ?
+            "var(--games-board-background-colour)" :
+            get_cantstop_player_color(player_number);
+
+        this.player_elem.css("background-color", color);
+    }
+
     make_commit() {
         this.reset();
 
-        this.player_elem.css("background-color", get_cantstop_player_color(this.player_number));
+        this.apply_player_color(this.player_number);
         this.status = sq_committed;
+    }
+
+    apply_owned_by_formatting(on) {
+        this.player_elem.toggleClass('cs-owned-player-square', on);
     }
 
     make_owned() {
         this.reset();
-        this.player_elem.addClass('cs-owned-player-square');
+        this.apply_owned_by_formatting(true);
     }
 
     is_owned() {

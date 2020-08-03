@@ -24,9 +24,9 @@ class CantStopPlayerColumn {
         }
     }
 
-    make_owned() {
+    apply_owned_by_formatting(owning_player) {
         for(let sq of this._squares) {
-            sq.make_owned();
+            sq.apply_owned_by_formatting(owning_player);
         }
     }
 
@@ -182,7 +182,7 @@ class CantStopColumn {
     }
 
     reset_non_column_state() {
-        this.decorate_owned_square_elems(null);
+        this.apply_owned_by_formatting(null);
         this.m_owned_by = null;
         this.in_play(false);
     }
@@ -313,7 +313,7 @@ class CantStopColumn {
         this.process_if_full(player_number);
     }
 
-    decorate_owned_square_elems(owning_player) {
+    apply_owned_by_formatting(owning_player) {
         if(owning_player === null) {
             for (let sq of this.square_elems) {
                 sq.removeClass('cs-square-owned');
@@ -327,15 +327,19 @@ class CantStopColumn {
             }
         }
     }
-    make_owned_by(owning_player) {
 
-        for (let pc of this.player_columns) {
-            pc.make_owned();
+    owned_by(owning_player) {
+        if (owning_player === undefined) {
+            return this.m_owned_by;
+        } else {
+            this.apply_owned_by_formatting(owning_player);
+
+            for (let pc of this.player_columns) {
+                pc.apply_owned_by_formatting(owning_player !== null);
+            }
+
+            this.m_owned_by = owning_player;
         }
-
-        this.decorate_owned_square_elems(owning_player);
-
-        this.m_owned_by = owning_player;
     }
 
     // Record that the colum is 'owned' by the given player
@@ -343,7 +347,7 @@ class CantStopColumn {
         assert(player_number !== undefined);
         if (this.player_columns[player_number].is_full() && !this.is_owned() &&
             this.square_elems.length > 0) {
-            this.make_owned_by(player_number);
+            this.owned_by(player_number);
         }
     }
 
@@ -410,30 +414,22 @@ class CantStopColumn {
     state(input_state) {
         const n_player = this.player_columns.length;
 
-        if(input_state === undefined) {
-            if (this.m_owned_by !== null) {
-                assert(typeof this.m_owned_by == "number" )
-                return { owned_by: this.m_owned_by }
-            } else {
-                let squares = new Array(n_player);
-                for (let i = 0; i < n_player; ++i) {
-                    squares[i] = this.player_columns[i].state();
-                }
-                return {
-                    squares: squares,
-                    in_play: this.in_play(),
-                };
+        if (input_state === undefined) {
+            let player_columns = new Array(n_player);
+            for (let i = 0; i < n_player; ++i) {
+                player_columns[i] = this.player_columns[i].state();
             }
+            return {
+                player_columns: player_columns,
+                in_play: this.in_play(),
+                owned_by: this.owned_by(),
+            };
         } else {
-            if (input_state.owned_by !== undefined) {
-                this.make_owned_by(input_state.owned_by);
-            } else {
-                this.reset_non_column_state(); // Hmm
-                for (let p = 0; p < n_player; ++p) {
-                    this.player_columns[p].state(input_state.squares[p]);
-                }
-                this.in_play(input_state.in_play);
+            for (let p = 0; p < n_player; ++p) {
+                this.player_columns[p].state(input_state.player_columns[p]);
             }
+            this.in_play(input_state.in_play);
+            this.owned_by(input_state.owned_by);
         }
     }
 

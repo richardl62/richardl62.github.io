@@ -313,7 +313,8 @@ function CantStopControl(game_board, dice_array, game_display) {
 
                 try {
                     sending_state = true;
-                    online_support.sendState({ state: game_state() });
+                    const state = game_state();
+                    online_support.sendState({ state: state});
                 } finally {
                     sending_state = false;
                 }
@@ -331,6 +332,33 @@ function CantStopControl(game_board, dice_array, game_display) {
         }
     }
 
+    function same(obj1, obj2) { // For now, at least
+        return JSON.stringify(obj1) == JSON.stringify(obj2);
+    }
+
+    function do_receive_state(input_state) {
+        let in_play = [];
+        for(let i = 0; i < input_state.game_board.length; ++i) {
+            if(input_state.game_board[i].in_play) {
+                in_play.push(i);
+            }
+        }
+        console.log("in-play columns recieved:", ... in_play);
+
+        for (let sc in state_control) {
+            state_control[sc].receive(input_state);
+        }
+
+        if(cant_stop_debug_checks) {
+            const current_state = game_state();
+            for(let name in input_state) {
+                const input_value = input_state[name];
+                const current_value = current_state[name];
+                assert(same(input_value, current_value), `Problem recieved state for '${name}'`);
+            }
+        }
+    }
+
     function receive_state(data) {
         assert(!sending_state, "Attempt receive of state while sending");
         assert(data.state || data.state_for_undo);
@@ -339,17 +367,10 @@ function CantStopControl(game_board, dice_array, game_display) {
             receive_state_count++;
             //console.log(`Receive state (${receive_state_count}): started`);
             try {
-                for (let sc in state_control) {
-                    receiving_state = true;
-                    state_control[sc].receive(data.state);
-                }
+                receiving_state = true;
+                do_receive_state(data.state);
             } finally {
                 receiving_state = false;
-            }
-
-            if (data.use_for_undo) {
-                console.log('Using received state for undo');
-                game_state_for_undo = game_board.state();
             }
         }
 

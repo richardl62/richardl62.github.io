@@ -2,8 +2,8 @@
 
 // Members of startup_options should be commented out when this file is pushed.
 const startup_options = {
-    // manual_filling: true,
-    // show_options_div: true,
+    manual_filling: true,
+    show_options_div: true,
     // dont_catch_load_errors: true,
 };
 
@@ -11,6 +11,7 @@ const in_play_column_limit = 3;
 const max_move_options = 6;
 const n_dice = 4;
 const default_num_players = 2;
+const cant_stop_debug_checks = true;
 
 // Cant stop play numbers start at 0, but player colors start at 1.
 function get_cantstop_player_color(player_number) {
