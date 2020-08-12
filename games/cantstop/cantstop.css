@@ -27,14 +27,14 @@
   margin-top: 1em;
 }
 
-#options-div {
+#more-div {
   align-self: flex-end;
   display: flex;
   font-size: x-large;
   margin-bottom: 10px;
 }
 
-#options-div input {
+#more-div input {
   font-size: inherit;
 }
 

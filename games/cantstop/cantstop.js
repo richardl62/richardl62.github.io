@@ -62,10 +62,10 @@ function cantstop_setup() {
         leave: $_checked("#leave"),
         loading: $_checked("#loading"),
         manual_filling: $_checked("#manual-filling"),
+        more_button: $_checked("#more-button"),
+        more_div: $_checked("#more-div"),
         move_option_div: $_checked("#move-options-div"),
         num_players: $_checked("#num-players"),
-        options_button: $_checked("#options-button"),
-        options_div: $_checked("#options-div"),
         pass: $_checked("#pass"),
         player_name: $_checked("#player-name"),
         required_roll: $_checked("#required-roll"),
@@ -223,14 +223,14 @@ function cantstop_setup() {
     function toggle_display_options_div(display /*optional*/) {
         if (display === undefined) {
             // Display if currently not displayed.
-            display = jq.options_div.hasClass(display_none_class);
+            display = jq.more_div.hasClass(display_none_class);
         }
 
-        jq.options_div.toggleClass(display_none_class, !display)
-        jq.options_button.toggleClass("in-out-button-pressed", display);
+        jq.more_div.toggleClass(display_none_class, !display)
+        jq.more_button.toggleClass("in-out-button-pressed", display);
     }
 
-    jq.options_button.click(function (elem) {
+    jq.more_button.click(function (elem) {
         toggle_display_options_div();
     });
 
