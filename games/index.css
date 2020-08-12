@@ -13,7 +13,7 @@
 
 #game-type {
     display: inline-flex;
-    flex-direction:column;
+    flex-direction: column;
     align-items: flex-end;
 
     grid-area: game-type;
@@ -26,12 +26,13 @@
 #play-offline {
     grid-area: play-offline;
 }
+
 #open-games-fieldset {
     grid-area: open-games;
 }
 
 #open-games-div {
-    display:flex;
+    display: flex;
     justify-content: space-between;
 }
 
@@ -53,7 +54,7 @@
 }
 
 .open-games-error {
-    display:grid;
+    display: grid;
     grid-template-columns: auto;
     row-gap: 4px;
 }
@@ -63,5 +64,5 @@
 }
 
 .debug-only {
-    visibility:hidden;
+    visibility: hidden;
 }

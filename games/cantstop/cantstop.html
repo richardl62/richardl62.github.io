@@ -37,28 +37,39 @@
     <div id="main">
     <div id="more-div">
         <fieldset>
+            <legend>Game options</legend>
+            <div id="options-div">
+                <label> Players
+                    <input type="number" name="num-players" id="num-players" min=1 max=4>
+                </label>
+
+                <label>Automatic filling 
+                    <input type="checkbox" id="automatic-filling">
+                </label>
+
+                <label>Manual filling
+                    <input type="checkbox" id="manual-filling">
+                </label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Networking</legend>
+            <div id="networking-div">
+                <div>Game ID: <span id="game-id"></span></div>
+                <button type="button" id="discontect">Disconnect</button>
+                <button type="button" id="networking-refresh">Refresh</button>
+            </div>
+        </fieldset>
+        <fieldset>
             <legend>Misc</legend>
-            <div id="misc-options">
+            <div id="misc-div">
                 <button type="button" id="undo">Undo</button>
                 <button type="button" id="commit">Commit</button>
+                <label> Debug
+                    <input type="text" id="debug-input" spellcheck="false">
+                </label>
             </div>
         </fieldset>
-        <fieldset>
-            <legend>Column filling</legend>
-            <div id=column-filling-options>
-                <label>automatic<input type="checkbox" id="automatic-filling"></label>
-                <label>manual<input type="checkbox" id="manual-filling"></label>
-            </div>
-        </fieldset>
-
-        <fieldset>
-            <legend>Players</legend>
-            <label> Number
-                <input type="number" name="num-players" id="num-players" min=1 max=4>
-            </label>
-
-        </fieldset>
-            
         <!-- <button type="debug" id="debug">debug</button> -->
     </div>
 

@@ -28,24 +28,39 @@
 }
 
 #more-div {
-  align-self: flex-end;
   display: flex;
   font-size: x-large;
   margin-bottom: 10px;
 }
 
-#more-div input {
-  font-size: inherit;
+#more-div input,
+#more-div button {
+  font-size: 0.8em;
+  margin-bottom: 2px;
 }
 
-#misc-options {
+#more-div>fieldset>div {
   display: inline-flex;
   flex-direction: column;
 }
 
-#num-players {
-  margin-left: 0.2em;
+#options-div {
+  align-items: flex-end;
 }
+
+#num-players {
+  margin-bottom: 5px;
+}
+
+#debug-input {
+  width: 4em;
+}
+
+#game-id {
+  font-size: 0.8em;
+  width: 5em;
+}
+
 
 #column-filling-options {
   display: flex;
@@ -168,7 +183,6 @@
   font-size: inherit;
   width: 1.5em;
 }
-
 
 #player-options {
   display: flex;
