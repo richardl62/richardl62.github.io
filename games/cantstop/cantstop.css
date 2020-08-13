@@ -56,11 +56,9 @@
   width: 4em;
 }
 
-#game-id {
-  font-size: 0.8em;
-  width: 5em;
+.game-disconneted {
+  text-decoration: line-through;
 }
-
 
 #column-filling-options {
   display: flex;

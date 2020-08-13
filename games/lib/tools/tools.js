@@ -264,42 +264,42 @@ class NestedArrayStringify
 function stringify_array(array, process_elems, same_line_depth)
 {
     let nas = new NestedArrayStringify(process_elems, same_line_depth);
-    return nas.do_array(array, "", same_line_depth)
+    return nas.do_array(array, "", same_line_depth);
 }
 
-function stringify_array_test(arr, remove_undefined, same_line_depth)
-{
-    function do_remove_undefined(elem) {   
-        return elem === undefined ? "" : elem; 
-    }
+// function stringify_array_test(arr, remove_undefined, same_line_depth)
+// {
+//     function do_remove_undefined(elem) {   
+//         return elem === undefined ? "" : elem; 
+//     }
 
-    let stringified = stringify_array(arr, 
-        remove_undefined ? do_remove_undefined : undefined, 
-        same_line_depth);
+//     let stringified = stringify_array(arr, 
+//         remove_undefined ? do_remove_undefined : undefined, 
+//         same_line_depth);
 
-    let round_trip;
-    try {
-        round_trip = eval(stringified)
-    }
-    catch(err)
-    {
-        round_trip = "Can't evaluate string";
-    }
+//     let round_trip;
+//     try {
+//         round_trip = eval(stringified);
+//     }
+//     catch(err)
+//     {
+//         round_trip = "Can't evaluate string";
+//     }
 
-    // KLUDGE: Use JSON stringfy to compare arrays.
-    if (JSON.stringify(arr) == JSON.stringify(round_trip)) {
-        console.log("stringified array is", stringified);
-    }
-    else
-    {
-        console.log("test object", arr);
-        console.log("   test object (as json)", JSON.stringify(arr));
-        console.log("   stringified", stringified);
-        console.log("   round-trip", round_trip);
-        console.log("   round-trip (as json)", JSON.stringify(round_trip));
-        console.log("   Error: array changed by cjson_parse round trip");
-    }
-}
+//     // KLUDGE: Use JSON stringfy to compare arrays.
+//     if (JSON.stringify(arr) == JSON.stringify(round_trip)) {
+//         console.log("stringified array is", stringified);
+//     }
+//     else
+//     {
+//         console.log("test object", arr);
+//         console.log("   test object (as json)", JSON.stringify(arr));
+//         console.log("   stringified", stringified);
+//         console.log("   round-trip", round_trip);
+//         console.log("   round-trip (as json)", JSON.stringify(round_trip));
+//         console.log("   Error: array changed by cjson_parse round trip");
+//     }
+// }
 
 //stringify_array_test([]);
 //stringify_array_test([,]);
@@ -318,10 +318,10 @@ function stringify_array_test(arr, remove_undefined, same_line_depth)
 function split_at_integers(input_str)
 {
     //  Repeatedly search for this regex
-    const regex = /[+-]?\d+/;;
+    const regex = /[+-]?\d+/;
 
     let str = input_str;
-    let result = new Array;
+    let result = [];
 
     let match = str.match(regex);
     while(match) {
@@ -378,8 +378,8 @@ function findAndParseInt(str) {
     // Look for a numbers in the input string.
     let match = str.match(/-?\d+/g);
     if (match && match.length > 1) {
-        return new Error('More than one number found in "'
-            + str + '"');
+        return new Error('More than one number found in "' +
+            str + '"');
     }
 
     if (match) {

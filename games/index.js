@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 
 
 window.onerror = () => {
@@ -45,15 +45,15 @@ function game_href(game, id) {
   assert(game);
 
   let href; // relative href
-  let search_params = new URLSearchParams;
+  let search_params = new URLSearchParams();
 
   if (game == "dropdown" || game == "othello") {
     search_params.set("game", game);
-    href = "gridgames/gridgames.html"
+    href = "gridgames/gridgames.html";
   } else if (game == "dicegame") {
-    href = "dicegame/dicegame.html"
+    href = "dicegame/dicegame.html";
   } else if (game == "cantstop") {
-    href = "cantstop/cantstop.html"
+    href = "cantstop/cantstop.html";
   }
   assert(href);
 
@@ -79,7 +79,7 @@ function game_display_name(game) {
   let display_name;
 
   if (game == "cantstop") {
-    display_name = "Can't Stop"
+    display_name = "Can't Stop";
   } else {
     // Capitalise the first letter - This is the default
     display_name = game.charAt(0).toUpperCase() + game.slice(1);
@@ -125,7 +125,7 @@ let oneline_game_info = new class  {
 
     open_games_info_elem.innerHTML = link + span + open_games_info_elem.innerHTML;
   }
-}
+}();
 
 
 async function show_all_open_games() {
@@ -164,7 +164,7 @@ async function start_game(id, game_type) {
     game: game_type,
   };
   if (id) {
-    sent_data['id'] = id;
+    sent_data.id = id;
   }
 
   display_working_message(true);
@@ -176,7 +176,7 @@ async function start_game(id, game_type) {
     oneline_game_info.error("Cannot start game", err);
   }
   finally {
-    display_working_message(false)
+    display_working_message(false);
   }
 }
 
@@ -199,16 +199,16 @@ function selected_game() {
 
 start_elem.addEventListener("click", (e) => {
   start_game(game_id_elem.value.trim(), selected_game());
-  game_id_elem.value = ""
-})
+  game_id_elem.value = "";
+});
 
 refresh_open_games_elem.addEventListener("click", (e) => {
   show_all_open_games();
-})
+});
 
 clear_games_elem.addEventListener("click", (e) => {
   clear_all_games();
-})
+});
 
 play_offline_elem.addEventListener("click", (e) => {
   const id = null;

@@ -23,9 +23,17 @@ class GameSocket {
     }
 
     set onStateReceive(callback) {this._onStateReceive = callback;}
+    get onStateReceive() {return this._onStateReceive;}
+
     set onPlayerJoin(callback) {this._onPlayerJoin = callback;}
+    get onPlayerJoin() {return this._onPlayerJoin;}
+
     set onPlayerLeave(callback) {this._onPlayerleave = callback;}
+    get onPlayerLeave() {return this._onPlayerLeave;}
+
     set onDisconnect(callback) {this._onDisconnect = callback;}
+    get onDisconnect() {return this._on_onDisconnectStateReceive;}
+
 
     connect(url) {
         this.disconnect();
@@ -70,7 +78,16 @@ class GameSocket {
         });
 
         this._socket.on('disconnect', () => {
+
+            // disconnect resets all member data including, for better or worse,
+            // _onDisconnect.
+            const onDisconnect = this._onDisconnect;
+            
             this.disconnect();
+
+            if(onDisconnect) {
+                onDisconnect();
+            } 
         });
     }
 
@@ -81,7 +98,7 @@ class GameSocket {
      *         state: <object with current state for the group, or null>
      *     }
      *
-     * If the promise is rejected an error object is returned (if that is the
+     * If the promise is rejected an error object is returned (if 'returned' is the
      * right word).
      */
     joinGame(id,state) {
@@ -117,7 +134,7 @@ class GameSocket {
                 throw Error("Server reported: " + data.server_error);
             }
 
-            assert(typeof data.state == "null" || typeof data.state == "object");
+            assert(data.state === null || typeof data.state == "object");
             assert(typeof data.player_id == "number");
             assert(typeof data.game_id == "string");
 
@@ -143,11 +160,7 @@ class GameSocket {
 
     disconnect() {
         if (this.connected) {
-            console.log("game-socket disconnecting: game id", this._game_id);
-            if(this._onDisconnect) {
-                this._onDisconnect();
-            } 
-
+            console.log("game socket disconnected");
             this._socket.disconnect();
             
             this.reset();
@@ -159,7 +172,7 @@ class GameSocket {
     }
 
     get joined() {
-        return this.playerId !== null;
+        return this._player_id !== null;
     }
 
     get playerId() {

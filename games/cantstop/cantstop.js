@@ -16,7 +16,7 @@ const cant_stop_extra_checks = true; // For now, at least
 // Cant stop play numbers start at 0, but player colors start at 1.
 function get_cantstop_player_color(player_number) {
     return get_default_player_color(player_number + 1);
-};
+}
 
 if (startup_options.dont_catch_load_errors) {
     // Make board visible before setup as seeing a partial contructed board might 
@@ -30,7 +30,7 @@ if (startup_options.dont_catch_load_errors) {
     // console.) 
     window.onerror = () => {
         alert("INTERNAL ERROR: See console log for details");
-    }
+    };
 
     try {
         // Make board visible after setup to avoid 'messy' display if there is an error
@@ -56,7 +56,7 @@ function cantstop_setup() {
         commit: $_checked("#commit"),
         debug_input: $_checked("#debug-input"),
         dice: $_checked(".csdice"),
-        disconneted: $_checked("#disconnect"),
+        disconnect: $_checked("#disconnect"),
         move_options: $_checked(".move-option"), // Expect 6 matches
         dont: $_checked("#dont"),
         game: $_checked("#game"),
@@ -68,6 +68,7 @@ function cantstop_setup() {
         more_button: $_checked("#more-button"),
         more_div: $_checked("#more-div"),
         move_option_div: $_checked("#move-options-div"),
+        networking_info: $_checked("#networking-info"),
         num_players: $_checked("#num-players"),
         pass: $_checked("#pass"),
         player_name: $_checked("#player-name"),
@@ -115,7 +116,9 @@ function cantstop_setup() {
 
     const display_stage_elements = [jq.bust, jq.game_over, jq.required_roll, jq.move_option_div];
     let game_display = new class {
-
+        constructor() {
+            this.game_id(null);
+        }
         // Make exactly one of the game-stage elements visible
         stage(input_stage) {
             //console.log("input stage:", input_stage)
@@ -148,7 +151,16 @@ function cantstop_setup() {
             } else {
                 throw Error(`Unrecognised display stage: ${input_stage}`);
             } 
+        }
 
+        game_id(id, connected = true) {
+            assert(id !== undefined);
+            jq.networking_info.toggleClass(display_none_class, id === null);
+
+            jq.disconnect.toggleClass(display_none_class, !connected);
+
+            jq.game_id.text(id);
+            jq.game_id.toggleClass("game-disconneted", !connected);
         }
 
         move_options(move_options) {
@@ -217,7 +229,7 @@ function cantstop_setup() {
         status_message(text) {
             jq.status_message.text(text);
         }
-    }
+    }();
 
     let control = new CantStopControl(new CantStopBoard(jq.board), dice_array,
         game_display);
@@ -230,7 +242,7 @@ function cantstop_setup() {
             display = jq.more_div.hasClass(display_none_class);
         }
 
-        jq.more_div.toggleClass(display_none_class, !display)
+        jq.more_div.toggleClass(display_none_class, !display);
         jq.more_button.toggleClass("in-out-button-pressed", display);
     }
 
@@ -307,7 +319,7 @@ function cantstop_setup() {
     });
 
     jq.manual_filling.change(function (elem) {
-        const manual_filling_on = $(this).prop('checked')
+        const manual_filling_on = $(this).prop('checked');
 
         control.manual_filling = manual_filling_on;
     });
@@ -316,15 +328,23 @@ function cantstop_setup() {
         control.automatic_filling = $(this).prop('checked');
     });
 
+    jq.disconnect.click(function (elem) {
+        control.disconnect();
+    });
+
+    jq.refresh_connection.click(function (elem) {
+        control.refresh_connection();
+    });
+
     // The reason (such as it is)for not doing the 'control.on' stuff entirely
     // in 'control' is to allow for future error handing, logging etc.
     control.onPlayerSquareClick(
         info => control.process_player_square_click(info)
-    )
+    );
 
     control.onInPlayColumnClick(
         column => control.in_play_column_clicked(column)
-    )
+    );
 
     control.automatic_filling = true;
     control.manual_filling = startup_options.manual_filling;
@@ -335,5 +355,5 @@ function cantstop_setup() {
     if (url_params.has('id')) {
         let online_support = new OnlineGameSupport(url_params);
         control.join_game(online_support);
-    }
+    } 
 }

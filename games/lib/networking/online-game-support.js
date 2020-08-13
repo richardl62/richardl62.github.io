@@ -1,6 +1,6 @@
 'use strict';
 
-`
+/*
 GameSupport provides facilities to support to web based board games.
 In summary, it provides support:
 - Support for online play
@@ -13,15 +13,15 @@ Undo: Only moves made on the current client can be undone. After an undo
       undone. 
 
 To do: Add more notes
-`
+*/
 class OnlineGameSupport {
 
+    // Sets up the game socket, but does not actually connect.
     constructor(urlParams) {
         this._game_socket = new GameSocket();
 
-        const server_url = get_game_server(urlParams.has('local'));
-        this._game_socket.connect(server_url)
-        this._game_id = urlParams.get('id')
+        this._server_url = get_game_server(urlParams.has('local'));
+        this._game_id = urlParams.get('id');
         Object.seal(this);
     }
 
@@ -29,11 +29,26 @@ class OnlineGameSupport {
         this._game_socket.onStateReceive = callback;
     }
 
+    get onReceiveState() {
+        return this._game_socket.onStateReceive;
+    }
+
     set onDisconnect(callback) {
         this._game_socket.onDisconnect = callback;
     }
 
+    get onDisconnect() {
+        return this._game_socket.onDisconnect;
+    }
     
+    connect() {
+        this._game_socket.connect(this._server_url);
+    }
+
+    disconnect() {
+        this._game_socket.disconnect();
+    }
+
     // Return a promise that is forefilled when/if the game is joined.
     // 
     joinGame(state) {
@@ -46,6 +61,8 @@ class OnlineGameSupport {
         assert(this.joined);
         this._game_socket.state(data);
     }
+
+
 
     get connected () {
         return this._game_socket.connected;
