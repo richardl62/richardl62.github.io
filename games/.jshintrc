@@ -1,0 +1,6 @@
+{
+    "esversion": 8,
+
+    "-W117": false, // Ignore 'is not defined'
+    "-W097": false  // Ignore 'Use the function form of "use strict"'
+}
