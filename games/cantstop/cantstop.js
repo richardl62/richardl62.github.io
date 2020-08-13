@@ -2,9 +2,9 @@
 
 // Members of startup_options should be commented out when this file is pushed.
 const startup_options = {
-//     manual_filling: true,
-//     show_options_div: true,
-//     dont_catch_load_errors: true,
+     manual_filling: true,
+     show_options_div: true,
+     dont_catch_load_errors: true,
 };
 
 const in_play_column_limit = 3;
@@ -54,10 +54,13 @@ function cantstop_setup() {
         board: $_checked("#board"),
         bust: $_checked("#bust"),
         commit: $_checked("#commit"),
+        debug_input: $_checked("#debug-input"),
         dice: $_checked(".csdice"),
+        disconneted: $_checked("#disconnect"),
         move_options: $_checked(".move-option"), // Expect 6 matches
         dont: $_checked("#dont"),
         game: $_checked("#game"),
+        game_id: $_checked("#game-id"),
         game_over: $_checked("#game-over"),
         leave: $_checked("#leave"),
         loading: $_checked("#loading"),
@@ -69,6 +72,7 @@ function cantstop_setup() {
         pass: $_checked("#pass"),
         player_name: $_checked("#player-name"),
         required_roll: $_checked("#required-roll"),
+        refresh_connection: $_checked("#refresh-connection"),
         restart: $_checked("#restart"),
         roll: $_checked("#roll"),
         status_message: $_checked("#status-message"),
