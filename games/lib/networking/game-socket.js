@@ -35,10 +35,11 @@ class GameSocket {
     get onDisconnect() {return this._on_onDisconnectStateReceive;}
 
 
-    connect(url) {
+    connect(local_server) {
+        assert(typeof local_server == "boolean");
         this.disconnect();
 
-        this._socket = io(url);
+        this._socket = io(get_game_server(get_game_server(local_server)));
 
         this.setGameListeners();
     }

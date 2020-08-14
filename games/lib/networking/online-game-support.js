@@ -1,4 +1,50 @@
 'use strict';
+const online_games = ["dropdown", "othello", "cantstop"];
+
+function game_display_name(game) {
+    assert(game);
+  
+    let display_name;
+  
+    if (game == "cantstop") {
+      display_name = "Can't Stop";
+    } else {
+      // Capitalise the first letter - This is the default
+      display_name = game.charAt(0).toUpperCase() + game.slice(1);
+    }
+  
+    return display_name;
+  }
+
+// Attempt to start a game of the given type, and with the ID recorded here.
+// Throwing an Error if there was a problem.
+async function start_online_game(id, game_type, use_local_server) {
+    assert(use_local_server !== undefined);
+    
+    if (!online_games.includes(game_type)) {
+      const display_name = game_display_name(game_type);
+      throw Error `${display_name} is not available online`;
+    }
+  
+    let sent_data = {
+      game: game_type,
+      id: id,
+    };
+
+    let server_data = null;
+    try {
+        let fetch_result = game_server_fetch('start-game', use_local_server, sent_data);
+        server_data = await fetch_result;
+    } catch(err) {
+        throw err;
+    } finally {
+        console.log("server_data", server_data);
+        if(server_data) {
+            throw_server_error(server_data);
+        }
+    }
+    return server_data;
+}
 
 /*
 GameSupport provides facilities to support to web based board games.
@@ -20,7 +66,7 @@ class OnlineGameSupport {
     constructor(urlParams) {
         this._game_socket = new GameSocket();
 
-        this._server_url = get_game_server(urlParams.has('local'));
+        this._local_server = urlParams.has('local');
         this._game_id = urlParams.get('id');
         Object.seal(this);
     }
@@ -42,15 +88,19 @@ class OnlineGameSupport {
     }
     
     connect() {
-        this._game_socket.connect(this._server_url);
+        this._game_socket.connect(this._local_server);
     }
 
     disconnect() {
         this._game_socket.disconnect();
     }
 
+    startGame(game_type) {  // Can throw
+        return start_online_game(this._game_id, game_type,
+            this._local_server);
+    }
+ 
     // Return a promise that is forefilled when/if the game is joined.
-    // 
     joinGame(state) {
         const data = this._game_socket.joinGame(this._game_id, state);
         return data;

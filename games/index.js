@@ -28,9 +28,7 @@ function display_working_message(on) {
 }
 display_working_message(false);
 
-const online_games = ["dropdown", "othello", "cantstop"];
-
-function local_server() {
+function use_local_server() {
   return local_server_elem.checked;
 }
 
@@ -61,7 +59,7 @@ function game_href(game, id) {
     search_params.set("id", id);
 
     //KLUDGE?
-    if (local_server()) {
+    if (use_local_server()) {
       search_params.set("local", 1);
     }
   }
@@ -71,21 +69,6 @@ function game_href(game, id) {
   }
 
   return href;
-}
-
-function game_display_name(game) {
-  assert(game);
-
-  let display_name;
-
-  if (game == "cantstop") {
-    display_name = "Can't Stop";
-  } else {
-    // Capitalise the first letter - This is the default
-    display_name = game.charAt(0).toUpperCase() + game.slice(1);
-  }
-
-  return display_name;
 }
 
 let oneline_game_info = new class  {
@@ -133,11 +116,11 @@ async function show_all_open_games() {
   display_working_message(true);
 
   try {
-    let data = await game_server_fetch('open-games', local_server());
+    let data = await game_server_fetch('open-games', use_local_server());
 
     let game_found = false;
     for (let [id, game] of data) {
-      oneline_game_info.add_first_game(id, game, local_server());
+      oneline_game_info.add_first_game(id, game, use_local_server());
       game_found = true;
     }
 
@@ -154,34 +137,25 @@ async function show_all_open_games() {
 
 async function start_game(id, game_type) {
 
-  if (!online_games.includes(game_type)) {
-    const display_name = game_display_name(game_type);
-    oneline_game_info.message(`Sorry: ${display_name} is not available online`);
-    return;
-  }
-
-  let sent_data = {
-    game: game_type,
-  };
-  if (id) {
-    sent_data.id = id;
-  }
-
   display_working_message(true);
+  let server_data = null;
   try {
-    let received_data = await game_server_fetch('start-game', local_server(), sent_data);
-    oneline_game_info.add_first_game(received_data.id, game_type);
+    server_data = await start_online_game(id, game_type, use_local_server());
   }
   catch (err) {
     oneline_game_info.error("Cannot start game", err);
   }
   finally {
+   if(server_data) {
+       assert(server_data.id);
+       oneline_game_info.add_first_game(server_data.id, game_type);
+     }
     display_working_message(false);
   }
 }
 
 function clear_all_games() {
-  game_server_fetch('clear', local_server())
+  game_server_fetch('clear', use_local_server())
     .then(data => {
       oneline_game_info.reset();
     })

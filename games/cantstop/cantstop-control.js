@@ -378,7 +378,7 @@ function CantStopControl(game_board, dice_array, game_display) {
                 in_play.push(i);
             }
         }
-        console.log("in-play columns recieved:", ... in_play);
+        //console.log("in-play columns recieved:", ... in_play);
 
         for (let sc in state_control) {
             state_control[sc].receive(input_state);
@@ -435,7 +435,7 @@ function CantStopControl(game_board, dice_array, game_display) {
         async join_game(online_support_) {
             online_support = online_support_;
             online_support.connect();
-            
+
             join_game();
         }
 
@@ -445,9 +445,10 @@ function CantStopControl(game_board, dice_array, game_display) {
             // display_online_status() is called by the disconnect callback
         }
 
-        refresh_connection() {
+        async refresh_connection() {
             online_support.disconnect();
             online_support.connect();
+            online_support.startGame('cantstop'); // can throw ...
 
             join_game();
         }
