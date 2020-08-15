@@ -299,14 +299,17 @@ function CantStopControl(game_board, dice_array, game_display) {
         return state;
     }
 
-    async function join_game() {    
+    async function join_game() {   
         game_display.status_message('Connecting ...');
 
-        online_support.onDisconnect = ()=>{
-            display_online_status();
-            alert("Connection to server lost");
-        };
+        online_support.onDisconnect = (opts)=>{
+            assert(typeof opts.client_disconnect == "boolean");
 
+            display_online_status({from_disconnect_callback: true});
+            if(!opts.client_disconnect) {
+                alert("Connection to server lost");
+            }
+        };
 
         try {
             let server_data = await online_support.joinGame(game_state());
@@ -327,7 +330,6 @@ function CantStopControl(game_board, dice_array, game_display) {
         } catch(err) {
             assert(!online_support.joined);
             console.log("join_game failed:", err);
-            game_display.status_message('Connection failed');
             throw err;
         } finally {
             display_online_status();
@@ -414,13 +416,16 @@ function CantStopControl(game_board, dice_array, game_display) {
         }
     }
 
-    function display_online_status() {
-        const msg = online_support.joined ?  
+    function display_online_status(opts = {}) {
+        // online_support.joined can be true while processing a disconnect callback.
+        const online = online_support.joined && !opts.from_disconnect_callback;
+
+        const msg = online ?  
             `Connected: Game ID ${online_support.game_id}` :
-            'Connection failed';
+            'Offline: Connection failed or was lost';
         game_display.status_message(msg);
 
-        game_display.game_id(online_support.game_id, online_support.joined);
+        game_display.game_id(online_support.game_id, online);
     }
     
     
@@ -441,8 +446,8 @@ function CantStopControl(game_board, dice_array, game_display) {
 
 
         disconnect() {
-            online_support.disconnect();
             // display_online_status() is called by the disconnect callback
+            online_support.disconnect();
         }
 
         async refresh_connection() {

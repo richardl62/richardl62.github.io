@@ -6,6 +6,8 @@ class GameSocket {
         leftGroup(player_id);  // Another player left the group
     */
     constructor(callbacks) {
+        this._in_client_disconnect = false;
+
         this.reset();
         
         Object.seal(this);
@@ -32,14 +34,14 @@ class GameSocket {
     get onPlayerLeave() {return this._onPlayerLeave;}
 
     set onDisconnect(callback) {this._onDisconnect = callback;}
-    get onDisconnect() {return this._on_onDisconnectStateReceive;}
+    get onDisconnect() {return this._onDisconnect;}
 
 
     connect(local_server) {
         assert(typeof local_server == "boolean");
         this.disconnect();
 
-        this._socket = io(get_game_server(get_game_server(local_server)));
+        this._socket = io(get_game_server(local_server));
 
         this.setGameListeners();
     }
@@ -79,16 +81,7 @@ class GameSocket {
         });
 
         this._socket.on('disconnect', () => {
-
-            // disconnect resets all member data including, for better or worse,
-            // _onDisconnect.
-            const onDisconnect = this._onDisconnect;
-            
-            this.disconnect();
-
-            if(onDisconnect) {
-                onDisconnect();
-            } 
+            this._socket_disconnect();
         });
     }
 
@@ -159,12 +152,25 @@ class GameSocket {
         }
     }
 
+    _socket_disconnect() {
+            if(this._onDisconnect) {
+                this._onDisconnect({
+                    client_disconnect: this._in_client_disconnect,
+                });
+            }
+
+            this.reset();
+        }
+
     disconnect() {
         if (this.connected) {
             console.log("game socket disconnected");
-            this._socket.disconnect();
-            
-            this.reset();
+            try {
+                this._in_client_disconnect = true;
+                this._socket.disconnect(); // Triggers call to _socket_disconnect().
+            } finally {
+                this._in_client_disconnect = false;
+            }
         }
     }
 

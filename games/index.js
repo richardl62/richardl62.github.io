@@ -1,5 +1,7 @@
 'use strict';
 
+// Comment out the line below (or set value to false) before pushing to server.
+// const default_to_local_server = true;
 
 window.onerror = () => {
   alert("Internal error: See console log for details");
@@ -30,6 +32,10 @@ display_working_message(false);
 
 function use_local_server() {
   return local_server_elem.checked;
+}
+
+if(typeof default_to_local_server != "undefined") {
+  local_server_elem.checked = default_to_local_server;
 }
 
 function show_debug_only_elems(show) {
