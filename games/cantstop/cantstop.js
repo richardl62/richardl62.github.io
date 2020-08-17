@@ -54,6 +54,10 @@ function cantstop_setup() {
         board: $_checked("#board"),
         bust: $_checked("#bust"),
         commit: $_checked("#commit"),
+        connection_lost_div: $_checked("#connection-lost-div"),
+        connection_lost_close: $_checked("#connection-lost-close"),
+        connection_lost_reconnect: $_checked("#connection-lost-reconnect"),
+        connection_lost_text: $_checked("#connection-lost-text"),
         debug_input: $_checked("#debug-input"),
         dice: $_checked(".csdice"),
         disconnect: $_checked("#disconnect"),
@@ -68,6 +72,9 @@ function cantstop_setup() {
         more_button: $_checked("#more-button"),
         more_div: $_checked("#more-div"),
         move_option_div: $_checked("#move-options-div"),
+        name: $_checked("#name"),
+        name_div: $_checked("#name-div"),
+        name_close: $_checked("#name-close"),
         networking_info: $_checked("#networking-info"),
         num_players: $_checked("#num-players"),
         pass: $_checked("#pass"),
@@ -336,6 +343,14 @@ function cantstop_setup() {
         control.refresh_connection();
     });
 
+    jq.connection_lost_close.click(function (elem) {
+        jq.connection_lost_div.addClass(display_none_class);
+    });
+
+    jq.name_close.click(function (elem) {
+        jq.name_div.addClass(display_none_class);
+    });
+
     // The reason (such as it is)for not doing the 'control.on' stuff entirely
     // in 'control' is to allow for future error handing, logging etc.
     control.onPlayerSquareClick(
@@ -348,7 +363,10 @@ function cantstop_setup() {
 
     control.automatic_filling = true;
     control.manual_filling = startup_options.manual_filling;
+
     toggle_display_options_div(startup_options.show_options_div);
+    jq.name_div.addClass(display_none_class);
+    jq.connection_lost_div.addClass(display_none_class);
 
     // Do last so that any state that is set during startup is avialable to
     // record on the server.

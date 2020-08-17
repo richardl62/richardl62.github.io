@@ -91,6 +91,44 @@
   /* Let's be boring, or now at least */
 }
 
+.modal {
+  display: flex;
+  border: 2px darkgray solid;
+  font-size: 30px;
+  margin-bottom: 4px;
+}
+
+.modal-close {
+  display: inline-block;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: #aaa;
+  margin-right: 3px;
+}
+.modal-close:hover,
+.modal-close:focus {
+  color: black;
+  cursor: pointer;
+}
+
+#connection-lost-div, #name-div {
+  padding-left: 0.3em;
+}
+
+#connection-lost-reconnect {
+  font-size: 0.8em;
+  margin: 3px 10px 3px auto; /* top right bottom left */
+}
+
+#name {
+  font-size: 0.8em;
+  margin: 3px 3px 3px 3px; /* top right bottom left */
+}
+
+#name-close {
+  margin-left: auto;
+}
+
 
 #below-board {
   display: flex;
