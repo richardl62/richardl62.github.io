@@ -44,6 +44,14 @@
   flex-direction: column;
 }
 
+/* #test-beta-div {
+  width: 4em;
+}
+ */
+
+#command {
+  width: 4em;
+}
 #options-div {
   align-items: flex-end;
 }
@@ -113,6 +121,10 @@
 
 #connection-lost-div, #name-div {
   padding-left: 0.3em;
+}
+
+#connection-lost-div {
+  color: red;
 }
 
 #connection-lost-reconnect {

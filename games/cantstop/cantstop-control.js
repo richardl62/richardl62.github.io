@@ -300,39 +300,39 @@ function CantStopControl(game_board, dice_array, game_display) {
     }
 
     async function join_game() {   
-        game_display.status_message('Connecting ...');
+        game_display.connecting(online_support.game_id);
 
         online_support.onDisconnect = (opts)=>{
             assert(typeof opts.client_disconnect == "boolean");
 
-            display_online_status({from_disconnect_callback: true});
-            if(!opts.client_disconnect) {
-                alert("Connection to server lost");
-            }
+            game_display.connection_lost(opts);
         };
 
+        let server_data = null;
         try {
-            let server_data = await online_support.joinGame(game_state());
-
-            assert(online_support.joined);
-            online_support.onReceiveState = receive_state;
-
-            // server_data.state is the game state recorded in the server at 
-            // the time of th join request. If this is the first request, it
-            // will be null. 
-            assert(server_data.hasOwnProperty('state'));
-            if (server_data.state) {
-                receive_state({
-                    state: server_data.state,
-                });
-                game_state_for_undo = game_board.state();
-            }    
+            server_data = await online_support.joinGame(game_state());
         } catch(err) {
             assert(!online_support.joined);
             console.log("join_game failed:", err);
+            game_display.connection_failed();   
             throw err;
         } finally {
-            display_online_status();
+            if (server_data !== null) {
+                assert(online_support.joined);
+                online_support.onReceiveState = receive_state;
+
+                // server_data.state is the game state recorded in the server at 
+                // the time of th join request. If this is the first request, it
+                // will be null. 
+                assert(server_data.hasOwnProperty('state'));
+                if (server_data.state) {
+                    receive_state({
+                        state: server_data.state,
+                    });
+                    game_state_for_undo = game_board.state();
+                }
+                game_display.connected();
+            }
         }
     }
 
@@ -415,19 +415,6 @@ function CantStopControl(game_board, dice_array, game_display) {
             game_state_for_undo = data.state_for_undo;
         }
     }
-
-    function display_online_status(opts = {}) {
-        // online_support.joined can be true while processing a disconnect callback.
-        const online = online_support.joined && !opts.from_disconnect_callback;
-
-        const msg = online ?  
-            `Connected: Game ID ${online_support.game_id}` :
-            'Offline: Connection failed or was lost';
-        game_display.status_message(msg);
-
-        game_display.game_id(online_support.game_id, online);
-    }
-    
     
     // Public interface for functionality defined above.
     // Also sends state changes to the server when apppopriate.
@@ -446,16 +433,20 @@ function CantStopControl(game_board, dice_array, game_display) {
 
 
         disconnect() {
-            // display_online_status() is called by the disconnect callback
-            online_support.disconnect();
+            if (online_support) {
+                // Display is updated by the disconnect callback
+                online_support.disconnect();
+            }
         }
 
         async refresh_connection() {
-            online_support.disconnect();
-            online_support.connect();
-            online_support.startGame('cantstop'); // can throw ...
+            if (online_support) {
+                online_support.disconnect();
+                online_support.connect();
+                online_support.startGame('cantstop'); // can throw ...
 
-            join_game();
+                join_game();
+            }
         }
 
         roll() {

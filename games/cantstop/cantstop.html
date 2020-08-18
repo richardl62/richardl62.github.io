@@ -37,6 +37,18 @@
     <div id="main">
     <div id="more-div">
         <fieldset>
+            <legend>Test/Beta</legend>
+            <div id=test-beta-div>
+                <div>Game ID: <span id="game-id"></span></div>
+                <button type="button" id="disconnect">Disconnect</button>
+                <button type="button" id="refresh-connection">Refresh</button>
+                <label> Cmd
+                    <input type="text" id="command" spellcheck="false">
+                </label>
+            </div>
+
+        </fieldset>
+        <fieldset>
             <legend>Game options</legend>
             <div id="options-div">
                 <label> Players
@@ -52,22 +64,11 @@
                 </label>
             </div>
         </fieldset>
-        <fieldset id="networking-info">
-            <legend>Networking</legend>
-            <div id="networking-div">
-                <div>Game ID: <span id="game-id"></span></div>
-                <button type="button" id="disconnect">Disconnect</button>
-                <button type="button" id="refresh-connection">Refresh</button>
-            </div>
-        </fieldset>
         <fieldset>
             <legend>Misc</legend>
             <div id="misc-div">
                 <button type="button" id="undo">Undo</button>
                 <button type="button" id="commit">Commit</button>
-                <label> Debug
-                    <input type="text" id="debug-input" spellcheck="false">
-                </label>
             </div>
         </fieldset>
     </div>

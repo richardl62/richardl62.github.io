@@ -58,7 +58,6 @@ function cantstop_setup() {
         connection_lost_close: $_checked("#connection-lost-close"),
         connection_lost_reconnect: $_checked("#connection-lost-reconnect"),
         connection_lost_text: $_checked("#connection-lost-text"),
-        debug_input: $_checked("#debug-input"),
         dice: $_checked(".csdice"),
         disconnect: $_checked("#disconnect"),
         move_options: $_checked(".move-option"), // Expect 6 matches
@@ -75,7 +74,6 @@ function cantstop_setup() {
         name: $_checked("#name"),
         name_div: $_checked("#name-div"),
         name_close: $_checked("#name-close"),
-        networking_info: $_checked("#networking-info"),
         num_players: $_checked("#num-players"),
         pass: $_checked("#pass"),
         player_name: $_checked("#player-name"),
@@ -122,9 +120,20 @@ function cantstop_setup() {
     let dice_array = make_dice_array();
 
     const display_stage_elements = [jq.bust, jq.game_over, jq.required_roll, jq.move_option_div];
+
+    function status_message(text) {
+        jq.status_message.text(text);
+    }
+
+    function toggle_connection_classes(connected) {
+        jq.disconnect.toggleClass(display_none_class, !connected);
+        jq.connection_lost_div.toggleClass(display_none_class, connected);
+        jq.game_id.toggleClass("game-disconneted", !connected);
+    }
+
     let game_display = new class {
         constructor() {
-            this.game_id(null);
+            this.name_id = null;
         }
         // Make exactly one of the game-stage elements visible
         stage(input_stage) {
@@ -160,15 +169,7 @@ function cantstop_setup() {
             } 
         }
 
-        game_id(id, connected = true) {
-            assert(id !== undefined);
-            jq.networking_info.toggleClass(display_none_class, id === null);
 
-            jq.disconnect.toggleClass(display_none_class, !connected);
-
-            jq.game_id.text(id);
-            jq.game_id.toggleClass("game-disconneted", !connected);
-        }
 
         move_options(move_options) {
             //console.log("move options to display:", move_options);
@@ -233,8 +234,27 @@ function cantstop_setup() {
             jq.num_players.val(num);
         }
 
-        status_message(text) {
-            jq.status_message.text(text);
+        connecting(game_id) {
+            assert(typeof game_id == "string");
+            this.game_id = game_id;
+            jq.game_id.text(game_id);
+            status_message("Connecting ...");
+        }
+
+        connected() {
+            assert(this.game_id ); // Should have been set by connecting()
+            status_message(`Connected: Game ID ${this.game_id}`);
+            toggle_connection_classes(true);
+        }
+
+        connection_failed() {
+            status_message('Connection failed');
+            toggle_connection_classes(false);
+        }
+
+        connection_lost() {
+            status_message('Connection lost');
+            toggle_connection_classes(false);
         }
     }();
 
@@ -340,6 +360,10 @@ function cantstop_setup() {
     });
 
     jq.refresh_connection.click(function (elem) {
+        control.refresh_connection();
+    });
+
+    jq.connection_lost_reconnect.click(function (elem) {
         control.refresh_connection();
     });
 
