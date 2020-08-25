@@ -497,6 +497,10 @@ function CantStopControl(game_board, dice_array, game_display) {
             restart();
 
             send_state();
+
+            // Kludge?: Prevent and undo action (e.g. passing) from restoring 
+            // the old game state.
+            send_state_for_undo(game_board.state()); 
         }
 
         set_num_players(num) {
