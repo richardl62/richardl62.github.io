@@ -15,7 +15,7 @@ const game_id_elem = getElementById_Checked("game-id");
 const local_server_elem = getElementById_Checked("local-server");
 const play_offline_elem = getElementById_Checked("play-offline");
 const start_elem = getElementById_Checked("start");
-const refresh_open_games_elem = getElementById_Checked("refresh-open-games");
+const list_online_games_elem = getElementById_Checked("list-online-games");
 const clear_games_elem = getElementById_Checked("clear-games");
 const open_games_info_elem = getElementById_Checked("open-games-info");
 const working_message_elem = getElementById_Checked("working-message");
@@ -182,7 +182,7 @@ start_elem.addEventListener("click", (e) => {
   game_id_elem.value = "";
 });
 
-refresh_open_games_elem.addEventListener("click", (e) => {
+list_online_games_elem.addEventListener("click", (e) => {
   show_all_open_games();
 });
 
