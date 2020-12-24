@@ -1,7 +1,7 @@
 'use strict';
 
 const gameServer_localserver = "http://localhost:5000";
-const gameServer_webserver = "https://glacial-chamber-12465.herokuapp.com";
+const gameServer_webserver = "https://richards-old-games-server.herokuapp.com";
 const default_connection_timeout = 10000; //ms
 
 function get_game_server(local) {
