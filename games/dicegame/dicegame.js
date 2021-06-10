@@ -91,10 +91,31 @@ function show_options(show) {
 
 $("#options-button").click(() => show_options(!options_shown));
 
+var july11_shown;
+function show_july11(show) {
+    july11_shown = show;
+    $("#july11-button").toggleClass("pressed-button", show);
+    $("#july11").toggle(show);
+    show_gene(false);
+}
+
+function show_gene(show) {
+    $("#gene").toggle(show);
+}
+
+$("#july11-button").click(() => show_july11(!july11_shown));
+
+$("#july11").click(() => {
+    show_gene(true);
+});
+
+
 $("#num-dice").change(setNumOfDice);
 $("#num-players").change(setNumOfPlayers);
 
+show_july11(false);
 show_options(false);
+show_gene(false);
 
 setNumOfDice(); // kludge ?
 setNumOfPlayers(); // kludge ?

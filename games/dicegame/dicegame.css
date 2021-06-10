@@ -25,3 +25,16 @@ button
 #restart {
    color: darkblue;
 }
+
+#july11 {
+   font-family: cursive;
+   font-size: 30px;
+   font-weight: bold;
+   color: darkred;
+   margin-bottom: 10px;
+}
+
+#gene {
+    font-weight: normal;
+    opacity: 0.8;
+}
