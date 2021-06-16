@@ -82,7 +82,7 @@ $("#roll-unheld").click(() => {
     current_player_control.dice_rolled();
 });
 
-var options_shown;
+var options_shown = false;
 function show_options(show) {
     options_shown = show;
     $("#options-button").toggleClass("pressed-button", show);
@@ -91,31 +91,28 @@ function show_options(show) {
 
 $("#options-button").click(() => show_options(!options_shown));
 
-var july11_shown;
-function show_july11(show) {
-    july11_shown = show;
-    $("#july11-button").toggleClass("pressed-button", show);
-    $("#july11").toggle(show);
-    show_gene(false);
+var optional_message_shown = false;
+function show_optional_message(show) {
+    optional_message_shown = show;
+    $("#optional-message-button").toggleClass("pressed-button", show);
+    $("#optional-message").toggle(show);
+    show_extra_optional_message(false);
 }
 
-function show_gene(show) {
-    $("#gene").toggle(show);
+function show_extra_optional_message(show) {
+    $("#optional-message span").toggle(show);
 }
 
-$("#july11-button").click(() => show_july11(!july11_shown));
+$("#optional-message-button").click(() => show_optional_message(!optional_message_shown));
 
-$("#july11").click(() => {
-    show_gene(true);
+$("#optional-message").click(() => {
+    show_extra_optional_message(true);
 });
 
 
 $("#num-dice").change(setNumOfDice);
 $("#num-players").change(setNumOfPlayers);
 
-show_july11(false);
-show_options(false);
-show_gene(false);
 
 setNumOfDice(); // kludge ?
 setNumOfPlayers(); // kludge ?

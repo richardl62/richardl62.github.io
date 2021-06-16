@@ -26,7 +26,12 @@ button
    color: darkblue;
 }
 
-#july11 {
+#options-menu {
+   display: none;  /* can be changed in script */
+}
+
+#optional-message {
+   display: none;  /* can be changed in script */
    font-family: cursive;
    font-size: 30px;
    font-weight: bold;
@@ -34,7 +39,7 @@ button
    margin-bottom: 10px;
 }
 
-#gene {
+#optional-message span {
     font-weight: normal;
     opacity: 0.8;
 }
